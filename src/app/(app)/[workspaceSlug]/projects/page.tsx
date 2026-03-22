@@ -9,6 +9,7 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { type ProjectPriority, type ProjectStatus } from "@/types";
+import { SquaresFour, List } from "@phosphor-icons/react";
 
 const PRIORITY_STYLES: Record<ProjectPriority, { badge: string; border: string; bar: string }> = {
   HIGH:   { badge: "bg-error-container text-on-error-container",           border: "border-l-4 border-primary",   bar: "bg-primary" },
@@ -72,10 +73,10 @@ export default async function ProjectsPage({
             <div className="flex items-center gap-4">
               <div className="flex rounded-xl bg-surface-container-low p-1">
                 <button className="rounded-lg bg-surface-container-lowest px-4 py-2 text-primary shadow-ambient">
-                  <span className="material-symbols-outlined block text-[20px]">grid_view</span>
+                  <SquaresFour size={20} />
                 </button>
                 <button className="px-4 py-2 text-on-surface-variant">
-                  <span className="material-symbols-outlined block text-[20px]">list</span>
+                  <List size={20} />
                 </button>
               </div>
               <NewProjectButton workspaceId={workspace.id} variant="sidebar" />

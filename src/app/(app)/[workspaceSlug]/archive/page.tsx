@@ -5,6 +5,7 @@ import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
 import { type ParaCategory } from "@/types";
+import { Archive } from "@phosphor-icons/react";
 
 export default async function ArchivePage({
   params,
@@ -43,9 +44,7 @@ export default async function ArchivePage({
         <div className="px-8 py-6">
           {workspace.notes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
-                inventory_2
-              </span>
+              <Archive size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
                 Nothing archived yet
               </p>

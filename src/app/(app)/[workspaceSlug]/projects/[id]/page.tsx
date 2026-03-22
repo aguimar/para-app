@@ -7,6 +7,7 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory, type ProjectStatus } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { ArrowLeft } from "@phosphor-icons/react";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   ACTIVE: "Active",
@@ -43,9 +44,9 @@ export default async function ProjectDetailPage({
         <div className="sticky top-0 z-10 flex h-14 items-center gap-4 bg-surface/80 px-8 backdrop-blur-md">
           <a
             href={`/${workspaceSlug}/projects`}
-            className="material-symbols-outlined text-[20px] text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            arrow_back
+            <ArrowLeft size={20} />
           </a>
           <IconPicker
             entityType="project"

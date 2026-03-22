@@ -30,12 +30,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`h-full ${manrope.variable} ${inter.variable}`}>
         <head>
-          {/* Material Symbols — loaded via <link> to avoid PostCSS @import ordering issues */}
           <link rel="stylesheet" href="/blocknote.css" />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-          />
         </head>
         <body className="h-full bg-background text-on-surface antialiased" suppressHydrationWarning>
           <TRPCProvider>{children}</TRPCProvider>

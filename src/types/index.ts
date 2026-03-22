@@ -1,3 +1,5 @@
+import { Tray, Rocket, TreeStructure, Books, Archive, type Icon } from "@phosphor-icons/react";
+
 export type ParaCategory = "INBOX" | "PROJECT" | "AREA" | "RESOURCE" | "ARCHIVE";
 export type ProjectStatus = "ACTIVE" | "ON_HOLD" | "COMPLETED";
 export type ProjectPriority = "HIGH" | "MEDIUM" | "LOW";
@@ -18,10 +20,10 @@ export const PARA_LABELS: Record<ParaCategory, string> = {
   ARCHIVE: "Archive",
 };
 
-export const PARA_ICONS: Record<ParaCategory, string> = {
-  INBOX: "inbox",
-  PROJECT: "rocket_launch",
-  AREA: "hub",
-  RESOURCE: "book_2",
-  ARCHIVE: "inventory_2",
+export const PARA_ICONS: Record<ParaCategory, Icon> = {
+  INBOX: Tray,
+  PROJECT: Rocket,
+  AREA: TreeStructure,
+  RESOURCE: Books,
+  ARCHIVE: Archive,
 };

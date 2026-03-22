@@ -8,6 +8,7 @@ import { type ParaCategory, type ProjectStatus } from "@/types";
 import type { Project, Note } from "@/generated/prisma/client";
 import { NewNoteButton } from "@/components/notes/NewNoteButton";
 import { InboxBoard } from "@/components/notes/InboxBoard";
+import { Rocket, TreeStructure, Books, Archive, type Icon } from "@phosphor-icons/react";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -55,11 +56,11 @@ export default async function DashboardPage() {
     select: { id: true, title: true, updatedAt: true },
   });
 
-  const inventory = [
-    { label: "Projects", count: workspace._count.projects, icon: "rocket_launch", color: "text-primary" },
-    { label: "Areas", count: workspace._count.areas, icon: "hub", color: "text-secondary" },
-    { label: "Resources", count: workspace._count.resources, icon: "book_2", color: "text-tertiary" },
-    { label: "Archives", count: workspace._count.notes, icon: "inventory_2", color: "text-outline" },
+  const inventory: { label: string; count: number; Icon: Icon; color: string }[] = [
+    { label: "Projects", count: workspace._count.projects, Icon: Rocket, color: "text-primary" },
+    { label: "Areas", count: workspace._count.areas, Icon: TreeStructure, color: "text-secondary" },
+    { label: "Resources", count: workspace._count.resources, Icon: Books, color: "text-tertiary" },
+    { label: "Archives", count: workspace._count.notes, Icon: Archive, color: "text-outline" },
   ];
 
   return (
@@ -82,14 +83,12 @@ export default async function DashboardPage() {
               PARA Inventory
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {inventory.map(({ label, count, icon, color }) => (
+              {inventory.map(({ label, count, Icon, color }) => (
                 <div
                   key={label}
                   className="rounded-xl bg-surface-container-lowest p-4 shadow-ambient"
                 >
-                  <span className={`material-symbols-outlined text-[22px] ${color}`}>
-                    {icon}
-                  </span>
+                  <Icon size={22} className={color} />
                   <p className="mt-2 font-headline text-2xl font-bold text-on-surface">
                     {count}
                   </p>
@@ -158,9 +157,7 @@ export default async function DashboardPage() {
 
           {workspace.projects.length === 0 && workspace.notes.length === 0 && (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
-                auto_stories
-              </span>
+              <Books size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
                 Your second brain is empty
               </p>

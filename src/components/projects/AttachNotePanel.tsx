@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
+import { UploadSimple, ArrowsClockwise, Link as LinkIcon, Folder } from "@phosphor-icons/react";
 import type { Note, Project } from "@/generated/prisma/client";
 
 interface Props {
@@ -37,9 +38,7 @@ export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
   return (
     <section className="mt-12">
       <div className="mb-6 flex items-center gap-3">
-        <span className="material-symbols-outlined text-[20px] text-on-surface-variant">
-          unarchive
-        </span>
+        <UploadSimple size={20} className="text-on-surface-variant" />
         <h2 className="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
           Unattached Notes — Project Category
         </h2>
@@ -80,9 +79,7 @@ export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
                   attaching === note.id && "opacity-50 cursor-not-allowed"
                 )}
               >
-                <span className="material-symbols-outlined text-[16px]">
-                  {attaching === note.id ? "sync" : "link"}
-                </span>
+                {attaching === note.id ? <ArrowsClockwise size={16} /> : <LinkIcon size={16} />}
                 Attach to Project
               </button>
 
@@ -102,7 +99,7 @@ export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
                         {p.icon ? (
                           <span className="text-base leading-none">{p.icon}</span>
                         ) : (
-                          <span className="material-symbols-outlined text-[16px] text-primary">folder</span>
+                          <Folder size={16} className="text-primary" />
                         )}
                         {p.title}
                       </button>

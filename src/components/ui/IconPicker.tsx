@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
+import { PencilSimple } from "@phosphor-icons/react";
 
 const EMOJI_GROUPS = [
   { label: "Conhecimento",   emojis: ["📚","📖","📝","🗒️","📋","📌","🔖","📑","📄","🗂️","🗃️","📜"] },
@@ -83,7 +84,7 @@ export function IconPicker({
           </span>
         )}
         <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-outline-variant bg-surface-container opacity-0 transition-opacity group-hover:opacity-100">
-          <span className="material-symbols-outlined text-[10px] text-on-surface-variant">edit</span>
+          <PencilSimple size={10} className="text-on-surface-variant" />
         </span>
       </button>
 

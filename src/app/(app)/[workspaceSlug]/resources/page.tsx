@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
+import { Books } from "@phosphor-icons/react";
 
 export default async function ResourcesPage({
   params,
@@ -66,9 +67,7 @@ export default async function ResourcesPage({
         {/* ── Index list ─────────────────────────────────────────── */}
         {resources.length === 0 ? (
           <div className="mx-auto max-w-5xl px-10 py-24 text-center">
-            <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
-              book_2
-            </span>
+            <Books size={48} className="text-on-surface-variant" />
             <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
               No resources yet
             </p>

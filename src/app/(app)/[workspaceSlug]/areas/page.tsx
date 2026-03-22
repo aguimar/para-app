@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachAreaNotePanel } from "@/components/areas/AttachAreaNotePanel";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
+import { Plus, TreeStructure } from "@phosphor-icons/react";
 
 export default async function AreasPage({
   params,
@@ -48,7 +49,7 @@ export default async function AreasPage({
             Areas
           </h1>
           <button className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary shadow-ambient transition hover:bg-secondary-dim">
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <Plus size={18} />
             New Area
           </button>
         </div>
@@ -56,9 +57,7 @@ export default async function AreasPage({
         <div className="px-8 py-6">
           {workspace.areas.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
-                hub
-              </span>
+              <TreeStructure size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
                 No areas yet
               </p>

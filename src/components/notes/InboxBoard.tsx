@@ -15,6 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
+import { Rocket, TreeStructure, Books, Archive, Tray, DotsSixVertical, type Icon } from "@phosphor-icons/react";
 
 interface InboxNote {
   id: string;
@@ -31,28 +32,28 @@ const CATEGORIES = [
   {
     id: "PROJECT",
     label: "Project",
-    icon: "rocket_launch",
+    Icon: Rocket,
     color: "text-primary",
     activeColor: "bg-primary-container text-on-primary-container border-primary/40",
   },
   {
     id: "AREA",
     label: "Area",
-    icon: "hub",
+    Icon: TreeStructure,
     color: "text-secondary",
     activeColor: "bg-secondary-container text-on-secondary-container border-secondary/40",
   },
   {
     id: "RESOURCE",
     label: "Resource",
-    icon: "book_2",
+    Icon: Books,
     color: "text-tertiary",
     activeColor: "bg-tertiary-container text-on-tertiary-container border-tertiary/40",
   },
   {
     id: "ARCHIVE",
     label: "Archive",
-    icon: "inventory_2",
+    Icon: Archive,
     color: "text-outline",
     activeColor: "bg-surface-container-highest text-on-surface-variant border-outline/40",
   },
@@ -81,9 +82,7 @@ function DraggableNote({ note, isDragging }: { note: InboxNote; isDragging?: boo
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-[16px] text-on-surface-variant">
-          drag_indicator
-        </span>
+        <DotsSixVertical size={16} className="text-on-surface-variant" />
         <p className="truncate font-body text-sm font-medium text-on-surface">
           {note.title || "Untitled"}
         </p>
@@ -98,7 +97,7 @@ function NoteGhost({ note }: { note: InboxNote }) {
   return (
     <div className="cursor-grabbing rounded-xl bg-surface-container-lowest px-4 py-3 shadow-[0_16px_48px_rgba(42,52,57,0.18)] ring-2 ring-primary/20 select-none rotate-2">
       <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-[16px] text-primary">drag_indicator</span>
+        <DotsSixVertical size={16} className="text-primary" />
         <p className="truncate font-body text-sm font-medium text-on-surface">
           {note.title || "Untitled"}
         </p>
@@ -128,9 +127,7 @@ function CategoryZone({
           : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/60"
       )}
     >
-      <span className={cn("material-symbols-outlined text-[28px]", isOver && category.color)}>
-        {category.icon}
-      </span>
+      <category.Icon size={28} className={cn(isOver && category.color)} />
       <p className={cn("font-label text-[11px] font-bold uppercase tracking-widest", isOver && category.color)}>
         {category.label}
       </p>
@@ -188,7 +185,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
     >
       <section className="rounded-xl bg-surface-container-low p-5">
         <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px] text-on-surface-variant">inbox</span>
+          <Tray size={18} className="text-on-surface-variant" />
           <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
             Inbox
           </h2>

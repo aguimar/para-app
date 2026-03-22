@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
+import { Link as LinkIcon, Books } from "@phosphor-icons/react";
 import type { Note, Resource } from "@/generated/prisma/client";
 
 interface Props {
@@ -63,7 +64,7 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
                     attaching === note.id && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  <span className="material-symbols-outlined text-[16px]">link</span>
+                  <LinkIcon size={16} />
                   Attach
                 </button>
 
@@ -81,7 +82,7 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
                         {r.icon ? (
                           <span className="text-base leading-none">{r.icon}</span>
                         ) : (
-                          <span className="material-symbols-outlined text-[16px] text-tertiary">book_2</span>
+                          <Books size={16} className="text-tertiary" />
                         )}
                         {r.title}
                       </button>

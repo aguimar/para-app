@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
+import { Link as LinkIcon, TreeStructure } from "@phosphor-icons/react";
 import type { Note, Area } from "@/generated/prisma/client";
 
 interface Props {
@@ -63,7 +64,7 @@ export function AttachAreaNotePanel({ notes: initialNotes, areas }: Props) {
                     attaching === note.id && "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  <span className="material-symbols-outlined text-[16px]">link</span>
+                  <LinkIcon size={16} />
                   Attach
                 </button>
 
@@ -81,7 +82,7 @@ export function AttachAreaNotePanel({ notes: initialNotes, areas }: Props) {
                         {a.icon ? (
                           <span className="text-base leading-none">{a.icon}</span>
                         ) : (
-                          <span className="material-symbols-outlined text-[16px] text-secondary">hub</span>
+                          <TreeStructure size={16} className="text-secondary" />
                         )}
                         {a.title}
                       </button>

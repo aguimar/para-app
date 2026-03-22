@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { Plus } from "@phosphor-icons/react";
 
 interface NewNoteButtonProps {
   workspaceId: string;
@@ -39,7 +40,7 @@ export function NewNoteButton({ workspaceId }: NewNoteButtonProps) {
       disabled={loading}
       className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary shadow-ambient transition hover:bg-primary-dim disabled:opacity-60"
     >
-      <span className="material-symbols-outlined text-[18px]">add</span>
+      <Plus size={18} />
       {loading ? "Creating…" : "New Note"}
     </button>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import { Rocket, TreeStructure, Books, Archive, House, type Icon } from "@phosphor-icons/react";
 
 interface SidebarProps {
   workspaceSlug: string;
@@ -11,10 +12,10 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { label: "Projects", icon: "rocket_launch", slug: "projects", color: "text-primary" },
-  { label: "Areas", icon: "hub", slug: "areas", color: "text-secondary" },
-  { label: "Resources", icon: "book_2", slug: "resources", color: "text-tertiary" },
-  { label: "Archive", icon: "inventory_2", slug: "archive", color: "text-outline" },
+  { label: "Projects", Icon: Rocket, slug: "projects", color: "text-primary" },
+  { label: "Areas", Icon: TreeStructure, slug: "areas", color: "text-secondary" },
+  { label: "Resources", Icon: Books, slug: "resources", color: "text-tertiary" },
+  { label: "Archive", Icon: Archive, slug: "archive", color: "text-outline" },
 ] as const;
 
 export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
@@ -45,9 +46,7 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
               : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
           )}
         >
-          <span className="material-symbols-outlined text-[20px]">
-            dashboard
-          </span>
+          <House size={20} />
           Dashboard
         </Link>
 
@@ -56,7 +55,7 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
           <p className="px-3 pb-1 font-label text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">
             PARA
           </p>
-          {NAV_ITEMS.map(({ label, icon, slug, color }) => {
+          {NAV_ITEMS.map(({ label, Icon, slug, color }) => {
             const href = `/${workspaceSlug}/${slug}`;
             const active = pathname.startsWith(href);
             return (
@@ -70,9 +69,7 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
                     : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                 )}
               >
-                <span className={cn("material-symbols-outlined text-[20px]", active ? color : "")}>
-                  {icon}
-                </span>
+                <Icon size={20} className={active ? color : ""} />
                 {label}
               </Link>
             );

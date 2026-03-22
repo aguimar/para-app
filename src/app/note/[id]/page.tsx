@@ -8,6 +8,7 @@ import { ParaBadge } from "@/components/ui/ParaBadge";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { cn } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS, PARA_ICONS } from "@/types";
+import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info } from "@phosphor-icons/react";
 
 export default function NoteEditorPage() {
   const params = useParams<{ id: string }>();
@@ -104,9 +105,7 @@ export default function NoteEditorPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
-        <span className="material-symbols-outlined animate-spin text-[32px] text-on-surface-variant">
-          progress_activity
-        </span>
+        <CircleNotch size={32} className="animate-spin text-on-surface-variant" />
       </div>
     );
   }
@@ -122,9 +121,7 @@ export default function NoteEditorPage() {
   if (initializedId !== params.id) {
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
-        <span className="material-symbols-outlined animate-spin text-[32px] text-on-surface-variant">
-          progress_activity
-        </span>
+        <CircleNotch size={32} className="animate-spin text-on-surface-variant" />
       </div>
     );
   }
@@ -137,9 +134,9 @@ export default function NoteEditorPage() {
         <div className="flex h-14 shrink-0 items-center gap-3 px-6 bg-surface-container-lowest">
           <button
             onClick={goBack}
-            className="material-symbols-outlined text-[20px] text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            arrow_back
+            <ArrowLeft size={20} />
           </button>
 
           <IconPicker
@@ -173,7 +170,7 @@ export default function NoteEditorPage() {
               className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
               title="Delete note"
             >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <Trash size={18} />
             </button>
 
             {isDirty && (
@@ -193,11 +190,9 @@ export default function NoteEditorPage() {
                   )}
                 >
                   {saving ? (
-                    <span className="material-symbols-outlined animate-spin text-[14px]">
-                      progress_activity
-                    </span>
+                    <CircleNotch size={14} className="animate-spin" />
                   ) : (
-                    <span className="material-symbols-outlined text-[14px]">save</span>
+                    <FloppyDisk size={14} />
                   )}
                   {saving ? "Saving…" : "Save"}
                 </button>
@@ -222,7 +217,7 @@ export default function NoteEditorPage() {
               )}
               title="Toggle inspector"
             >
-              <span className="material-symbols-outlined text-[18px]">info</span>
+              <Info size={18} />
             </button>
           </div>
         </div>
@@ -264,9 +259,7 @@ export default function NoteEditorPage() {
                       : "text-on-surface-variant hover:bg-surface-container"
                   )}
                 >
-                  <span className="material-symbols-outlined text-[16px]">
-                    {PARA_ICONS[cat]}
-                  </span>
+                  {(() => { const CatIcon = PARA_ICONS[cat]; return <CatIcon size={16} />; })()}
                   {PARA_LABELS[cat]}
                 </button>
               ))}

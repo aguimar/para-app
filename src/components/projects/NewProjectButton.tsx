@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
+import { Plus, X } from "@phosphor-icons/react";
 
 interface NewProjectButtonProps {
   workspaceId: string;
@@ -63,7 +64,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
           onClick={() => setOpen(true)}
           className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary shadow-ambient transition hover:bg-primary-dim"
         >
-          <span className="material-symbols-outlined text-[18px]">add</span>
+          <Plus size={18} />
           New Project
         </button>
       ) : (
@@ -72,7 +73,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
           className="flex min-h-[220px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-outline-variant/30 p-6 transition-colors hover:bg-surface-container-low/50 group"
         >
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant transition-all group-hover:bg-primary group-hover:text-on-primary">
-            <span className="material-symbols-outlined">add</span>
+            <Plus size={24} />
           </div>
           <p className="font-headline font-bold text-on-surface-variant">Initiate New Project</p>
         </button>
@@ -103,7 +104,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
                 onClick={() => setOpen(false)}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container"
               >
-                <span className="material-symbols-outlined text-[20px]">close</span>
+                <X size={20} />
               </button>
             </div>
 

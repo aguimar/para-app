@@ -7,6 +7,7 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { ArrowLeft, Link as LinkIcon, ArrowSquareOut, Books } from "@phosphor-icons/react";
 
 export default async function ResourceDetailPage({
   params,
@@ -38,9 +39,9 @@ export default async function ResourceDetailPage({
         <div className="sticky top-0 z-10 flex h-14 items-center gap-4 bg-surface/80 px-8 backdrop-blur-md border-b border-surface-container-high/50">
           <a
             href={`/${workspaceSlug}/resources`}
-            className="material-symbols-outlined text-[20px] text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            arrow_back
+            <ArrowLeft size={20} />
           </a>
           <span className="font-label text-[10px] font-bold uppercase tracking-[0.18em] text-tertiary">
             Resources
@@ -90,13 +91,11 @@ export default async function ResourceDetailPage({
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center gap-2 rounded-full border border-outline-variant px-4 py-1.5 font-body text-sm text-on-surface-variant hover:border-tertiary hover:text-tertiary transition-colors group"
                     >
-                      <span className="material-symbols-outlined text-[15px]">link</span>
+                      <LinkIcon size={15} />
                       <span className="truncate max-w-xs">
                         {resource.url.replace(/^https?:\/\//, "")}
                       </span>
-                      <span className="material-symbols-outlined text-[13px] opacity-0 group-hover:opacity-100 transition-opacity">
-                        open_in_new
-                      </span>
+                      <ArrowSquareOut size={13} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
                   )}
 
@@ -163,9 +162,7 @@ export default async function ResourceDetailPage({
 
             {resource.notes.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-surface-container-highest py-16 text-center">
-                <span className="material-symbols-outlined text-[40px] text-on-surface-variant opacity-40">
-                  book_2
-                </span>
+                <Books size={40} className="text-on-surface-variant opacity-40" />
                 <p className="mt-4 font-headline text-base font-semibold text-on-surface-variant">
                   Nenhuma nota neste resource
                 </p>
