@@ -8,7 +8,7 @@ import { type ParaCategory, type ProjectStatus } from "@/types";
 import type { Project, Note } from "@/generated/prisma/client";
 import { NewNoteButton } from "@/components/notes/NewNoteButton";
 import { InboxBoard } from "@/components/notes/InboxBoard";
-import { Rocket, TreeStructure, Books, Archive, type Icon } from "@phosphor-icons/react";
+import { ParaInventory } from "@/components/dashboard/ParaInventory";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -56,12 +56,6 @@ export default async function DashboardPage() {
     select: { id: true, title: true, updatedAt: true },
   });
 
-  const inventory: { label: string; count: number; Icon: Icon; color: string }[] = [
-    { label: "Projects", count: workspace._count.projects, Icon: Rocket, color: "text-primary" },
-    { label: "Areas", count: workspace._count.areas, Icon: TreeStructure, color: "text-secondary" },
-    { label: "Resources", count: workspace._count.resources, Icon: Books, color: "text-tertiary" },
-    { label: "Archives", count: workspace._count.notes, Icon: Archive, color: "text-outline" },
-  ];
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -82,22 +76,12 @@ export default async function DashboardPage() {
             <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-4">
               PARA Inventory
             </h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {inventory.map(({ label, count, Icon, color }) => (
-                <div
-                  key={label}
-                  className="rounded-xl bg-surface-container-lowest p-4 shadow-ambient"
-                >
-                  <Icon size={22} className={color} />
-                  <p className="mt-2 font-headline text-2xl font-bold text-on-surface">
-                    {count}
-                  </p>
-                  <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ParaInventory
+              projects={workspace._count.projects}
+              areas={workspace._count.areas}
+              resources={workspace._count.resources}
+              archives={workspace._count.notes}
+            />
           </section>
 
           {/* Inbox — drag notes to categorize */}

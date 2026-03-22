@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachAreaNotePanel } from "@/components/areas/AttachAreaNotePanel";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
-import { Plus, TreeStructure } from "@phosphor-icons/react";
+import { Plus, TreeStructure } from "@/components/ui/icons";
 
 export default async function AreasPage({
   params,

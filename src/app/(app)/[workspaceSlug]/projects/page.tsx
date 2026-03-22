@@ -9,7 +9,7 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { type ProjectPriority, type ProjectStatus } from "@/types";
-import { SquaresFour, List } from "@phosphor-icons/react";
+import { SquaresFour, List } from "@/components/ui/icons";
 
 const PRIORITY_STYLES: Record<ProjectPriority, { badge: string; border: string; bar: string }> = {
   HIGH:   { badge: "bg-error-container text-on-error-container",           border: "border-l-4 border-primary",   bar: "bg-primary" },

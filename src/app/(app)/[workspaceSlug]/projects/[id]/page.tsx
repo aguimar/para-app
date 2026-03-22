@@ -7,7 +7,7 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory, type ProjectStatus } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeft } from "@/components/ui/icons";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   ACTIVE: "Active",

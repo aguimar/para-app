@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
-import { Books } from "@phosphor-icons/react";
+import { Books } from "@/components/ui/icons";
 
 export default async function ResourcesPage({
   params,

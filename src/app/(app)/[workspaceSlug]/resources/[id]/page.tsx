@@ -7,7 +7,7 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { ArrowLeft, Link as LinkIcon, ArrowSquareOut, Books } from "@phosphor-icons/react";
+import { ArrowLeft, Link as LinkIcon, ArrowSquareOut, Books } from "@/components/ui/icons";
 
 export default async function ResourceDetailPage({
   params,

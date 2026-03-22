@@ -5,7 +5,7 @@ import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
 import { type ParaCategory } from "@/types";
-import { Archive } from "@phosphor-icons/react";
+import { Archive } from "@/components/ui/icons";
 
 export default async function ArchivePage({
   params,
