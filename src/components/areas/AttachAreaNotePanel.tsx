@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
 import { Link as LinkIcon, TreeStructure } from "@phosphor-icons/react";
+import { PickedIcon } from "@/components/ui/PickedIcon";
 import type { Note, Area } from "@/generated/prisma/client";
 
 interface Props {
@@ -80,7 +81,7 @@ export function AttachAreaNotePanel({ notes: initialNotes, areas }: Props) {
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-on-surface transition-colors hover:bg-surface-container"
                       >
                         {a.icon ? (
-                          <span className="text-base leading-none">{a.icon}</span>
+                          <PickedIcon name={a.icon} size={16} className="text-secondary" />
                         ) : (
                           <TreeStructure size={16} className="text-secondary" />
                         )}

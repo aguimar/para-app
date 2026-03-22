@@ -9,6 +9,7 @@ import type { Project, Note } from "@/generated/prisma/client";
 import { NewNoteButton } from "@/components/notes/NewNoteButton";
 import { InboxBoard } from "@/components/notes/InboxBoard";
 import { ParaInventory } from "@/components/dashboard/ParaInventory";
+import { Books } from "@/components/ui/icons";
 
 export default async function DashboardPage() {
   const { userId } = await auth();

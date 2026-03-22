@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
 import { UploadSimple, ArrowsClockwise, Link as LinkIcon, Folder } from "@phosphor-icons/react";
+import { PickedIcon } from "@/components/ui/PickedIcon";
 import type { Note, Project } from "@/generated/prisma/client";
 
 interface Props {
@@ -97,7 +98,7 @@ export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-on-surface transition-colors hover:bg-surface-container"
                       >
                         {p.icon ? (
-                          <span className="text-base leading-none">{p.icon}</span>
+                          <PickedIcon name={p.icon} size={16} className="text-primary" />
                         ) : (
                           <Folder size={16} className="text-primary" />
                         )}

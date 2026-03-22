@@ -8,6 +8,7 @@ import type { Block } from "@blocknote/core";
 interface NoteEditorProps {
   content: string;
   onChange: (json: string) => void;
+  placeholder?: string;
 }
 
 function parseContent(raw: string): Block[] | undefined {

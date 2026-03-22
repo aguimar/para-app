@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn, formatRelativeDate, bodyToPlainText } from "@/lib/utils";
 import { ParaBadge } from "./ParaBadge";
+import { PickedIcon } from "./PickedIcon";
 import { type ParaCategory } from "@/types";
 
 interface NoteCardProps {
@@ -36,7 +37,7 @@ export function NoteCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          {icon && <span className="text-lg leading-none shrink-0">{icon}</span>}
+          {icon && <PickedIcon name={icon} size={18} className="shrink-0 text-on-surface-variant" />}
           <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-2">
             {title || "Untitled"}
           </h3>
