@@ -7,7 +7,8 @@ import { NoteEditor } from "@/components/notes/NoteEditor";
 import { ParaBadge } from "@/components/ui/ParaBadge";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { cn } from "@/lib/utils";
-import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS, PARA_ICONS } from "@/types";
+import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
+import { PARA_ICONS } from "@/lib/para-icons";
 import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info } from "@phosphor-icons/react";
 
 export default function NoteEditorPage() {
