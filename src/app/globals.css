@@ -155,15 +155,12 @@ h4 {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24);
 }
 
-/* Tiptap editor */
-.tiptap {
-  outline: none;
+/* BlockNote editor — blend with page surface */
+.bn-editor {
+  padding: 0 !important;
 }
 
-.tiptap p.is-editor-empty:first-child::before {
-  color: var(--color-on-surface-variant);
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
+.bn-container,
+[data-theming-css-variables-demo] {
+  --bn-font-family: var(--font-body);
 }

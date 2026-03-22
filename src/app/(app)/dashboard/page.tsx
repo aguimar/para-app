@@ -106,9 +106,6 @@ export default async function DashboardPage() {
             <InboxBoard
               workspaceId={workspace.id}
               inboxNotes={inboxNotes}
-              projects={workspace.projects.map((p) => ({ id: p.id, title: p.title }))}
-              areas={workspace.areas.map((a) => ({ id: a.id, title: a.title }))}
-              resources={workspace.resources.map((r) => ({ id: r.id, title: r.title }))}
             />
           )}
 

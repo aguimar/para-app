@@ -25,6 +25,28 @@ export function formatRelativeDate(date: Date | string): string {
   return formatDate(date);
 }
 
+/** Extracts plain text from a note body (BlockNote JSON or legacy HTML). */
+export function bodyToPlainText(body: string): string {
+  if (!body) return "";
+  try {
+    const blocks = JSON.parse(body);
+    if (!Array.isArray(blocks)) throw new Error();
+    const texts: string[] = [];
+    function extractText(node: unknown) {
+      if (!node || typeof node !== "object") return;
+      const n = node as Record<string, unknown>;
+      if (n.type === "text" && typeof n.text === "string") texts.push(n.text);
+      if (Array.isArray(n.content)) n.content.forEach(extractText);
+      if (Array.isArray(n.children)) n.children.forEach(extractText);
+    }
+    blocks.forEach(extractText);
+    return texts.join(" ");
+  } catch {
+    // Legacy HTML
+    return body.replace(/<[^>]+>/g, "");
+  }
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

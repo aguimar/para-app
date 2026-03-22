@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
 import type { Resource } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
 import Link from "next/link";
 
 export default async function ResourcesPage({
@@ -14,106 +15,130 @@ export default async function ResourcesPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const workspace = await db.workspace.findUnique({
-    where: { slug: workspaceSlug },
-    include: {
-      resources: {
-        orderBy: { updatedAt: "desc" },
-        include: { _count: { select: { notes: true } } },
+  const [workspace, unattachedNotes] = await Promise.all([
+    db.workspace.findUnique({
+      where: { slug: workspaceSlug },
+      include: {
+        resources: {
+          orderBy: { title: "asc" },
+          include: { _count: { select: { notes: true } } },
+        },
       },
-    },
-  });
+    }),
+    db.note.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "RESOURCE",
+        resourceId: null,
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
-  // Collect all unique tags
-  const allTags = Array.from(
-    new Set(workspace.resources.flatMap((r: Resource) => r.tags))
-  ).sort() as string[];
+  const resources = workspace.resources as (Resource & { _count: { notes: number } })[];
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
-        <div className="sticky top-0 z-10 flex h-14 items-center justify-between bg-surface/80 px-8 backdrop-blur-md">
-          <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
-            Resources
-          </h1>
-          <button className="flex items-center gap-2 rounded-full bg-tertiary px-4 py-2 text-sm font-semibold text-on-tertiary shadow-ambient transition hover:bg-tertiary-dim">
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            New Resource
-          </button>
+
+        {/* ── Header ─────────────────────────────────────────────── */}
+        <div className="mx-auto max-w-5xl px-10 pt-14 pb-0">
+          <div className="flex items-end justify-between border-b border-surface-container-high pb-8">
+            <div className="flex flex-col gap-3">
+              <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-tertiary">
+                Biblioteca Pessoal
+              </span>
+              <h1 className="font-headline text-5xl font-bold leading-none tracking-tight text-on-surface">
+                Resources
+              </h1>
+            </div>
+            <p className="font-body text-sm text-on-surface-variant">
+              {resources.length} {resources.length === 1 ? "tópico" : "tópicos"}
+            </p>
+          </div>
         </div>
 
-        <div className="px-8 py-6 space-y-6">
-          {/* Tag filter */}
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="cursor-pointer rounded bg-tertiary-container px-2.5 py-1 font-label text-[11px] font-semibold text-on-tertiary-container transition hover:opacity-80"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {workspace.resources.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
-                book_2
-              </span>
-              <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
-                No resources yet
-              </p>
-              <p className="mt-1 font-body text-sm text-on-surface-variant">
-                Resources are topics of ongoing interest or research.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {workspace.resources.map((resource: Resource & { _count: { notes: number } }) => (
+        {/* ── Index list ─────────────────────────────────────────── */}
+        {resources.length === 0 ? (
+          <div className="mx-auto max-w-5xl px-10 py-24 text-center">
+            <span className="material-symbols-outlined text-[48px] text-on-surface-variant">
+              book_2
+            </span>
+            <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
+              No resources yet
+            </p>
+            <p className="mt-1 font-body text-sm text-on-surface-variant">
+              Drag an inbox note to the Resource zone to get started.
+            </p>
+          </div>
+        ) : (
+          <div className="mx-auto max-w-5xl px-10 pb-16">
+            <div className="grid grid-cols-2 gap-x-12">
+              {resources.map((resource, i) => (
                 <Link
                   key={resource.id}
                   href={`/${workspaceSlug}/resources/${resource.id}`}
-                  className="group block rounded-xl bg-surface-container-lowest p-5 shadow-ambient transition-shadow hover:shadow-[0_16px_48px_rgba(42,52,57,0.10)]"
+                  className="group grid items-baseline gap-x-4 border-b border-surface-container-high py-5 transition-colors hover:bg-surface-container-low"
+                  style={{ gridTemplateColumns: "36px 1fr auto", margin: "0 -16px", padding: "20px 16px" }}
                 >
+                  {/* Number */}
+                  <span className="font-body text-sm font-light tabular-nums text-on-surface-variant transition-colors group-hover:text-tertiary">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* Title + description */}
+                  <div className="min-w-0">
+                    <h2 className="font-headline text-base font-bold text-on-surface transition-colors group-hover:text-tertiary">
+                      {resource.title}
+                    </h2>
+                    {resource.description && (
+                      <p className="mt-0.5 font-body text-xs font-light text-on-surface-variant">
+                        {resource.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Note count + arrow */}
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-tertiary">
-                      book_2
+                    <div className="text-right">
+                      <p className="font-headline text-xl font-light leading-none text-on-surface-variant">
+                        {resource._count.notes}
+                      </p>
+                      <p className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant">
+                        {resource._count.notes === 1 ? "nota" : "notas"}
+                      </p>
+                    </div>
+                    <span className="font-body text-sm text-on-surface-variant opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 group-hover:text-tertiary">
+                      →
                     </span>
                   </div>
-                  <h3 className="mt-2 font-headline text-base font-semibold text-on-surface group-hover:text-tertiary transition-colors">
-                    {resource.title}
-                  </h3>
-                  {resource.description && (
-                    <p className="mt-1.5 font-body text-sm text-on-surface-variant line-clamp-2">
-                      {resource.description}
-                    </p>
-                  )}
-                  {resource.tags.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {resource.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded bg-tertiary-container px-1.5 py-0.5 font-label text-[10px] text-on-tertiary-container"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <p className="mt-4 font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                    {resource._count.notes} {resource._count.notes === 1 ? "note" : "notes"}
-                  </p>
                 </Link>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* ── Unattached resource notes ───────────────────────────── */}
+        {unattachedNotes.length > 0 && (
+          <div className="mx-auto max-w-5xl px-10 pb-16">
+            <div className="mb-4 flex items-center gap-3 border-t border-surface-container-high pt-10">
+              <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
+                Resource Notes — not yet attached
+              </span>
+              <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
+                {unattachedNotes.length}
+              </span>
+            </div>
+            <AttachResourceNotePanel
+              notes={unattachedNotes}
+              resources={resources.map((r) => ({ id: r.id, title: r.title }))}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

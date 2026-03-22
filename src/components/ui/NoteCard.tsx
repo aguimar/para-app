@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, formatRelativeDate, bodyToPlainText } from "@/lib/utils";
 import { ParaBadge } from "./ParaBadge";
-import { formatRelativeDate } from "@/lib/utils";
 import { type ParaCategory } from "@/types";
 
 interface NoteCardProps {
@@ -23,10 +22,7 @@ export function NoteCard({
   tags,
   className,
 }: NoteCardProps) {
-  // Strip HTML tags for preview
-  const preview = body
-    ? body.replace(/<[^>]+>/g, "").slice(0, 120)
-    : undefined;
+  const preview = body ? bodyToPlainText(body).slice(0, 120) : undefined;
 
   return (
     <Link

@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Second Brain — PARA
 
-## Getting Started
+App de organização de conhecimento pessoal baseado na metodologia [PARA](https://fortelabs.com/blog/para/) (Projects, Areas, Resources, Archive).
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router) + TypeScript
+- **tRPC 11** — type-safe API entre cliente e servidor
+- **Prisma 7** + PostgreSQL — persistência
+- **Clerk** — autenticação
+- **BlockNote** — editor de notas estilo Notion (rich text, slash commands, tabelas, listas)
+- **@dnd-kit** — drag-and-drop do inbox para categorias PARA
+- **Tailwind CSS v4** (CSS-first via `@theme`) + design system próprio
+- **Docker Compose** — ambiente de desenvolvimento
+
+## Desenvolvimento
+
+### Pré-requisitos
+
+- Docker + Docker Compose
+- Variáveis de ambiente em `.env.local` (Clerk keys, DATABASE_URL)
+
+### Subir o ambiente
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+O app estará disponível em [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Instalar pacotes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Sempre instale dentro do container para não misturar com o host:
 
-## Learn More
+```bash
+docker compose exec app npm install <pacote>
+docker compose restart app
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Banco de dados
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Rodar migrations
+docker compose exec app npx prisma migrate dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Abrir Prisma Studio
+docker compose exec app npx prisma studio
+```
 
-## Deploy on Vercel
+## Estrutura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/
+│   ├── (app)/              # Rotas autenticadas
+│   │   ├── dashboard/      # Inbox + notas recentes
+│   │   └── [workspaceSlug]/
+│   │       ├── projects/
+│   │       ├── areas/
+│   │       ├── resources/
+│   │       └── archive/
+│   ├── note/[id]/          # Editor de nota (BlockNote)
+│   └── api/
+│       ├── trpc/           # Handler tRPC
+│       └── webhooks/       # Clerk webhooks
+├── components/
+│   ├── notes/              # NoteEditor, NewNoteButton, InboxBoard
+│   ├── projects/           # AttachNotePanel
+│   ├── resources/          # AttachResourceNotePanel
+│   └── ui/                 # NoteCard, ParaBadge, etc.
+├── server/
+│   └── routers/            # tRPC routers (note, workspace, project…)
+└── lib/
+    ├── utils.ts            # cn(), bodyToPlainText(), formatRelativeDate()…
+    └── trpc.ts             # tRPC client
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Editor de notas
+
+O editor usa **BlockNote** com tema customizado integrado ao design system do app.
+
+O conteúdo é armazenado como JSON do BlockNote no campo `body` da tabela `Note`. Notas antigas com HTML são importadas automaticamente na primeira abertura.
+
+Para extrair texto puro do `body` (para previews), use o utilitário:
+
+```ts
+import { bodyToPlainText } from "@/lib/utils";
+
+const preview = bodyToPlainText(note.body).slice(0, 120);
+```
+
+## Design System
+
+Tailwind v4 com tokens customizados via `@theme` em `src/app/globals.css`. Dark mode ativado por padrão (`class="dark"` no `<html>`).
+
+Fontes: **Manrope** (headlines) + **Inter** (corpo/labels), carregadas via `next/font/google`.
+
+O CSS do BlockNote é carregado via `<link href="/blocknote.css">` no `<head>` para evitar conflitos com o pipeline PostCSS do Tailwind v4.

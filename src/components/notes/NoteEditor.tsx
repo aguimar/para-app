@@ -1,180 +1,91 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import Typography from "@tiptap/extension-typography";
-import { cn } from "@/lib/utils";
+import { useEffect, useMemo } from "react";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import type { Block, Theme } from "@blocknote/core";
 
 interface NoteEditorProps {
   content: string;
-  onChange: (html: string) => void;
-  placeholder?: string;
-  className?: string;
+  onChange: (json: string) => void;
 }
 
-interface FloatingToolbarState {
-  show: boolean;
-  top: number;
-  left: number;
+function parseContent(raw: string): Block[] | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed as Block[];
+  } catch {
+    // legacy HTML — will be imported async below
+  }
+  return undefined;
 }
 
-export function NoteEditor({
-  content,
-  onChange,
-  placeholder = "Start writing…",
-  className,
-}: NoteEditorProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [toolbar, setToolbar] = useState<FloatingToolbarState>({
-    show: false,
-    top: 0,
-    left: 0,
-  });
+// Theme tokens matching the app's dark palette (globals.css .dark)
+const paraTheme: Theme = {
+  colors: {
+    editor: {
+      text: "#dce4e9",       // --color-on-surface dark
+      background: "#09100f", // --color-surface-container-lowest dark
+      selectedText: "#618bff",
+    },
+    menu: {
+      text: "#dce4e9",
+      background: "#1b272c", // --color-surface-container dark
+    },
+    tooltip: {
+      text: "#bdc8cf",
+      background: "#253136", // --color-surface-container-high dark
+    },
+    hovered: {
+      text: "#dce4e9",
+      background: "#253136",
+    },
+    selected: {
+      text: "#dbe1ff",
+      background: "#003798", // --color-primary-container dark
+    },
+    disabled: {
+      text: "#566166",       // --color-on-surface-variant light
+      background: "#1b272c",
+    },
+    shadow: "rgba(0, 0, 0, 0.32)",
+    border: "#3d484e",       // --color-outline-variant dark
+    sideMenu: "#3d484e",
+    highlights: {
+      gray: { text: "#bdc8cf", background: "#253136" },
+      brown: { text: "#ffddb3", background: "#5a3a00" },
+      red: { text: "#fe8983", background: "#4e0309" },
+      orange: { text: "#ffb945", background: "#5a3a00" },
+      yellow: { text: "#f8a010", background: "#4a2c00" },
+      green: { text: "#4fdba0", background: "#005236" },
+      blue: { text: "#618bff", background: "#003798" },
+      purple: { text: "#c4b5fd", background: "#3b2a6e" },
+      pink: { text: "#f9a8d4", background: "#6b2147" },
+    },
+  },
+  borderRadius: 6,
+  fontFamily: "Inter, sans-serif",
+};
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      StarterKit,
-      Placeholder.configure({ placeholder }),
-      Typography,
-    ],
-    content,
-    editorProps: {
-      attributes: {
-        class:
-          "tiptap prose prose-sm max-w-none focus:outline-none min-h-[400px] font-body text-on-surface",
-      },
-    },
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
-    onSelectionUpdate: ({ editor }) => {
-      const { empty } = editor.state.selection;
-      if (empty || !containerRef.current) {
-        setToolbar((t) => ({ ...t, show: false }));
-        return;
-      }
-      const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const containerRect = containerRef.current.getBoundingClientRect();
-      setToolbar({
-        show: true,
-        top: rect.top - containerRect.top - 48,
-        left: Math.max(
-          0,
-          rect.left - containerRect.left + rect.width / 2 - 140
-        ),
-      });
-    },
-  });
+export function NoteEditor({ content, onChange }: NoteEditorProps) {
+  const initialContent = useMemo(() => parseContent(content), []);
 
-  // Hide toolbar on click outside
+  const editor = useCreateBlockNote({ initialContent });
+
+  // Import legacy HTML content on first mount
   useEffect(() => {
-    const hide = () => setToolbar((t) => ({ ...t, show: false }));
-    document.addEventListener("mousedown", hide);
-    return () => document.removeEventListener("mousedown", hide);
+    if (!content || parseContent(content)) return;
+    editor.tryParseHTMLToBlocks(content).then((blocks) => {
+      editor.replaceBlocks(editor.document, blocks);
+    });
   }, []);
 
-  if (!editor) return null;
-
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
-      {/* Floating formatting toolbar */}
-      {toolbar.show && (
-        <div
-          onMouseDown={(e) => e.preventDefault()}
-          style={{ top: toolbar.top, left: toolbar.left }}
-          className="absolute z-50 flex items-center gap-0.5 rounded-xl bg-surface-container-lowest px-2 py-1.5 shadow-ambient"
-        >
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            active={editor.isActive("bold")}
-            icon="format_bold"
-            title="Bold"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            active={editor.isActive("italic")}
-            icon="format_italic"
-            title="Italic"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            active={editor.isActive("strike")}
-            icon="strikethrough_s"
-            title="Strikethrough"
-          />
-          <div className="mx-1 h-4 w-px bg-outline-variant" />
-          <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run()
-            }
-            active={editor.isActive("heading", { level: 2 })}
-            icon="title"
-            title="Heading"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            active={editor.isActive("bulletList")}
-            icon="format_list_bulleted"
-            title="Bullet list"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            active={editor.isActive("orderedList")}
-            icon="format_list_numbered"
-            title="Numbered list"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            active={editor.isActive("blockquote")}
-            icon="format_quote"
-            title="Quote"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            active={editor.isActive("code")}
-            icon="code"
-            title="Inline code"
-          />
-        </div>
-      )}
-
-      <EditorContent editor={editor} />
-    </div>
-  );
-}
-
-function ToolbarButton({
-  onClick,
-  active,
-  icon,
-  title,
-}: {
-  onClick: () => void;
-  active: boolean;
-  icon: string;
-  title: string;
-}) {
-  return (
-    <button
-      onMouseDown={(e) => {
-        e.preventDefault();
-        onClick();
-      }}
-      title={title}
-      className={cn(
-        "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-        active
-          ? "bg-primary-container text-on-primary-container"
-          : "text-on-surface-variant hover:bg-surface-container"
-      )}
-    >
-      <span className="material-symbols-outlined text-[18px]">{icon}</span>
-    </button>
+    <BlockNoteView
+      editor={editor}
+      theme={paraTheme}
+      onChange={() => onChange(JSON.stringify(editor.document))}
+    />
   );
 }

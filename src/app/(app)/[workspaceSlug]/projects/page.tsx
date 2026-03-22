@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import type { Project } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NewProjectButton } from "@/components/projects/NewProjectButton";
+import { AttachNotePanel } from "@/components/projects/AttachNotePanel";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { type ProjectPriority, type ProjectStatus } from "@/types";
@@ -23,15 +24,25 @@ export default async function ProjectsPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const workspace = await db.workspace.findUnique({
-    where: { slug: workspaceSlug },
-    include: {
-      projects: {
-        orderBy: { updatedAt: "desc" },
-        include: { _count: { select: { notes: true } } },
+  const [workspace, unattachedNotes] = await Promise.all([
+    db.workspace.findUnique({
+      where: { slug: workspaceSlug },
+      include: {
+        projects: {
+          orderBy: { updatedAt: "desc" },
+          include: { _count: { select: { notes: true } } },
+        },
       },
-    },
-  });
+    }),
+    db.note.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "PROJECT",
+        projectId: null,
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
@@ -122,6 +133,12 @@ export default async function ProjectsPage({
             {/* Initiate New Project card */}
             <NewProjectButton workspaceId={workspace.id} variant="card" />
           </div>
+
+          {/* Unattached PROJECT notes */}
+          <AttachNotePanel
+            notes={unattachedNotes}
+            projects={workspace.projects.map((p) => ({ id: p.id, title: p.title }))}
+          />
         </div>
       </main>
     </div>
