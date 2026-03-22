@@ -139,13 +139,6 @@ h4 {
   font-family: var(--font-headline);
 }
 
-/* Material Symbols */
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  vertical-align: middle;
-  user-select: none;
-}
-
 /* Ambient shadow — per Editorial Intelligence spec */
 .shadow-ambient {
   box-shadow: 0 12px 40px rgba(42, 52, 57, 0.06);
@@ -155,12 +148,12 @@ h4 {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24);
 }
 
-/* BlockNote — mapeia tokens do design system, funciona em light e dark */
-.bn-container[data-color-scheme],
-.bn-container {
+/* BlockNote — mapeia tokens do design system para :root para que os popovers
+   (renderizados via Mantine portal em document.body) também recebam as variáveis */
+:root {
   --bn-colors-editor-background: var(--color-surface-container-lowest);
   --bn-colors-editor-text: var(--color-on-surface);
-  --bn-colors-menu-background: var(--color-surface-container);
+  --bn-colors-menu-background: var(--color-surface-container-low);
   --bn-colors-menu-text: var(--color-on-surface);
   --bn-colors-tooltip-background: var(--color-surface-container-high);
   --bn-colors-tooltip-text: var(--color-on-surface-variant);
