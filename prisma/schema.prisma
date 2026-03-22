@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum ParaCategory {
+  INBOX
+  PROJECT
+  AREA
+  RESOURCE
+  ARCHIVE
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+}
+
+enum ProjectPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id         String      @id // Clerk user ID
+  email      String      @unique
+  name       String?
+  imageUrl   String?
+  workspaces Workspace[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Workspace {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects  Project[]
+  areas     Area[]
+  resources Resource[]
+  notes     Note[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      ProjectStatus   @default(ACTIVE)
+  priority    ProjectPriority @default(MEDIUM)
+  progress    Int             @default(0) // 0–100
+  deadline    DateTime?
+  workspaceId String
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  notes       Note[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([workspaceId])
+}
+
+model Area {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  notes       Note[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+}
+
+model Resource {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  tags        String[]
+  url         String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  notes       Note[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+}
+
+model Note {
+  id          String       @id @default(cuid())
+  title       String       @default("Untitled")
+  body        String       @default("") // HTML from Tiptap
+  category    ParaCategory @default(INBOX)
+  tags        String[]
+  projectId   String?
+  project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  areaId      String?
+  area        Area?        @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  resourceId  String?
+  resource    Resource?    @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  // Backlinks: self-referential many-to-many
+  backlinks   Note[]       @relation("NoteBacklinks")
+  linkedFrom  Note[]       @relation("NoteBacklinks")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([workspaceId])
+  @@index([category])
+  @@index([projectId])
+  @@index([areaId])
+  @@index([resourceId])
+}
