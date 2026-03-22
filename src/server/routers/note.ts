@@ -138,6 +138,7 @@ export const noteRouter = router({
       z.object({
         id: z.string(),
         title: z.string().optional(),
+        icon: z.string().optional(),
         body: z.string().optional(),
         category: z
           .enum(["INBOX", "PROJECT", "AREA", "RESOURCE", "ARCHIVE"])

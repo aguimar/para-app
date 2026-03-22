@@ -155,12 +155,26 @@ h4 {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24);
 }
 
-/* BlockNote editor — blend with page surface */
-.bn-editor {
-  padding: 0 !important;
+/* BlockNote — mapeia tokens do design system, funciona em light e dark */
+.bn-container[data-color-scheme],
+.bn-container {
+  --bn-colors-editor-background: var(--color-surface-container-lowest);
+  --bn-colors-editor-text: var(--color-on-surface);
+  --bn-colors-menu-background: var(--color-surface-container);
+  --bn-colors-menu-text: var(--color-on-surface);
+  --bn-colors-tooltip-background: var(--color-surface-container-high);
+  --bn-colors-tooltip-text: var(--color-on-surface-variant);
+  --bn-colors-hovered-background: var(--color-surface-container-high);
+  --bn-colors-hovered-text: var(--color-on-surface);
+  --bn-colors-selected-background: var(--color-primary-container);
+  --bn-colors-selected-text: var(--color-on-primary-container);
+  --bn-colors-disabled-background: var(--color-surface-container-low);
+  --bn-colors-disabled-text: var(--color-on-surface-variant);
+  --bn-colors-border: var(--color-outline-variant);
+  --bn-colors-side-menu: var(--color-outline-variant);
+  --bn-font-family: var(--font-body);
 }
 
-.bn-container,
-[data-theming-css-variables-demo] {
-  --bn-font-family: var(--font-body);
+.bn-editor {
+  padding: 0 !important;
 }

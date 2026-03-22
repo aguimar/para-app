@@ -46,6 +46,7 @@ export const resourceRouter = router({
       z.object({
         workspaceId: z.string(),
         title: z.string().min(1).max(200),
+        icon: z.string().default(""),
         description: z.string().optional(),
         tags: z.array(z.string()).default([]),
         url: z.string().url().optional(),
@@ -65,6 +66,7 @@ export const resourceRouter = router({
       z.object({
         id: z.string(),
         title: z.string().min(1).max(200).optional(),
+        icon: z.string().optional(),
         description: z.string().optional(),
         tags: z.array(z.string()).optional(),
         url: z.string().url().optional(),

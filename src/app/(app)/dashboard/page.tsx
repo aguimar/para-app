@@ -145,6 +145,7 @@ export default async function DashboardPage() {
                     key={note.id}
                     id={note.id}
                     title={note.title}
+                    icon={(note as any).icon}
                     body={note.body}
                     category={note.category as ParaCategory}
                     updatedAt={note.updatedAt}

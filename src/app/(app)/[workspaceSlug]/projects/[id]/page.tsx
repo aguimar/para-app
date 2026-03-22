@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
+import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory, type ProjectStatus } from "@/types";
 import { formatDate } from "@/lib/utils";
 
@@ -46,6 +47,14 @@ export default async function ProjectDetailPage({
           >
             arrow_back
           </a>
+          <IconPicker
+            entityType="project"
+            entityId={project.id}
+            currentIcon={project.icon}
+            entityTitle={project.title}
+            accentClass="text-primary"
+            bgClass="bg-primary-container/20"
+          />
           <h1 className="font-headline text-xl font-bold tracking-tight text-on-surface">
             {project.title}
           </h1>
@@ -122,6 +131,7 @@ export default async function ProjectDetailPage({
                     key={note.id}
                     id={note.id}
                     title={note.title}
+                    icon={(note as any).icon}
                     body={note.body}
                     category={note.category as ParaCategory}
                     updatedAt={note.updatedAt}

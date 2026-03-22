@@ -5,14 +5,14 @@ import { trpc } from "@/lib/trpc";
 import { useRouter } from "next/navigation";
 import { cn, bodyToPlainText } from "@/lib/utils";
 import Link from "next/link";
-import type { Note, Resource } from "@/generated/prisma/client";
+import type { Note, Area } from "@/generated/prisma/client";
 
 interface Props {
   notes: Note[];
-  resources: Pick<Resource, "id" | "title" | "icon">[];
+  areas: Pick<Area, "id" | "title" | "icon">[];
 }
 
-export function AttachResourceNotePanel({ notes: initialNotes, resources }: Props) {
+export function AttachAreaNotePanel({ notes: initialNotes, areas }: Props) {
   const router = useRouter();
   const [notes, setNotes] = useState(initialNotes);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
               href={`/note/${note.id}`}
               className="group flex flex-col gap-1 flex-1 min-w-0"
             >
-              <span className="font-headline text-base font-bold text-on-surface group-hover:text-tertiary transition-colors truncate">
+              <span className="font-headline text-base font-bold text-on-surface group-hover:text-secondary transition-colors truncate">
                 {note.title || "Untitled"}
               </span>
               {note.body && (
@@ -51,7 +51,7 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
               )}
             </Link>
 
-            {resources.length > 0 && (
+            {areas.length > 0 && (
               <div className="relative ml-6 flex-shrink-0">
                 <button
                   onClick={() =>
@@ -59,7 +59,7 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
                   }
                   disabled={attaching === note.id}
                   className={cn(
-                    "flex items-center gap-2 rounded-full border border-tertiary px-4 py-2 font-label text-[11px] font-bold uppercase tracking-widest text-tertiary transition-all hover:bg-tertiary-container",
+                    "flex items-center gap-2 rounded-full border border-secondary px-4 py-2 font-label text-[11px] font-bold uppercase tracking-widest text-secondary transition-all hover:bg-secondary-container",
                     attaching === note.id && "opacity-50 cursor-not-allowed"
                   )}
                 >
@@ -69,21 +69,21 @@ export function AttachResourceNotePanel({ notes: initialNotes, resources }: Prop
 
                 {openDropdown === note.id && (
                   <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl bg-surface-container-lowest py-2 shadow-[0_12px_40px_rgba(42,52,57,0.12)]">
-                    {resources.map((r) => (
+                    {areas.map((a) => (
                       <button
-                        key={r.id}
+                        key={a.id}
                         onClick={() => {
                           setAttaching(note.id);
-                          updateNote.mutate({ id: note.id, resourceId: r.id, category: "RESOURCE" });
+                          updateNote.mutate({ id: note.id, areaId: a.id, category: "AREA" });
                         }}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-on-surface transition-colors hover:bg-surface-container"
                       >
-                        {r.icon ? (
-                          <span className="text-base leading-none">{r.icon}</span>
+                        {a.icon ? (
+                          <span className="text-base leading-none">{a.icon}</span>
                         ) : (
-                          <span className="material-symbols-outlined text-[16px] text-tertiary">book_2</span>
+                          <span className="material-symbols-outlined text-[16px] text-secondary">hub</span>
                         )}
-                        {r.title}
+                        {a.title}
                       </button>
                     ))}
                   </div>

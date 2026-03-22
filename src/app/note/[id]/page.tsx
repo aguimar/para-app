@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { NoteEditor } from "@/components/notes/NoteEditor";
 import { ParaBadge } from "@/components/ui/ParaBadge";
+import { IconPicker } from "@/components/ui/IconPicker";
 import { cn } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS, PARA_ICONS } from "@/types";
 
@@ -18,6 +19,7 @@ export default function NoteEditorPage() {
   const deleteNote = trpc.note.delete.useMutation();
 
   const [title, setTitle] = useState("");
+  const [icon, setIcon] = useState("");
   const [body, setBody] = useState("");
   const [category, setCategory] = useState<ParaCategory>("INBOX");
   const [inspectorOpen, setInspectorOpen] = useState(true);
@@ -28,6 +30,7 @@ export default function NoteEditorPage() {
   useEffect(() => {
     if (note && initializedId !== params.id) {
       setTitle(note.title);
+      setIcon((note as any).icon ?? "");
       setBody(note.body);
       setCategory(note.category as ParaCategory);
       setInitializedId(params.id);
@@ -48,7 +51,16 @@ export default function NoteEditorPage() {
   const save = useCallback(async () => {
     setSaving(true);
     try {
-      await updateNote.mutateAsync({ id: params.id, title, body, category });
+      await updateNote.mutateAsync({
+        id: params.id,
+        title,
+        body,
+        category,
+        // Clear parent IDs that don't match the new category
+        projectId:  category === "PROJECT"  ? undefined : null,
+        areaId:     category === "AREA"     ? undefined : null,
+        resourceId: category === "RESOURCE" ? undefined : null,
+      });
       utils.note.invalidate();
       setIsDirty(false);
       router.refresh();
@@ -129,6 +141,16 @@ export default function NoteEditorPage() {
           >
             arrow_back
           </button>
+
+          <IconPicker
+            entityType="note"
+            entityId={params.id}
+            currentIcon={icon}
+            entityTitle={title}
+            accentClass="text-on-surface-variant"
+            bgClass="bg-surface-container"
+            onIconChange={setIcon}
+          />
 
           <input
             type="text"

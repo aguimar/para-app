@@ -3,6 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
 import type { Area } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { AttachAreaNotePanel } from "@/components/areas/AttachAreaNotePanel";
+import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
 
 export default async function AreasPage({
@@ -14,15 +16,25 @@ export default async function AreasPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const workspace = await db.workspace.findUnique({
-    where: { slug: workspaceSlug },
-    include: {
-      areas: {
-        orderBy: { updatedAt: "desc" },
-        include: { _count: { select: { notes: true } } },
+  const [workspace, unattachedNotes] = await Promise.all([
+    db.workspace.findUnique({
+      where: { slug: workspaceSlug },
+      include: {
+        areas: {
+          orderBy: { updatedAt: "desc" },
+          include: { _count: { select: { notes: true } } },
+        },
       },
-    },
-  });
+    }),
+    db.note.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "AREA",
+        areaId: null,
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
@@ -57,35 +69,58 @@ export default async function AreasPage({
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {workspace.areas.map((area: Area & { _count: { notes: number } }) => (
-                <Link
+                <div
                   key={area.id}
-                  href={`/${workspaceSlug}/areas/${area.id}`}
-                  className="group block rounded-xl bg-surface-container-lowest p-5 shadow-ambient transition-shadow hover:shadow-[0_16px_48px_rgba(42,52,57,0.10)]"
+                  className="group relative rounded-xl bg-surface-container-lowest p-5 shadow-ambient transition-shadow hover:shadow-[0_16px_48px_rgba(42,52,57,0.10)]"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-secondary">
-                      hub
-                    </span>
-                    <span className="font-label text-[11px] uppercase tracking-widest text-secondary">
-                      Area
-                    </span>
+                  {/* Icon picker outside Link */}
+                  <div className="mb-3">
+                    <IconPicker
+                      entityType="area"
+                      entityId={area.id}
+                      currentIcon={area.icon}
+                      entityTitle={area.title}
+                      accentClass="text-secondary"
+                      bgClass="bg-secondary-container/20"
+                    />
                   </div>
-                  <h3 className="mt-2 font-headline text-base font-semibold text-on-surface group-hover:text-secondary transition-colors">
-                    {area.title}
-                  </h3>
-                  {area.description && (
-                    <p className="mt-1.5 font-body text-sm text-on-surface-variant line-clamp-2">
-                      {area.description}
+
+                  <Link href={`/${workspaceSlug}/areas/${area.id}`} className="block">
+                    <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-secondary transition-colors">
+                      {area.title}
+                    </h3>
+                    {area.description && (
+                      <p className="mt-1.5 font-body text-sm text-on-surface-variant line-clamp-2">
+                        {area.description}
+                      </p>
+                    )}
+                    <p className="mt-4 font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
+                      {area._count.notes} {area._count.notes === 1 ? "note" : "notes"}
                     </p>
-                  )}
-                  <p className="mt-4 font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                    {area._count.notes} {area._count.notes === 1 ? "note" : "notes"}
-                  </p>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* ── Unattached area notes ─────────────────────────────── */}
+        {unattachedNotes.length > 0 && (
+          <div className="px-8 pb-16">
+            <div className="mb-4 flex items-center gap-3 border-t border-surface-container-high pt-10">
+              <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
+                Area Notes — not yet attached
+              </span>
+              <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
+                {unattachedNotes.length}
+              </span>
+            </div>
+            <AttachAreaNotePanel
+              notes={unattachedNotes}
+              areas={workspace.areas.map((a) => ({ id: a.id, title: a.title, icon: a.icon }))}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import type { Resource } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
+import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
 
 export default async function ResourcesPage({
@@ -79,19 +80,30 @@ export default async function ResourcesPage({
           <div className="mx-auto max-w-5xl px-10 pb-16">
             <div className="grid grid-cols-2 gap-x-12">
               {resources.map((resource, i) => (
-                <Link
+                <div
                   key={resource.id}
-                  href={`/${workspaceSlug}/resources/${resource.id}`}
-                  className="group grid items-baseline gap-x-4 border-b border-surface-container-high py-5 transition-colors hover:bg-surface-container-low"
-                  style={{ gridTemplateColumns: "36px 1fr auto", margin: "0 -16px", padding: "20px 16px" }}
+                  className="group grid items-center gap-x-4 border-b border-surface-container-high transition-colors hover:bg-surface-container-low"
+                  style={{ gridTemplateColumns: "44px 44px 1fr auto", margin: "0 -16px", padding: "16px 16px" }}
                 >
                   {/* Number */}
-                  <span className="font-body text-sm font-light tabular-nums text-on-surface-variant transition-colors group-hover:text-tertiary">
+                  <span className="font-body text-sm font-light tabular-nums text-on-surface-variant transition-colors group-hover:text-tertiary self-center">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
-                  {/* Title + description */}
-                  <div className="min-w-0">
+                  {/* Icon picker */}
+                  <div className="self-center">
+                    <IconPicker
+                      entityType="resource"
+                      entityId={resource.id}
+                      currentIcon={resource.icon}
+                      entityTitle={resource.title}
+                      accentClass="text-tertiary"
+                      bgClass="bg-tertiary-container/20"
+                    />
+                  </div>
+
+                  {/* Title + description — clicking navigates */}
+                  <Link href={`/${workspaceSlug}/resources/${resource.id}`} className="min-w-0 block">
                     <h2 className="font-headline text-base font-bold text-on-surface transition-colors group-hover:text-tertiary">
                       {resource.title}
                     </h2>
@@ -100,10 +112,10 @@ export default async function ResourcesPage({
                         {resource.description}
                       </p>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Note count + arrow */}
-                  <div className="flex items-center gap-2">
+                  <Link href={`/${workspaceSlug}/resources/${resource.id}`} className="flex items-center gap-2">
                     <div className="text-right">
                       <p className="font-headline text-xl font-light leading-none text-on-surface-variant">
                         {resource._count.notes}
@@ -115,8 +127,8 @@ export default async function ResourcesPage({
                     <span className="font-body text-sm text-on-surface-variant opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 group-hover:text-tertiary">
                       →
                     </span>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
@@ -135,7 +147,7 @@ export default async function ResourcesPage({
             </div>
             <AttachResourceNotePanel
               notes={unattachedNotes}
-              resources={resources.map((r) => ({ id: r.id, title: r.title }))}
+              resources={resources.map((r) => ({ id: r.id, title: r.title, icon: r.icon }))}
             />
           </div>
         )}

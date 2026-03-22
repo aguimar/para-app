@@ -9,7 +9,7 @@ import type { Note, Project } from "@/generated/prisma/client";
 
 interface Props {
   notes: Note[];
-  projects: Pick<Project, "id" | "title">[];
+  projects: Pick<Project, "id" | "title" | "icon">[];
 }
 
 export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
@@ -99,9 +99,11 @@ export function AttachNotePanel({ notes: initialNotes, projects }: Props) {
                         onClick={() => handleAttach(note.id, p.id)}
                         className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-on-surface transition-colors hover:bg-surface-container"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-primary">
-                          folder
-                        </span>
+                        {p.icon ? (
+                          <span className="text-base leading-none">{p.icon}</span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[16px] text-primary">folder</span>
+                        )}
                         {p.title}
                       </button>
                     ))

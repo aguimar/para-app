@@ -5,6 +5,7 @@ import { PrismaClient } from "@/generated/prisma/client";
 
 const projectInput = z.object({
   title: z.string().min(1).max(200),
+  icon: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(["ACTIVE", "ON_HOLD", "COMPLETED"]).optional(),
   priority: z.enum(["HIGH", "MEDIUM", "LOW"]).optional(),

@@ -6,6 +6,7 @@ import { type ParaCategory } from "@/types";
 interface NoteCardProps {
   id: string;
   title: string;
+  icon?: string;
   body?: string;
   category: ParaCategory;
   updatedAt: Date | string;
@@ -16,6 +17,7 @@ interface NoteCardProps {
 export function NoteCard({
   id,
   title,
+  icon,
   body,
   category,
   updatedAt,
@@ -33,9 +35,12 @@ export function NoteCard({
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-2">
-          {title || "Untitled"}
-        </h3>
+        <div className="flex items-center gap-2 min-w-0">
+          {icon && <span className="text-lg leading-none shrink-0">{icon}</span>}
+          <h3 className="font-headline text-base font-semibold text-on-surface group-hover:text-primary transition-colors line-clamp-2">
+            {title || "Untitled"}
+          </h3>
+        </div>
         <ParaBadge category={category} className="shrink-0" />
       </div>
       {preview && (

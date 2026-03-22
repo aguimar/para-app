@@ -60,6 +60,7 @@ model Workspace {
 model Project {
   id          String        @id @default(cuid())
   title       String
+  icon        String        @default("")
   description String?
   status      ProjectStatus   @default(ACTIVE)
   priority    ProjectPriority @default(MEDIUM)
@@ -77,6 +78,7 @@ model Project {
 model Area {
   id          String    @id @default(cuid())
   title       String
+  icon        String    @default("")
   description String?
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -90,6 +92,7 @@ model Area {
 model Resource {
   id          String    @id @default(cuid())
   title       String
+  icon        String    @default("")
   description String?
   tags        String[]
   url         String?
@@ -105,6 +108,7 @@ model Resource {
 model Note {
   id          String       @id @default(cuid())
   title       String       @default("Untitled")
+  icon        String       @default("")
   body        String       @default("") // HTML from Tiptap
   category    ParaCategory @default(INBOX)
   tags        String[]
