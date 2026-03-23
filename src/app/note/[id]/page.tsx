@@ -9,7 +9,7 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import { cn } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
-import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info } from "@phosphor-icons/react";
+import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle } from "@phosphor-icons/react";
 
 export default function NoteEditorPage() {
   const params = useParams<{ id: string }>();
@@ -28,6 +28,11 @@ export default function NoteEditorPage() {
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [initializedId, setInitializedId] = useState<string | null>(null);
+  const [suggestion, setSuggestion] = useState<{ category: ParaCategory; reason: string } | null>(null);
+
+  const suggestCategory = trpc.note.suggestCategory.useMutation({
+    onSuccess: (data) => setSuggestion(data as { category: ParaCategory; reason: string }),
+  });
 
   useEffect(() => {
     if (note && initializedId !== params.id) {
@@ -242,9 +247,39 @@ export default function NoteEditorPage() {
         <aside className="w-72 shrink-0 overflow-y-auto bg-surface-container-low border-l-0 p-6 space-y-6">
           {/* Category */}
           <div>
-            <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
-              Category
-            </p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
+                Category
+              </p>
+              <button
+                onClick={() => suggestCategory.mutate({ id: params.id })}
+                disabled={suggestCategory.isPending}
+                title="Sugerir categoria com IA"
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-on-surface-variant opacity-50 hover:opacity-100 hover:bg-surface-container transition-all"
+              >
+                {suggestCategory.isPending ? (
+                  <CircleNotch size={12} className="animate-spin" />
+                ) : (
+                  <Sparkle size={12} />
+                )}
+                <span className="font-label text-[10px] uppercase tracking-wider">
+                  {suggestCategory.isPending ? "…" : "Sugerir"}
+                </span>
+              </button>
+            </div>
+
+            {suggestion && (
+              <div className="mb-2 rounded-lg border border-primary/20 bg-primary-container/30 px-3 py-2">
+                <p className="font-body text-xs text-primary leading-snug">{suggestion.reason}</p>
+                <button
+                  onClick={() => setSuggestion(null)}
+                  className="mt-1 font-label text-[10px] text-primary/60 hover:text-primary/100 transition-colors uppercase tracking-wider"
+                >
+                  Dispensar
+                </button>
+              </div>
+            )}
+
             <div className="space-y-1">
               {PARA_CATEGORIES.map((cat) => (
                 <button
@@ -252,16 +287,23 @@ export default function NoteEditorPage() {
                   onClick={() => {
                     setCategory(cat);
                     setIsDirty(true);
+                    setSuggestion(null);
                   }}
                   className={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
                     category === cat
                       ? "bg-surface-container-lowest text-on-surface shadow-ambient"
-                      : "text-on-surface-variant hover:bg-surface-container"
+                      : "text-on-surface-variant hover:bg-surface-container",
+                    suggestion?.category === cat && category !== cat
+                      ? "ring-2 ring-primary/40 ring-offset-1"
+                      : ""
                   )}
                 >
                   {(() => { const CatIcon = PARA_ICONS[cat]; return <CatIcon size={16} />; })()}
                   {PARA_LABELS[cat]}
+                  {suggestion?.category === cat && category !== cat && (
+                    <Sparkle size={11} className="ml-auto text-primary" />
+                  )}
                 </button>
               ))}
             </div>

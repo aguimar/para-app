@@ -15,7 +15,11 @@ import {
 } from "@dnd-kit/core";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { Rocket, TreeStructure, Books, Archive, Tray, DotsSixVertical, type Icon } from "@phosphor-icons/react";
+import {
+  Rocket, TreeStructure, Books, Archive, Tray,
+  DotsSixVertical, Sparkle, CircleNotch, Check, X,
+  type Icon,
+} from "@phosphor-icons/react";
 
 interface InboxNote {
   id: string;
@@ -35,6 +39,7 @@ const CATEGORIES = [
     Icon: Rocket,
     color: "text-primary",
     activeColor: "bg-primary-container text-on-primary-container border-primary/40",
+    suggestionColor: "bg-primary-container/60 text-primary border-primary/30",
   },
   {
     id: "AREA",
@@ -42,6 +47,7 @@ const CATEGORIES = [
     Icon: TreeStructure,
     color: "text-secondary",
     activeColor: "bg-secondary-container text-on-secondary-container border-secondary/40",
+    suggestionColor: "bg-secondary-container/60 text-secondary border-secondary/30",
   },
   {
     id: "RESOURCE",
@@ -49,6 +55,7 @@ const CATEGORIES = [
     Icon: Books,
     color: "text-tertiary",
     activeColor: "bg-tertiary-container text-on-tertiary-container border-tertiary/40",
+    suggestionColor: "bg-tertiary-container/60 text-tertiary border-tertiary/30",
   },
   {
     id: "ARCHIVE",
@@ -56,37 +63,111 @@ const CATEGORIES = [
     Icon: Archive,
     color: "text-outline",
     activeColor: "bg-surface-container-highest text-on-surface-variant border-outline/40",
+    suggestionColor: "bg-surface-container-high text-on-surface-variant border-outline/30",
   },
 ] as const;
 
+type CategoryId = (typeof CATEGORIES)[number]["id"];
+
+interface Suggestion {
+  category: CategoryId;
+  reason: string;
+}
+
 // ─── Draggable note card ──────────────────────────────────────────────────────
 
-function DraggableNote({ note, isDragging }: { note: InboxNote; isDragging?: boolean }) {
+function DraggableNote({
+  note,
+  isDragging,
+  onAssign,
+}: {
+  note: InboxNote;
+  isDragging?: boolean;
+  onAssign: (noteId: string, category: CategoryId) => void;
+}) {
   const router = useRouter();
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: note.id });
+  const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
+
+  const suggest = trpc.note.suggestCategory.useMutation({
+    onSuccess: (data) => setSuggestion(data as Suggestion),
+    onError: (err) => alert("Erro: " + err.message),
+  });
 
   const style = transform
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : undefined;
 
+  const suggestedCat = suggestion
+    ? CATEGORIES.find((c) => c.id === suggestion.category)
+    : null;
+
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      onDoubleClick={() => router.push(`/note/${note.id}`)}
-      className={cn(
-        "cursor-grab rounded-xl bg-surface-container-lowest px-4 py-3 shadow-ambient select-none transition-shadow active:cursor-grabbing",
-        isDragging && "opacity-40"
-      )}
+      className={cn("rounded-xl bg-surface-container-lowest shadow-ambient select-none transition-shadow", isDragging && "opacity-40")}
     >
-      <div className="flex items-center gap-2">
-        <DotsSixVertical size={16} className="text-on-surface-variant" />
-        <p className="truncate font-body text-sm font-medium text-on-surface">
+      {/* Drag handle row */}
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        onDoubleClick={() => router.push(`/note/${note.id}`)}
+        className="flex items-center gap-2 cursor-grab px-4 pt-3 pb-2 active:cursor-grabbing"
+      >
+        <DotsSixVertical size={16} className="shrink-0 text-on-surface-variant" />
+        <p className="flex-1 truncate font-body text-sm font-medium text-on-surface">
           {note.title || "Untitled"}
         </p>
       </div>
+
+      {/* Suggestion result */}
+      {suggestion && suggestedCat && (
+        <div className={cn("mx-3 mb-2 rounded-lg border px-3 py-2", suggestedCat.suggestionColor)}>
+          <div className="flex items-start gap-2">
+            <suggestedCat.Icon size={14} className="mt-0.5 shrink-0" />
+            <p className="flex-1 font-body text-xs leading-snug">{suggestion.reason}</p>
+          </div>
+          <div className="mt-2 flex gap-1.5">
+            <button
+              onClick={() => {
+                onAssign(note.id, suggestion.category);
+                setSuggestion(null);
+              }}
+              className="flex items-center gap-1 rounded-md bg-white/30 px-2.5 py-1 font-label text-[10px] font-bold uppercase tracking-wider transition-colors hover:bg-white/50"
+            >
+              <Check size={11} />
+              Aplicar
+            </button>
+            <button
+              onClick={() => setSuggestion(null)}
+              className="flex items-center gap-1 rounded-md px-2 py-1 font-label text-[10px] font-bold uppercase tracking-wider opacity-60 transition-opacity hover:opacity-100"
+            >
+              <X size={11} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* AI suggest button */}
+      {!suggestion && (
+        <div className="px-4 pb-2.5">
+          <button
+            onClick={() => suggest.mutate({ id: note.id })}
+            disabled={suggest.isPending}
+            className="flex items-center gap-1 text-on-surface-variant opacity-50 hover:opacity-100 transition-opacity"
+          >
+            {suggest.isPending ? (
+              <CircleNotch size={12} className="animate-spin" />
+            ) : (
+              <Sparkle size={12} />
+            )}
+            <span className="font-label text-[10px] uppercase tracking-wider">
+              {suggest.isPending ? "Analisando…" : "Sugerir"}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -142,7 +223,8 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
 
-  const assignNote = trpc.note.assign.useMutation();
+  const router = useRouter();
+  const assignNote = trpc.note.assign.useMutation({ onSuccess: () => router.refresh() });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -166,11 +248,15 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
     if (!over) return;
 
     const noteId = active.id as string;
-    const category = over.id as "PROJECT" | "AREA" | "RESOURCE" | "ARCHIVE";
+    const category = over.id as CategoryId;
 
     setNotes((prev) => prev.filter((n) => n.id !== noteId));
-
     await assignNote.mutateAsync({ noteId, category });
+  }
+
+  function handleAssign(noteId: string, category: CategoryId) {
+    setNotes((prev) => prev.filter((n) => n.id !== noteId));
+    assignNote.mutate({ noteId, category });
   }
 
   if (notes.length === 0) return null;
@@ -202,6 +288,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
                 key={note.id}
                 note={note}
                 isDragging={activeNoteId === note.id}
+                onAssign={handleAssign}
               />
             ))}
             <p className="mt-1 font-label text-[10px] text-on-surface-variant">

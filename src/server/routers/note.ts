@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { suggestParaCategory } from "@/lib/openrouter";
+import { bodyToPlainText } from "@/lib/utils";
 
 export const noteRouter = router({
   list: protectedProcedure
@@ -184,6 +186,19 @@ export const noteRouter = router({
           category: input.category,
         },
       });
+    }),
+
+  suggestCategory: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const note = await ctx.db.note.findUnique({
+        where: { id: input.id },
+        include: { workspace: true },
+      });
+      if (!note || note.workspace.userId !== ctx.userId)
+        throw new TRPCError({ code: "NOT_FOUND" });
+      const plainText = bodyToPlainText(note.body);
+      return suggestParaCategory(note.title, plainText);
     }),
 
   delete: protectedProcedure
