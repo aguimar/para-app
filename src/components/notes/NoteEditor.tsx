@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import type { Block } from "@blocknote/core";
+import dynamic from "next/dynamic";
 
 interface NoteEditorProps {
   content: string;
@@ -22,8 +23,7 @@ function parseContent(raw: string): Block[] | undefined {
   return undefined;
 }
 
-
-export function NoteEditor({ content, onChange }: NoteEditorProps) {
+function NoteEditorInner({ content, onChange }: NoteEditorProps) {
   const initialContent = useMemo(() => parseContent(content), []);
 
   const editor = useCreateBlockNote({ initialContent });
@@ -44,3 +44,8 @@ export function NoteEditor({ content, onChange }: NoteEditorProps) {
     />
   );
 }
+
+export const NoteEditor = dynamic(
+  () => Promise.resolve(NoteEditorInner),
+  { ssr: false }
+);

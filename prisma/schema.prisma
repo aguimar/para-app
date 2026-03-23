@@ -126,9 +126,24 @@ model Note {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  attachments Attachment[]
+
   @@index([workspaceId])
   @@index([category])
   @@index([projectId])
   @@index([areaId])
   @@index([resourceId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  filename  String   // original filename shown to user
+  storedAs  String   // filename on disk (cuid + ext)
+  size      Int      // bytes
+  mimeType  String
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([noteId])
 }

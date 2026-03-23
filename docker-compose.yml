@@ -7,6 +7,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.next
+      - uploads_data:/app/uploads
     environment:
       - DATABASE_URL=postgresql://para:para@postgres:5432/para
       - NODE_ENV=development
@@ -35,3 +36,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:

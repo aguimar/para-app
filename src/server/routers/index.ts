@@ -5,6 +5,7 @@ import { areaRouter } from "./area";
 import { resourceRouter } from "./resource";
 import { archiveRouter } from "./archive";
 import { noteRouter } from "./note";
+import { attachmentRouter } from "./attachment";
 
 export const appRouter = router({
   workspace: workspaceRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   resource: resourceRouter,
   archive: archiveRouter,
   note: noteRouter,
+  attachment: attachmentRouter,
 });
 
 export type AppRouter = typeof appRouter;

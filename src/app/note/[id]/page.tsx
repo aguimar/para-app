@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
 import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle } from "@phosphor-icons/react";
+import { NoteAttachments } from "@/components/notes/NoteAttachments";
 
 export default function NoteEditorPage() {
   const params = useParams<{ id: string }>();
@@ -308,6 +309,9 @@ export default function NoteEditorPage() {
               ))}
             </div>
           </div>
+
+          {/* Attachments */}
+          <NoteAttachments noteId={params.id} />
 
           {/* Tags */}
           <div>
