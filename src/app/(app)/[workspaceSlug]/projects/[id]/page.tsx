@@ -10,8 +10,11 @@ import { formatDate } from "@/lib/utils";
 import { ArrowLeft } from "@/components/ui/icons";
 import Link from "next/link";
 import { ProjectAreaPicker } from "@/components/projects/ProjectAreaPicker";
+import { ProjectStatusPicker } from "@/components/projects/ProjectStatusPicker";
 
 import { ProjectKanbanBoard } from "@/components/projects/ProjectKanbanBoard";
+import { SuggestTasksButton } from "@/components/projects/SuggestTasksButton";
+import { ProjectProgress } from "@/components/projects/ProjectProgress";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   ACTIVE: "Active",
@@ -78,9 +81,10 @@ export default async function ProjectDetailPage({
             accentClass="text-primary"
             bgClass="bg-primary-container/20"
           />
-          <h1 className="font-headline text-xl font-bold tracking-tight text-on-surface">
+          <h1 className="font-headline text-xl font-bold tracking-tight text-on-surface flex-1">
             {project.title}
           </h1>
+          <SuggestTasksButton projectId={project.id} workspaceId={workspace.id} />
         </div>
 
         <div className="px-8 py-8 space-y-10">
@@ -99,26 +103,12 @@ export default async function ProjectDetailPage({
                 <p className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
                   Status
                 </p>
-                <span className="mt-1.5 inline-block rounded-md bg-surface-container-high px-2 py-0.5 font-label text-[11px] font-bold text-on-surface">
-                  {STATUS_LABELS[project.status as ProjectStatus]}
-                </span>
+                <ProjectStatusPicker
+                  projectId={project.id}
+                  currentStatus={project.status as ProjectStatus}
+                />
               </div>
-              <div>
-                <p className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-                  Progress
-                </p>
-                <div className="mt-1 flex items-center gap-3">
-                  <div className="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${project.progress}%` }}
-                    />
-                  </div>
-                  <span className="font-label text-[11px] font-bold text-on-surface">
-                    {project.progress}%
-                  </span>
-                </div>
-              </div>
+              <ProjectProgress projectId={project.id} initialProgress={project.progress} />
               {project.deadline && (
                 <div>
                   <p className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
@@ -164,7 +154,7 @@ export default async function ProjectDetailPage({
               </div>
             ) : (
               <div className="-mx-8 px-8 pb-8 overflow-x-auto no-scrollbar">
-                <ProjectKanbanBoard initialNotes={project.notes as any[]} />
+                <ProjectKanbanBoard initialNotes={project.notes as any[]} projectId={project.id} />
               </div>
             )}
           </section>

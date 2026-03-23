@@ -6,7 +6,8 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachAreaNotePanel } from "@/components/areas/AttachAreaNotePanel";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
-import { Plus, TreeStructure } from "@/components/ui/icons";
+import { TreeStructure } from "@/components/ui/icons";
+import { NewAreaButton } from "@/components/areas/NewAreaButton";
 
 export default async function AreasPage({
   params,
@@ -23,7 +24,7 @@ export default async function AreasPage({
       include: {
         areas: {
           orderBy: { updatedAt: "desc" },
-          include: { _count: { select: { notes: true } } },
+          include: { _count: { select: { notes: true, projects: true, resources: true } } },
         },
       },
     }),
@@ -48,10 +49,7 @@ export default async function AreasPage({
           <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
             Areas
           </h1>
-          <button className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary shadow-ambient transition hover:bg-secondary-dim">
-            <Plus size={18} />
-            New Area
-          </button>
+          <NewAreaButton workspaceId={workspace.id} />
         </div>
 
         <div className="px-8 py-6">
@@ -67,7 +65,7 @@ export default async function AreasPage({
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {workspace.areas.map((area: Area & { _count: { notes: number } }) => (
+              {workspace.areas.map((area: Area & { _count: { notes: number; projects: number; resources: number } }) => (
                 <div
                   key={area.id}
                   className="group relative rounded-xl bg-surface-container-lowest p-5 shadow-ambient transition-shadow hover:shadow-[0_16px_48px_rgba(42,52,57,0.10)]"
@@ -93,9 +91,19 @@ export default async function AreasPage({
                         {area.description}
                       </p>
                     )}
-                    <p className="mt-4 font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                      {area._count.notes} {area._count.notes === 1 ? "note" : "notes"}
-                    </p>
+                    <div className="mt-4 flex items-center gap-3 flex-wrap">
+                      <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
+                        {area._count.projects} {area._count.projects === 1 ? "project" : "projects"}
+                      </p>
+                      <span className="text-outline-variant">·</span>
+                      <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
+                        {area._count.resources} {area._count.resources === 1 ? "resource" : "resources"}
+                      </p>
+                      <span className="text-outline-variant">·</span>
+                      <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
+                        {area._count.notes} {area._count.notes === 1 ? "note" : "notes"}
+                      </p>
+                    </div>
                   </Link>
                 </div>
               ))}

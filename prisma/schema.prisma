@@ -92,6 +92,7 @@ model Area {
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   projects    Project[]
+  resources   Resource[]
   notes       Note[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -106,6 +107,8 @@ model Resource {
   description String?
   tags        String[]
   url         String?
+  areaId      String?
+  area        Area?     @relation(fields: [areaId], references: [id], onDelete: SetNull)
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   notes       Note[]
@@ -113,6 +116,7 @@ model Resource {
   updatedAt   DateTime  @updatedAt
 
   @@index([workspaceId])
+  @@index([areaId])
 }
 
 model Note {

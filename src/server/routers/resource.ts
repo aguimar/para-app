@@ -22,7 +22,10 @@ export const resourceRouter = router({
           ...(input.tag && { tags: { has: input.tag } }),
         },
         orderBy: { updatedAt: "desc" },
-        include: { _count: { select: { notes: true } } },
+        include: {
+          _count: { select: { notes: true } },
+          area: { select: { id: true, title: true, icon: true } },
+        },
       });
     }),
 
@@ -34,6 +37,7 @@ export const resourceRouter = router({
         include: {
           notes: { orderBy: { updatedAt: "desc" } },
           workspace: true,
+          area: { select: { id: true, title: true, icon: true } },
         },
       });
       if (!resource || resource.workspace.userId !== ctx.userId)
@@ -50,6 +54,7 @@ export const resourceRouter = router({
         description: z.string().optional(),
         tags: z.array(z.string()).default([]),
         url: z.string().url().optional(),
+        areaId: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -70,6 +75,7 @@ export const resourceRouter = router({
         description: z.string().optional(),
         tags: z.array(z.string()).optional(),
         url: z.string().url().optional(),
+        areaId: z.string().nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

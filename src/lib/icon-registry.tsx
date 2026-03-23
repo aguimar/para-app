@@ -55,7 +55,7 @@ export const ICON_GROUPS: { label: string; icons: string[] }[] = [
       "WifiHigh","Bluetooth","HardDrive","Keyboard","Mouse","Broadcast",
       "MonitorPlay","Download","GitCommit","GitFork","GitMerge","GitPullRequest",
       "GithubLogo","StackSimple","Stack","Cube","CubeFocus","Package",
-      "Plugs","PlugsConnected","WebhooksLogo","Webhook","Code","CodeBlock",
+      "Plugs","PlugsConnected","WebhooksLogo","Webhook","CodeBlock","CodeSimple",
     ],
   },
   {

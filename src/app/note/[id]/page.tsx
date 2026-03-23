@@ -25,6 +25,8 @@ export default function NoteEditorPage() {
   const [icon, setIcon] = useState("");
   const [body, setBody] = useState("");
   const [category, setCategory] = useState<ParaCategory>("INBOX");
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [resourceId, setResourceId] = useState<string | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -41,9 +43,21 @@ export default function NoteEditorPage() {
       setIcon((note as any).icon ?? "");
       setBody(note.body);
       setCategory(note.category as ParaCategory);
+      setProjectId((note as any).projectId ?? null);
+      setResourceId((note as any).resourceId ?? null);
       setInitializedId(params.id);
     }
   }, [note, initializedId, params.id]);
+
+  const workspaceId = (note as any)?.workspace?.id ?? "";
+  const { data: projects = [] } = trpc.project.list.useQuery(
+    { workspaceId },
+    { enabled: category === "PROJECT" && !!workspaceId }
+  );
+  const { data: resources = [] } = trpc.resource.list.useQuery(
+    { workspaceId },
+    { enabled: category === "RESOURCE" && !!workspaceId }
+  );
 
   const getCategoryPath = useCallback((cat: ParaCategory, slug: string) => {
     const map: Record<ParaCategory, string> = {
@@ -64,10 +78,10 @@ export default function NoteEditorPage() {
         title,
         body,
         category,
-        // Clear parent IDs that don't match the new category
-        projectId:  category === "PROJECT"  ? undefined : null,
-        areaId:     category === "AREA"     ? undefined : null,
-        resourceId: category === "RESOURCE" ? undefined : null,
+        // Set/clear parent IDs based on category
+        projectId:  category === "PROJECT"  ? projectId  : null,
+        areaId:     category === "AREA"     ? undefined  : null,
+        resourceId: category === "RESOURCE" ? resourceId : null,
       });
       utils.note.invalidate();
       setIsDirty(false);
@@ -84,6 +98,8 @@ export default function NoteEditorPage() {
       setTitle(note.title);
       setBody(note.body);
       setCategory(note.category as ParaCategory);
+      setProjectId((note as any).projectId ?? null);
+      setResourceId((note as any).resourceId ?? null);
       setIsDirty(false);
     }
   }, [note]);
@@ -309,6 +325,56 @@ export default function NoteEditorPage() {
               ))}
             </div>
           </div>
+
+          {/* Project picker (only when category = PROJECT) */}
+          {category === "PROJECT" && (
+            <div>
+              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+                Projeto
+              </p>
+              <select
+                value={projectId ?? ""}
+                onChange={(e) => {
+                  setProjectId(e.target.value || null);
+                  setIsDirty(true);
+                }}
+                className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">— Sem projeto —</option>
+                {projects
+                  .filter((p) => p.status !== "COMPLETED")
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.title}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+
+          {/* Resource picker (only when category = RESOURCE) */}
+          {category === "RESOURCE" && (
+            <div>
+              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+                Resource
+              </p>
+              <select
+                value={resourceId ?? ""}
+                onChange={(e) => {
+                  setResourceId(e.target.value || null);
+                  setIsDirty(true);
+                }}
+                className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-tertiary/20"
+              >
+                <option value="">— Sem resource —</option>
+                {resources.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Attachments */}
           <NoteAttachments noteId={params.id} />

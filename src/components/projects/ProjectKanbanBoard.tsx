@@ -46,11 +46,23 @@ function SortableNoteItem({ note }: { note: Note }) {
   );
 }
 
-export function ProjectKanbanBoard({ initialNotes }: { initialNotes: Note[] }) {
+export function ProjectKanbanBoard({ initialNotes, projectId }: { initialNotes: Note[]; projectId: string }) {
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [activeId, setActiveId] = useState<string | null>(null);
-  
+
+  const utils = trpc.useUtils();
   const updateNoteMutation = trpc.note.update.useMutation();
+  const updateProjectMutation = trpc.project.update.useMutation();
+
+  function syncProgress(updatedNotes: Note[]) {
+    if (updatedNotes.length === 0) return;
+    const done = updatedNotes.filter((n) => (n as any).status === "DONE").length;
+    const progress = Math.round((done / updatedNotes.length) * 100);
+    updateProjectMutation.mutate({ id: projectId, progress });
+    utils.project.byId.setData({ id: projectId }, (old) =>
+      old ? { ...old, progress } : old
+    );
+  }
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -76,20 +88,20 @@ export function ProjectKanbanBoard({ initialNotes }: { initialNotes: Note[] }) {
     // Moving NOTE to another Column
     if (isOverColumn) {
       const newStatus = overId as KanbanColumn;
-      setNotes((prev) =>
-        prev.map((n) => (n.id === activeId ? { ...n, status: newStatus as any } : n))
-      );
+      const updated = notes.map((n) => (n.id === activeId ? { ...n, status: newStatus as any } : n));
+      setNotes(updated);
       updateNoteMutation.mutate({ id: activeId as string, status: newStatus });
+      syncProgress(updated);
       return;
     }
 
     // Moving NOTE over another NOTE
     if (isOverTask) {
       const overStatus = over.data.current?.note.status;
-      setNotes((prev) =>
-        prev.map((n) => (n.id === activeId ? { ...n, status: overStatus } : n))
-      );
+      const updated = notes.map((n) => (n.id === activeId ? { ...n, status: overStatus } : n));
+      setNotes(updated);
       updateNoteMutation.mutate({ id: activeId as string, status: overStatus });
+      syncProgress(updated);
       return;
     }
   };

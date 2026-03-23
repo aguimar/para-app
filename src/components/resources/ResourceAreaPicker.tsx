@@ -7,22 +7,21 @@ import { AreaPicker } from "@/components/ui/AreaPicker";
 interface Area { id: string; title: string; icon: string }
 
 interface Props {
-  projectId: string;
-  workspaceId: string;
+  resourceId: string;
   currentAreaId: string | null;
   areas: Area[];
 }
 
-export function ProjectAreaPicker({ projectId, currentAreaId, areas }: Props) {
+export function ResourceAreaPicker({ resourceId, currentAreaId, areas }: Props) {
   const router = useRouter();
-  const update = trpc.project.update.useMutation({ onSuccess: () => router.refresh() });
+  const update = trpc.resource.update.useMutation({ onSuccess: () => router.refresh() });
 
   return (
     <AreaPicker
       currentAreaId={currentAreaId}
       areas={areas}
       isPending={update.isPending}
-      onChange={(areaId) => update.mutate({ id: projectId, areaId })}
+      onChange={(areaId) => update.mutate({ id: resourceId, areaId })}
     />
   );
 }

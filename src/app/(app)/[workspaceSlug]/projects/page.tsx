@@ -1,22 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
-import type { Project } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NewProjectButton } from "@/components/projects/NewProjectButton";
 import { AttachNotePanel } from "@/components/projects/AttachNotePanel";
-import { IconPicker } from "@/components/ui/IconPicker";
-import Link from "next/link";
-import { formatDate } from "@/lib/utils";
-import { type ProjectPriority, type ProjectStatus } from "@/types";
-import { SquaresFour, List, TreeStructure } from "@/components/ui/icons";
-import { PickedIcon } from "@/components/ui/PickedIcon";
-
-const PRIORITY_STYLES: Record<ProjectPriority, { badge: string; border: string; bar: string }> = {
-  HIGH:   { badge: "bg-error-container text-on-error-container",           border: "border-l-4 border-primary",   bar: "bg-primary" },
-  MEDIUM: { badge: "bg-secondary-container text-on-secondary-container",   border: "border-l-4 border-secondary", bar: "bg-secondary" },
-  LOW:    { badge: "bg-surface-container-highest text-on-surface-variant", border: "border-l-4 border-outline",   bar: "bg-outline" },
-};
+import { ProjectsView } from "@/components/projects/ProjectsView";
 
 export default async function ProjectsPage({
   params,
@@ -73,102 +61,17 @@ export default async function ProjectsPage({
               </p>
             </div>
 
-            {/* Grid/list toggle + new project */}
             <div className="flex items-center gap-4">
-              <div className="flex rounded-xl bg-surface-container-low p-1">
-                <button className="rounded-lg bg-surface-container-lowest px-4 py-2 text-primary shadow-ambient">
-                  <SquaresFour size={20} />
-                </button>
-                <button className="px-4 py-2 text-on-surface-variant">
-                  <List size={20} />
-                </button>
-              </div>
               <NewProjectButton workspaceId={workspace.id} variant="sidebar" />
             </div>
           </header>
 
-          {/* Projects grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {workspace.projects.map((project: Project & { _count: { notes: number } }) => {
-              const priority = (project.priority ?? "MEDIUM") as ProjectPriority;
-              const styles = PRIORITY_STYLES[priority];
-
-              return (
-                <div
-                  key={project.id}
-                  className={`group relative flex flex-col rounded-xl bg-surface-container-lowest p-6 shadow-ambient transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(42,52,57,0.10)] ${styles.border}`}
-                >
-                  {/* Icon picker — outside Link to avoid nav on click */}
-                  <div className="mb-4 relative z-10">
-                    <IconPicker
-                      entityType="project"
-                      entityId={project.id}
-                      currentIcon={project.icon}
-                      entityTitle={project.title}
-                      accentClass="text-primary"
-                      bgClass="bg-primary-container/20"
-                    />
-                  </div>
-
-                  {/* Clickable area navigates to detail */}
-                  <div className="flex flex-col flex-1">
-                    {/* Due date + priority */}
-                    <div className="mb-6 flex items-start justify-between">
-                      <span className="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
-                        {project.deadline ? `Due ${formatDate(project.deadline)}` : "No deadline"}
-                      </span>
-                      <span className={`rounded px-2 py-0.5 font-label text-[10px] font-bold uppercase tracking-wide ${styles.badge}`}>
-                        {priority.charAt(0) + priority.slice(1).toLowerCase()}
-                      </span>
-                    </div>
-
-                    {/* Area badge */}
-                    {(project as any).area && (
-                      <Link
-                        href={`/${workspaceSlug}/areas/${(project as any).area.id}`}
-                        className="relative z-10 mb-2 inline-flex items-center gap-1 rounded-full bg-secondary-container/60 px-2.5 py-0.5 font-label text-[10px] font-semibold text-secondary hover:bg-secondary-container transition-colors"
-                      >
-                        {(project as any).area.icon
-                          ? <PickedIcon name={(project as any).area.icon} size={11} />
-                          : <TreeStructure size={11} />
-                        }
-                        {(project as any).area.title}
-                      </Link>
-                    )}
-
-                    {/* Title + description */}
-                    <h3 className="mb-3 font-headline text-xl font-bold leading-snug text-on-surface group-hover:text-primary transition-colors">
-                      <Link href={`/${workspaceSlug}/projects/${project.id}`} className="before:absolute before:inset-0 before:z-0">
-                        {project.title}
-                      </Link>
-                    </h3>
-                    {project.description && (
-                      <p className="mb-8 line-clamp-2 font-body text-sm text-on-surface-variant">
-                        {project.description}
-                      </p>
-                    )}
-
-                    {/* Progress */}
-                    <div className="mt-auto">
-                      <div className="mb-2 flex justify-between font-label text-[11px] font-bold uppercase tracking-widest text-on-surface">
-                        <span>Progress</span>
-                        <span>{project.progress}%</span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
-                        <div
-                          className={`h-full rounded-full transition-all ${styles.bar}`}
-                          style={{ width: `${project.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Initiate New Project card */}
-            <NewProjectButton workspaceId={workspace.id} variant="card" />
-          </div>
+          {/* Projects grid / list (toggle managed client-side) */}
+          <ProjectsView
+            projects={workspace.projects as any}
+            workspaceId={workspace.id}
+            workspaceSlug={workspaceSlug}
+          />
 
           {/* Unattached PROJECT notes */}
           <AttachNotePanel

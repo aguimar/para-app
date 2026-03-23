@@ -4,9 +4,12 @@ import { db } from "@/server/db";
 import type { Resource } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
+import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
+import { NewResourceButton } from "@/components/resources/NewResourceButton";
 import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
-import { Books } from "@/components/ui/icons";
+import { Books, TreeStructure } from "@/components/ui/icons";
+import { PickedIcon } from "@/components/ui/PickedIcon";
 
 export default async function ResourcesPage({
   params,
@@ -23,8 +26,12 @@ export default async function ResourcesPage({
       include: {
         resources: {
           orderBy: { title: "asc" },
-          include: { _count: { select: { notes: true } } },
+          include: {
+            _count: { select: { notes: true } },
+            area: { select: { id: true, title: true, icon: true } },
+          },
         },
+        areas: { select: { id: true, title: true, icon: true }, orderBy: { title: "asc" } },
       },
     }),
     db.note.findMany({
@@ -39,7 +46,9 @@ export default async function ResourcesPage({
 
   if (!workspace || workspace.userId !== userId) notFound();
 
-  const resources = workspace.resources as (Resource & { _count: { notes: number } })[];
+  type AreaSnippet = { id: string; title: string; icon: string };
+  const resources = workspace.resources as (Resource & { _count: { notes: number }; area: AreaSnippet | null })[];
+  const areas = workspace.areas as AreaSnippet[];
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -58,9 +67,12 @@ export default async function ResourcesPage({
                 Resources
               </h1>
             </div>
-            <p className="font-body text-sm text-on-surface-variant">
-              {resources.length} {resources.length === 1 ? "tópico" : "tópicos"}
-            </p>
+            <div className="flex items-center gap-4">
+              <p className="font-body text-sm text-on-surface-variant">
+                {resources.length} {resources.length === 1 ? "tópico" : "tópicos"}
+              </p>
+              <NewResourceButton workspaceId={workspace.id} />
+            </div>
           </div>
         </div>
 
@@ -101,7 +113,7 @@ export default async function ResourcesPage({
                     />
                   </div>
 
-                  {/* Title + description — clicking navigates */}
+                  {/* Title + description + area */}
                   <Link href={`/${workspaceSlug}/resources/${resource.id}`} className="min-w-0 block">
                     <h2 className="font-headline text-base font-bold text-on-surface transition-colors group-hover:text-tertiary">
                       {resource.title}
@@ -110,6 +122,14 @@ export default async function ResourcesPage({
                       <p className="mt-0.5 font-body text-xs font-light text-on-surface-variant">
                         {resource.description}
                       </p>
+                    )}
+                    {resource.area && (
+                      <span className="mt-1 inline-flex items-center gap-1 font-label text-[10px] text-secondary">
+                        {resource.area.icon
+                          ? <PickedIcon name={resource.area.icon} size={10} />
+                          : <TreeStructure size={10} />}
+                        {resource.area.title}
+                      </span>
                     )}
                   </Link>
 

@@ -6,6 +6,10 @@
 export {
   Archive,
   ArrowLeft,
+  CaretDown,
+  CaretRight,
+  Check,
+  Sparkle,
   ArrowSquareOut,
   ArrowsClockwise,
   Books,

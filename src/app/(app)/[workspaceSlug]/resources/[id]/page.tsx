@@ -8,6 +8,7 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft, Link as LinkIcon, ArrowSquareOut, Books } from "@/components/ui/icons";
+import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
 
 export default async function ResourceDetailPage({
   params,
@@ -24,10 +25,20 @@ export default async function ResourceDetailPage({
   });
   if (!workspace || workspace.userId !== userId) notFound();
 
-  const resource = await db.resource.findUnique({
-    where: { id, workspaceId: workspace.id },
-    include: { notes: { orderBy: { updatedAt: "desc" } } },
-  });
+  const [resource, workspaceAreas] = await Promise.all([
+    db.resource.findUnique({
+      where: { id, workspaceId: workspace.id },
+      include: {
+        notes: { orderBy: { updatedAt: "desc" } },
+        area: { select: { id: true, title: true, icon: true } },
+      },
+    }),
+    db.area.findMany({
+      where: { workspaceId: workspace.id },
+      select: { id: true, title: true, icon: true },
+      orderBy: { title: "asc" },
+    }),
+  ]);
   if (!resource) notFound();
 
   return (
@@ -127,6 +138,18 @@ export default async function ResourceDetailPage({
 
               {/* Meta row */}
               <div className="mt-8 flex items-center gap-6 border-t border-surface-container-high pt-5">
+                <div>
+                  <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+                    Área
+                  </p>
+                  <div className="mt-0.5">
+                    <ResourceAreaPicker
+                      resourceId={resource.id}
+                      currentAreaId={resource.area?.id ?? null}
+                      areas={workspaceAreas}
+                    />
+                  </div>
+                </div>
                 <div>
                   <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
                     Criado em

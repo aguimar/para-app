@@ -2,6 +2,7 @@ import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { PrismaClient } from "@/generated/prisma/client";
+import { suggestProjectTasks } from "@/lib/openrouter";
 
 const projectInput = z.object({
   title: z.string().min(1).max(200),
@@ -69,6 +70,18 @@ export const projectRouter = router({
       if (!project || project.workspace.userId !== ctx.userId)
         throw new TRPCError({ code: "NOT_FOUND" });
       return ctx.db.project.update({ where: { id }, data });
+    }),
+
+  suggestTasks: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const project = await ctx.db.project.findUnique({
+        where: { id: input.id },
+        include: { workspace: true, area: { select: { title: true } } },
+      });
+      if (!project || project.workspace.userId !== ctx.userId)
+        throw new TRPCError({ code: "NOT_FOUND" });
+      return suggestProjectTasks(project.title, project.description, project.area?.title);
     }),
 
   delete: protectedProcedure
