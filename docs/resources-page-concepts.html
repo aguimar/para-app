@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources Page — Design Concepts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #1a1a18;
+      --ink-dim:   #6b6b62;
+      --ink-ghost: #a8a89e;
+      --paper:     #f5f2eb;
+      --paper-warm:#ede9df;
+      --paper-deep:#e4dfd3;
+      --accent:    #865400;
+      --accent-dim:#b87d2a;
+      --accent-pale:#f5ead4;
+      --green:     #2d5a3d;
+      --blue:      #1a3a6b;
+      --red:       #7a2020;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ─── CONCEPT SWITCHER ─────────────────────────────────────── */
+    .switcher {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--ink);
+      padding: 12px;
+      border-radius: 12px;
+    }
+    .switcher p {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-ghost);
+      padding-bottom: 6px;
+    }
+    .switcher button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-ghost);
+      text-align: left;
+      padding: 6px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
+    }
+    .switcher button:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .switcher button.active { color: #fff; background: rgba(255,255,255,0.15); }
+
+    .concept { display: none; min-height: 100vh; }
+    .concept.active { display: block; }
+
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT A — THE INDEX
+    ══════════════════════════════════════════════════════════════ */
+    #concept-a {
+      background: var(--paper);
+    }
+
+    .index-header {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 72px 48px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--paper-deep);
+      padding-bottom: 32px;
+    }
+
+    .index-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .index-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .index-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 52px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .index-title em {
+      font-style: italic;
+      color: var(--ink-dim);
+    }
+
+    .index-meta {
+      font-size: 12px;
+      color: var(--ink-ghost);
+      letter-spacing: 0.04em;
+    }
+
+    /* Filter bar — clean, no tag chips on cards */
+    .index-filters {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--paper-deep);
+    }
+
+    .filter-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-ghost);
+      margin-right: 4px;
+    }
+
+    .filter-pill {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--ink-dim);
+      padding: 4px 12px;
+      border: 1px solid var(--paper-deep);
+      border-radius: 100px;
+      background: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+    }
+    .filter-pill:hover,
+    .filter-pill.active {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    /* The list itself */
+    .index-list {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    .index-entry {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      align-items: baseline;
+      gap: 0 24px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--paper-warm);
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .index-entry:hover { background: var(--paper-warm); margin: 0 -48px; padding: 24px 48px; }
+    .index-entry:hover .entry-arrow { opacity: 1; transform: translateX(0); }
+    .index-entry:hover .entry-num { color: var(--accent); }
+
+    .entry-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ink-ghost);
+      letter-spacing: 0.04em;
+      transition: color 0.15s;
+      padding-top: 2px;
+    }
+
+    .entry-body {}
+
+    .entry-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .entry-icon {
+      font-size: 16px;
+      opacity: 0.6;
+    }
+
+    .entry-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ink-dim);
+      line-height: 1.5;
+    }
+
+    .entry-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .entry-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--ink-ghost);
+      line-height: 1;
+    }
+
+    .entry-count-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-ghost);
+    }
+
+    .entry-arrow {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateX(-6px) translateY(-50%);
+      opacity: 0;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: -0.05em;
+    }
+
+    /* Animation */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .index-entry { animation: slideUp 0.4s ease both; }
+    .index-entry:nth-child(1)  { animation-delay: 0.05s; }
+    .index-entry:nth-child(2)  { animation-delay: 0.10s; }
+    .index-entry:nth-child(3)  { animation-delay: 0.15s; }
+    .index-entry:nth-child(4)  { animation-delay: 0.20s; }
+    .index-entry:nth-child(5)  { animation-delay: 0.25s; }
+    .index-entry:nth-child(6)  { animation-delay: 0.30s; }
+    .index-entry:nth-child(7)  { animation-delay: 0.35s; }
+    .index-entry:nth-child(8)  { animation-delay: 0.40s; }
+    .index-entry:nth-child(9)  { animation-delay: 0.45s; }
+    .index-entry:nth-child(10) { animation-delay: 0.50s; }
+    .index-entry:nth-child(11) { animation-delay: 0.55s; }
+    .index-entry:nth-child(12) { animation-delay: 0.60s; }
+
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT B — THE COLLECTION (Large letter initials, dark)
+    ══════════════════════════════════════════════════════════════ */
+    #concept-b {
+      background: #111110;
+      color: #e8e4da;
+    }
+
+    .coll-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 64px 48px 48px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .coll-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 14px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #5a5a52;
+    }
+
+    .coll-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: #5a5a52;
+      letter-spacing: 0.08em;
+    }
+
+    .coll-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+
+    .coll-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      cursor: pointer;
+      background: #1a1a18;
+    }
+
+    .coll-card::before {
+      content: attr(data-initial);
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 120px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,0.04);
+      pointer-events: none;
+      transition: all 0.5s ease;
+    }
+
+    .coll-card:hover::before {
+      font-size: 200px;
+      color: rgba(255,255,255,0.06);
+    }
+
+    /* Color accents per card */
+    .coll-card:nth-child(4n+1) { background: #1a1510; }
+    .coll-card:nth-child(4n+2) { background: #0f1418; }
+    .coll-card:nth-child(4n+3) { background: #111810; }
+    .coll-card:nth-child(4n)   { background: #18101a; }
+
+    .coll-card-inner {
+      position: absolute;
+      inset: 0;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+      transition: background 0.3s;
+    }
+
+    .coll-card:hover .coll-card-inner {
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 100%);
+    }
+
+    .coll-card-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: #e8e4da;
+      margin-bottom: 6px;
+      transform: translateY(0);
+      transition: transform 0.3s;
+    }
+
+    .coll-card-desc {
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(232, 228, 218, 0.5);
+      line-height: 1.5;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.3s;
+      opacity: 0;
+    }
+
+    .coll-card:hover .coll-card-desc {
+      max-height: 60px;
+      opacity: 1;
+    }
+
+    .coll-card-num {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(232,228,218,0.25);
+      letter-spacing: 0.06em;
+    }
+
+    /* Hover accent bar */
+    .coll-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #b87d2a;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .coll-card:hover::after { transform: scaleX(1); }
+
+
+    /* ══════════════════════════════════════════════════════════════
+       CONCEPT C — THE SHELF (Horizontal book spines)
+    ══════════════════════════════════════════════════════════════ */
+    #concept-c {
+      background: #f0ede4;
+      min-height: 100vh;
+    }
+
+    .shelf-header {
+      padding: 64px 64px 40px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .shelf-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      letter-spacing: -0.02em;
+      color: #1a1a18;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .shelf-heading span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9a9a90;
+    }
+
+    .shelf-subtitle {
+      font-size: 13px;
+      font-weight: 300;
+      color: #6b6b62;
+      max-width: 280px;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    /* The actual shelf */
+    .shelf-scene {
+      padding: 0 64px 64px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .shelf-wood {
+      background: #2a2015;
+      height: 12px;
+      border-radius: 2px;
+      box-shadow: 0 4px 20px rgba(42, 32, 21, 0.25), 0 1px 0 #5a4a2a inset;
+      margin-bottom: 32px;
+    }
+
+    .shelf-books {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      padding-bottom: 16px;
+      overflow-x: auto;
+      padding-left: 8px;
+    }
+
+    .book {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      border-radius: 3px 6px 6px 3px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.25s ease, filter 0.25s;
+      transform-origin: bottom center;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15), inset -2px 0 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .book:hover {
+      transform: translateY(-20px) scale(1.03);
+      filter: brightness(1.05);
+      z-index: 10;
+    }
+
+    .book-spine {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      padding: 24px 0 16px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-bottom {
+      width: 100%;
+      padding: 10px 4px 6px;
+      text-align: center;
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    /* Tooltip on hover */
+    .book-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a18;
+      color: #e8e4da;
+      font-size: 11px;
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+      padding: 8px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 20;
+    }
+    .book-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1a1a18;
+    }
+    .book:hover .book-tooltip { opacity: 1; }
+
+    /* Book colors */
+    .book-1  { background: #5c3a1e; color: #f5e6c8; width: 44px; height: 220px; }
+    .book-2  { background: #1a3a6b; color: #c8d8f5; width: 38px; height: 240px; }
+    .book-3  { background: #865400; color: #f5e8c0; width: 50px; height: 210px; }
+    .book-4  { background: #2d5a3d; color: #c0f0d0; width: 36px; height: 195px; }
+    .book-5  { background: #3a2a5a; color: #d8c8f8; width: 48px; height: 228px; }
+    .book-6  { background: #5a2020; color: #f8d0c8; width: 42px; height: 215px; }
+    .book-7  { background: #2a3a2a; color: #c8e0c8; width: 34px; height: 245px; }
+    .book-8  { background: #3a2a10; color: #f0e0b8; width: 46px; height: 205px; }
+    .book-9  { background: #1a2a3a; color: #c0d0e8; width: 40px; height: 230px; }
+    .book-10 { background: #4a1a2a; color: #f0c0d0; width: 38px; height: 218px; }
+    .book-11 { background: #2a4a3a; color: #c8e8d8; width: 44px; height: 200px; }
+    .book-12 { background: #3a3a1a; color: #e8e8b8; width: 50px; height: 238px; }
+
+    /* Decorative bookend */
+    .bookend {
+      width: 16px;
+      height: 200px;
+      background: #5a4030;
+      border-radius: 3px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .bookend-right {
+      transform: scaleX(-1);
+    }
+
+    /* Add new resource card */
+    .book-add {
+      width: 44px;
+      height: 180px;
+      background: none;
+      border: 2px dashed #c8c4b8;
+      border-radius: 3px 6px 6px 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #c8c4b8;
+      font-size: 20px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .book-add:hover {
+      border-color: #865400;
+      color: #865400;
+      transform: translateY(-8px);
+    }
+
+    /* Shelf detail */
+    .shelf-detail {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 8px;
+    }
+    .shelf-detail-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #c8c4b8, transparent);
+    }
+    .shelf-detail-text {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #a8a89e;
+      font-weight: 400;
+    }
+
+    /* Selected book panel */
+    .shelf-panel {
+      margin-top: 24px;
+      background: white;
+      border-radius: 16px;
+      padding: 32px 40px;
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      box-shadow: 0 4px 24px rgba(42,32,21,0.08);
+      animation: slideUp 0.3s ease;
+    }
+    .shelf-panel-color {
+      width: 6px;
+      align-self: stretch;
+      border-radius: 99px;
+      flex-shrink: 0;
+    }
+    .shelf-panel-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: #1a1a18;
+      margin-bottom: 6px;
+    }
+    .shelf-panel-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: #6b6b62;
+      line-height: 1.6;
+    }
+    .shelf-panel-meta {
+      margin-top: 16px;
+      display: flex;
+      gap: 24px;
+    }
+    .shelf-panel-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .shelf-panel-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 300;
+      color: #1a1a18;
+    }
+    .shelf-panel-stat-label {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #a8a89e;
+    }
+    .shelf-panel-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #a8a89e;
+      font-size: 18px;
+      padding: 4px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .shelf-panel-close:hover { color: #1a1a18; }
+  </style>
+</head>
+<body>
+
+  <!-- Concept switcher -->
+  <nav class="switcher">
+    <p>Concepts</p>
+    <button class="active" onclick="show('a')">A · The Index</button>
+    <button onclick="show('b')">B · The Collection</button>
+    <button onclick="show('c')">C · The Shelf</button>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONCEPT A — THE INDEX
+  ═══════════════════════════════════════════ -->
+  <section id="concept-a" class="concept active">
+
+    <header class="index-header">
+      <div class="index-header-left">
+        <span class="index-eyebrow">Biblioteca Pessoal</span>
+        <h1 class="index-title">Resources <em>&amp; References</em></h1>
+      </div>
+      <p class="index-meta">12 tópicos · última atualização hoje</p>
+    </header>
+
+    <div class="index-filters">
+      <span class="filter-label">Filtrar</span>
+      <button class="filter-pill active" onclick="toggleFilter(this)">Todos</button>
+      <button class="filter-pill" onclick="toggleFilter(this)">Comportamento</button>
+      <button class="filter-pill" onclick="toggleFilter(this)">Criatividade</button>
+      <button class="filter-pill" onclick="toggleFilter(this)">Técnico</button>
+      <button class="filter-pill" onclick="toggleFilter(this)">Cultura</button>
+    </div>
+
+    <ul class="index-list" style="list-style:none">
+      <li class="index-entry">
+        <span class="entry-num">01</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🧠</span> Psicologia</h2>
+          <p class="entry-desc">Comportamento, cognição, emoções</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">8</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">02</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">💻</span> Tecnologia</h2>
+          <p class="entry-desc">IA, ferramentas, tendências</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">14</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">03</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">✏️</span> Design</h2>
+          <p class="entry-desc">UI/UX, sistemas visuais, tipografia</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">22</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">04</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">📈</span> Produtividade</h2>
+          <p class="entry-desc">Métodos, sistemas, ferramentas</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">11</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">05</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">📚</span> Livros</h2>
+          <p class="entry-desc">Leituras, resenhas, citações</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">31</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">06</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🎙️</span> Podcasts</h2>
+          <p class="entry-desc">Episódios salvos e referências</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">7</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">07</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🌍</span> Filosofia</h2>
+          <p class="entry-desc">Estoicismo, existencialismo, ética</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">18</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">08</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🍳</span> Culinária</h2>
+          <p class="entry-desc">Receitas, técnicas, restaurantes</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">5</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">09</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">💡</span> Ideias Soltas</h2>
+          <p class="entry-desc">Conceitos sem categoria ainda</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">3</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">10</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🎵</span> Música</h2>
+          <p class="entry-desc">Playlists, artistas, referências</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">9</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">11</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">🏙️</span> Viagens</h2>
+          <p class="entry-desc">Destinos, roteiros, dicas</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">6</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+      <li class="index-entry">
+        <span class="entry-num">12</span>
+        <div class="entry-body">
+          <h2 class="entry-title"><span class="entry-icon">📷</span> Fotografia</h2>
+          <p class="entry-desc">Técnicas, inspiração, equipamentos</p>
+        </div>
+        <div class="entry-right">
+          <span class="entry-count">4</span>
+          <span class="entry-count-label">notas</span>
+        </div>
+        <span class="entry-arrow">→</span>
+      </li>
+    </ul>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONCEPT B — THE COLLECTION
+  ═══════════════════════════════════════════ -->
+  <section id="concept-b" class="concept">
+    <header class="coll-header">
+      <span class="coll-title">Resources — 12 tópicos</span>
+      <span class="coll-count">Passe o mouse para detalhes</span>
+    </header>
+
+    <div class="coll-grid">
+      <div class="coll-card" data-initial="P">
+        <span class="coll-card-num">01</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🧠 Psicologia</h3>
+          <p class="coll-card-desc">Comportamento, cognição, emoções</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="T">
+        <span class="coll-card-num">02</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">💻 Tecnologia</h3>
+          <p class="coll-card-desc">IA, ferramentas, tendências</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="D">
+        <span class="coll-card-num">03</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">✏️ Design</h3>
+          <p class="coll-card-desc">UI/UX, sistemas visuais, tipografia</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="P">
+        <span class="coll-card-num">04</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">📈 Produtividade</h3>
+          <p class="coll-card-desc">Métodos, sistemas, ferramentas</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="L">
+        <span class="coll-card-num">05</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">📚 Livros</h3>
+          <p class="coll-card-desc">Leituras, resenhas, citações</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="P">
+        <span class="coll-card-num">06</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🎙️ Podcasts</h3>
+          <p class="coll-card-desc">Episódios salvos e referências</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="F">
+        <span class="coll-card-num">07</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🌍 Filosofia</h3>
+          <p class="coll-card-desc">Estoicismo, existencialismo, ética</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="C">
+        <span class="coll-card-num">08</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🍳 Culinária</h3>
+          <p class="coll-card-desc">Receitas, técnicas, restaurantes</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="I">
+        <span class="coll-card-num">09</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">💡 Ideias Soltas</h3>
+          <p class="coll-card-desc">Conceitos sem categoria ainda</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="M">
+        <span class="coll-card-num">10</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🎵 Música</h3>
+          <p class="coll-card-desc">Playlists, artistas, referências</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="V">
+        <span class="coll-card-num">11</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">🏙️ Viagens</h3>
+          <p class="coll-card-desc">Destinos, roteiros, dicas</p>
+        </div>
+      </div>
+      <div class="coll-card" data-initial="F">
+        <span class="coll-card-num">12</span>
+        <div class="coll-card-inner">
+          <h3 class="coll-card-name">📷 Fotografia</h3>
+          <p class="coll-card-desc">Técnicas, inspiração, equipamentos</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONCEPT C — THE SHELF
+  ═══════════════════════════════════════════ -->
+  <section id="concept-c" class="concept">
+    <header class="shelf-header">
+      <h1 class="shelf-heading">
+        Estante
+        <span>12 tópicos</span>
+      </h1>
+      <p class="shelf-subtitle">Cada tópico é um volume. Clique para abrir.</p>
+    </header>
+
+    <div class="shelf-scene">
+      <div class="shelf-books" id="shelf-books">
+        <div class="bookend"></div>
+        <div class="book book-1"  onclick="openBook('Psicologia',    'Comportamento, cognição, emoções',   '#5c3a1e', 8)">
+          <div class="book-spine">Psicologia</div>
+          <div class="book-bottom">🧠</div>
+          <div class="book-tooltip">8 notas</div>
+        </div>
+        <div class="book book-2"  onclick="openBook('Tecnologia',    'IA, ferramentas, tendências',        '#1a3a6b', 14)">
+          <div class="book-spine">Tecnologia</div>
+          <div class="book-bottom">💻</div>
+          <div class="book-tooltip">14 notas</div>
+        </div>
+        <div class="book book-3"  onclick="openBook('Design',        'UI/UX, sistemas visuais, tipografia','#865400', 22)">
+          <div class="book-spine">Design</div>
+          <div class="book-bottom">✏️</div>
+          <div class="book-tooltip">22 notas</div>
+        </div>
+        <div class="book book-4"  onclick="openBook('Produtividade', 'Métodos, sistemas, ferramentas',     '#2d5a3d', 11)">
+          <div class="book-spine">Produtividade</div>
+          <div class="book-bottom">📈</div>
+          <div class="book-tooltip">11 notas</div>
+        </div>
+        <div class="book book-5"  onclick="openBook('Livros',        'Leituras, resenhas, citações',       '#3a2a5a', 31)">
+          <div class="book-spine">Livros</div>
+          <div class="book-bottom">📚</div>
+          <div class="book-tooltip">31 notas</div>
+        </div>
+        <div class="book book-6"  onclick="openBook('Podcasts',      'Episódios salvos e referências',     '#5a2020', 7)">
+          <div class="book-spine">Podcasts</div>
+          <div class="book-bottom">🎙️</div>
+          <div class="book-tooltip">7 notas</div>
+        </div>
+        <div class="book book-7"  onclick="openBook('Filosofia',     'Estoicismo, existencialismo, ética', '#2a3a2a', 18)">
+          <div class="book-spine">Filosofia</div>
+          <div class="book-bottom">🌍</div>
+          <div class="book-tooltip">18 notas</div>
+        </div>
+        <div class="book book-8"  onclick="openBook('Culinária',     'Receitas, técnicas, restaurantes',   '#3a2a10', 5)">
+          <div class="book-spine">Culinária</div>
+          <div class="book-bottom">🍳</div>
+          <div class="book-tooltip">5 notas</div>
+        </div>
+        <div class="book book-9"  onclick="openBook('Ideias Soltas', 'Conceitos sem categoria ainda',      '#1a2a3a', 3)">
+          <div class="book-spine">Ideias Soltas</div>
+          <div class="book-bottom">💡</div>
+          <div class="book-tooltip">3 notas</div>
+        </div>
+        <div class="book book-10" onclick="openBook('Música',        'Playlists, artistas, referências',   '#4a1a2a', 9)">
+          <div class="book-spine">Música</div>
+          <div class="book-bottom">🎵</div>
+          <div class="book-tooltip">9 notas</div>
+        </div>
+        <div class="book book-11" onclick="openBook('Viagens',       'Destinos, roteiros, dicas',          '#2a4a3a', 6)">
+          <div class="book-spine">Viagens</div>
+          <div class="book-bottom">🏙️</div>
+          <div class="book-tooltip">6 notas</div>
+        </div>
+        <div class="book book-12" onclick="openBook('Fotografia',    'Técnicas, inspiração, equipamentos', '#3a3a1a', 4)">
+          <div class="book-spine">Fotografia</div>
+          <div class="book-bottom">📷</div>
+          <div class="book-tooltip">4 notas</div>
+        </div>
+        <div class="book-add" title="Novo recurso">+</div>
+        <div class="bookend bookend-right"></div>
+      </div>
+
+      <div class="shelf-wood"></div>
+      <div class="shelf-detail">
+        <div class="shelf-detail-line"></div>
+        <span class="shelf-detail-text">Clique em um volume para abrir</span>
+        <div class="shelf-detail-line"></div>
+      </div>
+
+      <div id="shelf-panel" style="display:none"></div>
+    </div>
+  </section>
+
+
+  <script>
+    function show(id) {
+      document.querySelectorAll('.concept').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.switcher button').forEach(el => el.classList.remove('active'));
+      document.getElementById('concept-' + id).classList.add('active');
+      document.querySelectorAll('.switcher button')[['a','b','c'].indexOf(id)].classList.add('active');
+    }
+
+    function toggleFilter(btn) {
+      document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function openBook(title, desc, color, notes) {
+      const panel = document.getElementById('shelf-panel');
+      panel.style.display = 'flex';
+      panel.innerHTML = `
+        <div class="shelf-panel-color" style="background:${color}"></div>
+        <div style="flex:1">
+          <h3 class="shelf-panel-title">${title}</h3>
+          <p class="shelf-panel-desc">${desc}</p>
+          <div class="shelf-panel-meta">
+            <div class="shelf-panel-stat">
+              <span class="shelf-panel-stat-num">${notes}</span>
+              <span class="shelf-panel-stat-label">Notas</span>
+            </div>
+            <div class="shelf-panel-stat">
+              <span class="shelf-panel-stat-num">—</span>
+              <span class="shelf-panel-stat-label">Última edição</span>
+            </div>
+          </div>
+        </div>
+        <button class="shelf-panel-close" onclick="document.getElementById('shelf-panel').style.display='none'">✕</button>
+      `;
+    }
+  </script>
+</body>
+</html>

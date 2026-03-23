@@ -249,6 +249,7 @@ export default function NoteEditorPage() {
         <div className="flex-1 overflow-y-auto px-12 py-8">
           <NoteEditor
             key={note.id}
+            noteId={params.id}
             content={body}
             onChange={(html) => {
               setBody(html);

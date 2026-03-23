@@ -7,6 +7,7 @@ import type { Block } from "@blocknote/core";
 import dynamic from "next/dynamic";
 
 interface NoteEditorProps {
+  noteId?: string;
   content: string;
   onChange: (json: string) => void;
   placeholder?: string;
@@ -23,10 +24,23 @@ function parseContent(raw: string): Block[] | undefined {
   return undefined;
 }
 
-function NoteEditorInner({ content, onChange }: NoteEditorProps) {
+function NoteEditorInner({ noteId = "", content, onChange }: NoteEditorProps) {
   const initialContent = useMemo(() => parseContent(content), []);
 
-  const editor = useCreateBlockNote({ initialContent });
+  const uploadFile = useMemo(
+    () => async (file: File): Promise<string> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("noteId", noteId);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return `/api/files/${data.id}`;
+    },
+    [noteId]
+  );
+
+  const editor = useCreateBlockNote({ initialContent, uploadFile });
 
   // Import legacy HTML content on first mount
   useEffect(() => {
