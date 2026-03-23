@@ -145,6 +145,7 @@ export const noteRouter = router({
         category: z
           .enum(["INBOX", "PROJECT", "AREA", "RESOURCE", "ARCHIVE"])
           .optional(),
+        status: z.enum(["TODO", "IN_PROGRESS", "DONE"]).optional(),
         tags: z.array(z.string()).optional(),
         projectId: z.string().nullable().optional(),
         areaId: z.string().nullable().optional(),

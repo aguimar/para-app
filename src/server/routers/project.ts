@@ -11,6 +11,7 @@ const projectInput = z.object({
   priority: z.enum(["HIGH", "MEDIUM", "LOW"]).optional(),
   progress: z.number().min(0).max(100).optional(),
   deadline: z.date().optional(),
+  areaId: z.string().nullable().optional(),
 });
 
 async function assertWorkspaceAccess(
@@ -30,7 +31,7 @@ export const projectRouter = router({
       return ctx.db.project.findMany({
         where: { workspaceId: input.workspaceId },
         orderBy: { updatedAt: "desc" },
-        include: { _count: { select: { notes: true } } },
+        include: { _count: { select: { notes: true } }, area: { select: { id: true, title: true, icon: true } } },
       });
     }),
 
@@ -42,6 +43,7 @@ export const projectRouter = router({
         include: {
           notes: { orderBy: { updatedAt: "desc" } },
           workspace: true,
+          area: { select: { id: true, title: true, icon: true } },
         },
       });
       if (!project || project.workspace.userId !== ctx.userId)
