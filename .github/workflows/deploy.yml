@@ -31,6 +31,12 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/para-app:${{ github.sha }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/para-app:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/para-app:buildcache,mode=max
+          build-args: |
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+            NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+            NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+            NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
