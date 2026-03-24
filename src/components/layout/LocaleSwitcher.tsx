@@ -11,8 +11,8 @@ export function LocaleSwitcher({ currentLocale }: Props) {
   }
 
   const nextLocale = currentLocale === "pt-BR" ? "en-US" : "pt-BR";
-  const label = currentLocale === "pt-BR" ? "EN" : "PT";
-  const flag = currentLocale === "pt-BR" ? "\u{1F1FA}\u{1F1F8}" : "\u{1F1E7}\u{1F1F7}";
+  const label = currentLocale === "pt-BR" ? "PT" : "EN";
+  const flag = currentLocale === "pt-BR" ? "\u{1F1E7}\u{1F1F7}" : "\u{1F1FA}\u{1F1F8}";
 
   return (
     <button
