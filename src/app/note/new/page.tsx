@@ -1,7 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
@@ -12,7 +11,7 @@ import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
 import { ArrowLeft, CircleNotch, FloppyDisk, Info } from "@phosphor-icons/react";
 
-export default function NewNotePage() {
+function NewNotePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const workspaceId = searchParams.get("workspaceId") ?? "";
@@ -164,5 +163,13 @@ export default function NewNotePage() {
         </aside>
       )}
     </div>
+  );
+}
+
+export default function NewNotePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewNotePageContent />
+    </Suspense>
   );
 }
