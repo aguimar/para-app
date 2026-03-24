@@ -42,8 +42,10 @@ export async function POST(req: Request) {
     const baseSlug = slugify(name || "my-brain");
     const slug = `${baseSlug}-${id.slice(-6)}`;
 
-    await db.user.create({
-      data: {
+    await db.user.upsert({
+      where: { email },
+      update: { id, name, imageUrl: image_url },
+      create: {
         id,
         email,
         name,
