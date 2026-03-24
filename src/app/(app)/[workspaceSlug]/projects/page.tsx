@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { NewProjectButton } from "@/components/projects/NewProjectButton";
 import { AttachNotePanel } from "@/components/projects/AttachNotePanel";
 import { ProjectsView } from "@/components/projects/ProjectsView";
+import { getDict, getLocaleFromCookies } from "@/lib/get-locale";
 
 export default async function ProjectsPage({
   params,
@@ -15,7 +16,9 @@ export default async function ProjectsPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [workspace, unattachedNotes] = await Promise.all([
+  const [t, locale, workspace, unattachedNotes] = await Promise.all([
+    getDict(),
+    getLocaleFromCookies(),
     db.workspace.findUnique({
       where: { slug: workspaceSlug },
       include: {
@@ -42,7 +45,7 @@ export default async function ProjectsPage({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         <div className="mx-auto max-w-6xl px-8 py-12">
@@ -51,13 +54,13 @@ export default async function ProjectsPage({
           <header className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="mb-4 inline-flex items-center rounded bg-primary-container px-3 py-1 font-label text-[11px] font-bold uppercase tracking-widest text-on-primary-container">
-                Active Initiatives
+                {t.projects.badge}
               </div>
               <h1 className="font-headline text-4xl font-bold tracking-tight text-on-surface">
-                Projects
+                {t.projects.title}
               </h1>
               <p className="mt-2 max-w-md font-body text-sm leading-relaxed text-on-surface-variant">
-                Organize your current focus areas. These are time-bound efforts with a specific outcome in mind.
+                {t.projects.description}
               </p>
             </div>
 

@@ -2,6 +2,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/server/db";
 import { slugify } from "@/lib/utils";
+import { getDict } from "@/lib/get-locale";
+import { DictionaryProvider } from "@/components/providers/DictionaryProvider";
 
 export default async function AppLayout({
   children,
@@ -48,5 +50,11 @@ export default async function AppLayout({
     }
   }
 
-  return <>{children}</>;
+  const dictionary = await getDict();
+
+  return (
+    <DictionaryProvider dictionary={dictionary}>
+      {children}
+    </DictionaryProvider>
+  );
 }

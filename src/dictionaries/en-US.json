@@ -1,0 +1,221 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving\u2026",
+    "saved": "Saved",
+    "notSaved": "Not saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "discard": "Discard",
+    "loading": "Loading\u2026",
+    "untitled": "Untitled",
+    "back": "Back",
+    "attach": "Attach",
+    "apply": "Apply",
+    "creating": "Creating\u2026",
+    "uploading": "Uploading\u2026",
+    "created": "Created!",
+    "noDeadline": "No deadline",
+    "optional": "optional"
+  },
+  "landing": {
+    "title": "Second Brain",
+    "description": "Organize your knowledge with the PARA method. Projects, Areas, Resources, Archives \u2014 all in one quiet, focused workspace.",
+    "getStarted": "Get started",
+    "signIn": "Sign in"
+  },
+  "sidebar": {
+    "brand": "Second Brain",
+    "subtitle": "PARA Methodology",
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "areas": "Areas",
+    "resources": "Resources",
+    "archive": "Archive",
+    "guide": "How to use"
+  },
+  "para": {
+    "inbox": "Inbox",
+    "project": "Project",
+    "area": "Area",
+    "resource": "Resource",
+    "archive": "Archive"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "paraInventory": "PARA Inventory",
+    "projects": "Projects",
+    "areas": "Areas",
+    "resources": "Resources",
+    "archives": "Archives",
+    "activeProjects": "Active Projects",
+    "recentNotes": "Recent Notes",
+    "emptyTitle": "Your second brain is empty",
+    "emptyDescription": "Start by capturing a thought or creating a project."
+  },
+  "inbox": {
+    "title": "Inbox",
+    "dragHint": "\u2190 drag onto a category",
+    "suggest": "Suggest",
+    "analyzing": "Analyzing\u2026"
+  },
+  "projects": {
+    "title": "Projects",
+    "badge": "Active Initiatives",
+    "description": "Organize your current focus areas. These are time-bound efforts with a specific outcome in mind.",
+    "activeCount_one": "active project",
+    "activeCount_other": "active projects",
+    "progress": "Progress",
+    "due": "Due",
+    "knowledgeKanban": "Knowledge Kanban",
+    "activeNotes": "Active Notes",
+    "noNotesYet": "No notes in this project yet. Start capturing thoughts to build your knowledge flow.",
+    "linkedArea": "Linked Area",
+    "deadline": "Deadline",
+    "status": "Status",
+    "area": "Area",
+    "tasks": "Tasks",
+    "note_one": "note",
+    "note_other": "notes"
+  },
+  "projectStatus": {
+    "active": "Active",
+    "onHold": "On Hold",
+    "completed": "Completed"
+  },
+  "projectPriority": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "newProject": {
+    "button": "New Project",
+    "initiateCard": "Initiate New Project",
+    "modalLabel": "New Project",
+    "modalTitle": "Initiate a Project",
+    "titleLabel": "Project Title *",
+    "titlePlaceholder": "e.g. Q4 Brand Redesign",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is the outcome of this project?",
+    "areaLabel": "Area",
+    "noArea": "\u2014 No area \u2014",
+    "priorityLabel": "Priority",
+    "deadlineLabel": "Deadline",
+    "submit": "Create Project"
+  },
+  "kanban": {
+    "todo": "Inbox / Capture",
+    "inProgress": "In Progress",
+    "done": "Integrated / Archive"
+  },
+  "suggestTasks": {
+    "button": "Suggest tasks",
+    "modalTitle": "Suggested tasks",
+    "thinking": "Thinking of the best tasks\u2026",
+    "error": "Failed to generate suggestions. Try again.",
+    "selected": "of",
+    "selectedSuffix": "selected",
+    "submit": "Create selected"
+  },
+  "areas": {
+    "title": "Areas",
+    "emptyTitle": "No areas yet",
+    "emptyDescription": "Areas are ongoing responsibilities that require a standard of performance over time.",
+    "project_one": "project",
+    "project_other": "projects",
+    "resource_one": "resource",
+    "resource_other": "resources",
+    "note_one": "note",
+    "note_other": "notes",
+    "unattachedNotes": "Area Notes \u2014 not yet attached"
+  },
+  "newArea": {
+    "button": "New Area",
+    "modalLabel": "New Area",
+    "modalTitle": "Define an Area",
+    "titleLabel": "Title *",
+    "titlePlaceholder": "e.g. Health, Finances, Career\u2026",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What standard of performance do you want to maintain?",
+    "submit": "Create Area"
+  },
+  "resources": {
+    "title": "Resources",
+    "badge": "Personal Library",
+    "topic_one": "topic",
+    "topic_other": "topics",
+    "emptyTitle": "No resources yet",
+    "emptyDescription": "Drag an inbox note to the Resource zone to get started.",
+    "note_one": "note",
+    "note_other": "notes",
+    "unattachedNotes": "Resource Notes \u2014 not yet attached"
+  },
+  "newResource": {
+    "button": "New Resource",
+    "modalLabel": "New Resource",
+    "modalTitle": "Add Topic",
+    "titleLabel": "Title *",
+    "titlePlaceholder": "e.g. Psychology, Design, Finances\u2026",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this topic about?",
+    "urlLabel": "URL",
+    "areaLabel": "Area",
+    "noArea": "\u2014 None \u2014",
+    "submit": "Create Resource"
+  },
+  "archive": {
+    "title": "Archive",
+    "emptyTitle": "Nothing archived yet",
+    "emptyDescription": "Completed projects and archived notes appear here.",
+    "completedProjects": "Completed Projects",
+    "archivedNotes": "Archived Notes",
+    "note_one": "note",
+    "note_other": "notes"
+  },
+  "noteEditor": {
+    "newNote": "New Note",
+    "unsavedChanges": "You have unsaved changes. Save before leaving?",
+    "notFound": "Note not found.",
+    "deleteConfirm": "Delete this note? This cannot be undone.",
+    "deleteNote": "Delete note",
+    "toggleInspector": "Toggle inspector",
+    "placeholder": "Start writing your thoughts\u2026",
+    "category": "Category",
+    "suggestCategory": "Suggest category with AI",
+    "suggest": "Suggest",
+    "dismiss": "Dismiss",
+    "project": "Project",
+    "noProject": "\u2014 No project \u2014",
+    "resource": "Resource",
+    "noResource": "\u2014 No resource \u2014",
+    "tags": "Tags",
+    "noTags": "No tags yet.",
+    "linkedFrom": "Linked from",
+    "noBacklinks": "No backlinks yet.",
+    "lastEdited": "Last edited",
+    "created": "Created"
+  },
+  "attachments": {
+    "title": "Attachments",
+    "attach": "Attach",
+    "noAttachments": "No attachments yet."
+  },
+  "attachNotes": {
+    "projectCategory": "Unattached Notes \u2014 Project Category",
+    "attachToProject": "Attach to Project",
+    "noProjects": "No projects yet"
+  },
+  "iconPicker": {
+    "search": "Search icon\u2026",
+    "recent": "Recent",
+    "changeIcon": "Change icon",
+    "noRecent": "No recent icons",
+    "noResults": "No results",
+    "removeIcon": "Remove icon"
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{count} days ago"
+  }
+}

@@ -5,21 +5,25 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { Rocket, TreeStructure, Books, Archive, House, Question, type Icon } from "@phosphor-icons/react";
+import { useTranslation } from "@/lib/i18n-client";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
 interface SidebarProps {
   workspaceSlug: string;
   workspaceName: string;
+  locale: string;
 }
 
-const NAV_ITEMS = [
-  { label: "Projects", Icon: Rocket, slug: "projects", color: "text-primary" },
-  { label: "Areas", Icon: TreeStructure, slug: "areas", color: "text-secondary" },
-  { label: "Resources", Icon: Books, slug: "resources", color: "text-tertiary" },
-  { label: "Archive", Icon: Archive, slug: "archive", color: "text-outline" },
-] as const;
-
-export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
+export function Sidebar({ workspaceSlug, workspaceName, locale }: SidebarProps) {
   const pathname = usePathname();
+  const t = useTranslation();
+
+  const NAV_ITEMS = [
+    { label: t.sidebar.projects, Icon: Rocket, slug: "projects", color: "text-primary" },
+    { label: t.sidebar.areas, Icon: TreeStructure, slug: "areas", color: "text-secondary" },
+    { label: t.sidebar.resources, Icon: Books, slug: "resources", color: "text-tertiary" },
+    { label: t.sidebar.archive, Icon: Archive, slug: "archive", color: "text-outline" },
+  ];
 
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 bg-surface-container-low sticky top-0 shrink-0">
@@ -28,10 +32,10 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
         <div className="px-3 py-5">
           <Link href="/dashboard">
             <h1 className="font-headline text-base font-black uppercase tracking-tighter text-on-surface">
-              Second Brain
+              {t.sidebar.brand}
             </h1>
             <p className="mt-0.5 font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-              PARA Methodology
+              {t.sidebar.subtitle}
             </p>
           </Link>
         </div>
@@ -47,7 +51,7 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
           )}
         >
           <House size={20} />
-          Dashboard
+          {t.sidebar.dashboard}
         </Link>
 
         {/* PARA nav */}
@@ -87,15 +91,16 @@ export function Sidebar({ workspaceSlug, workspaceName }: SidebarProps) {
           )}
         >
           <Question size={20} className={pathname === "/guide" ? "text-primary" : ""} />
-          Como usar
+          {t.sidebar.guide}
         </Link>
 
-        {/* Workspace name + user */}
+        {/* Workspace name + user + locale */}
         <div className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2">
           <UserButton />
-          <span className="truncate font-label text-xs text-on-surface-variant">
+          <span className="flex-1 truncate font-label text-xs text-on-surface-variant">
             {workspaceName}
           </span>
+          <LocaleSwitcher currentLocale={locale} />
         </div>
       </div>
     </aside>

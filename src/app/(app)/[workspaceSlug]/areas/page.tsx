@@ -8,6 +8,8 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import Link from "next/link";
 import { TreeStructure } from "@/components/ui/icons";
 import { NewAreaButton } from "@/components/areas/NewAreaButton";
+import { getDict, getLocaleFromCookies } from "@/lib/get-locale";
+import { plural } from "@/lib/utils";
 
 export default async function AreasPage({
   params,
@@ -18,7 +20,9 @@ export default async function AreasPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [workspace, unattachedNotes] = await Promise.all([
+  const [t, locale, workspace, unattachedNotes] = await Promise.all([
+    getDict(),
+    getLocaleFromCookies(),
     db.workspace.findUnique({
       where: { slug: workspaceSlug },
       include: {
@@ -42,12 +46,12 @@ export default async function AreasPage({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         <div className="sticky top-0 z-10 flex h-14 items-center justify-between bg-surface/80 px-8 backdrop-blur-md">
           <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
-            Areas
+            {t.areas.title}
           </h1>
           <NewAreaButton workspaceId={workspace.id} />
         </div>
@@ -57,10 +61,10 @@ export default async function AreasPage({
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <TreeStructure size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
-                No areas yet
+                {t.areas.emptyTitle}
               </p>
               <p className="mt-1 font-body text-sm text-on-surface-variant">
-                Areas are ongoing responsibilities that require a standard of performance over time.
+                {t.areas.emptyDescription}
               </p>
             </div>
           ) : (
@@ -93,15 +97,15 @@ export default async function AreasPage({
                     )}
                     <div className="mt-4 flex items-center gap-3 flex-wrap">
                       <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                        {area._count.projects} {area._count.projects === 1 ? "project" : "projects"}
+                        {plural(area._count.projects, t.areas.project_one, t.areas.project_other)}
                       </p>
                       <span className="text-outline-variant">·</span>
                       <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                        {area._count.resources} {area._count.resources === 1 ? "resource" : "resources"}
+                        {plural(area._count.resources, t.areas.resource_one, t.areas.resource_other)}
                       </p>
                       <span className="text-outline-variant">·</span>
                       <p className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                        {area._count.notes} {area._count.notes === 1 ? "note" : "notes"}
+                        {plural(area._count.notes, t.areas.note_one, t.areas.note_other)}
                       </p>
                     </div>
                   </Link>
@@ -116,7 +120,7 @@ export default async function AreasPage({
           <div className="px-8 pb-16">
             <div className="mb-4 flex items-center gap-3 border-t border-surface-container-high pt-10">
               <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
-                Area Notes — not yet attached
+                {t.areas.unattachedNotes}
               </span>
               <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
                 {unattachedNotes.length}

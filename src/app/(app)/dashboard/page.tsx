@@ -10,10 +10,13 @@ import { NewNoteButton } from "@/components/notes/NewNoteButton";
 import { InboxBoard } from "@/components/notes/InboxBoard";
 import { ParaInventory } from "@/components/dashboard/ParaInventory";
 import { Books } from "@/components/ui/icons";
+import { getDict, getLocaleFromCookies } from "@/lib/get-locale";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
+
+  const [t, locale] = await Promise.all([getDict(), getLocaleFromCookies()]);
 
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -60,13 +63,13 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         {/* Top bar */}
         <div className="sticky top-0 z-10 flex h-14 items-center justify-between bg-surface/80 px-8 backdrop-blur-md">
           <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
-            Dashboard
+            {t.dashboard.title}
           </h1>
           <NewNoteButton workspaceId={workspace.id} />
         </div>
@@ -75,7 +78,7 @@ export default async function DashboardPage() {
           {/* PARA Inventory */}
           <section>
             <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-4">
-              PARA Inventory
+              {t.dashboard.paraInventory}
             </h2>
             <ParaInventory
               projects={workspace._count.projects}
@@ -97,7 +100,7 @@ export default async function DashboardPage() {
           {workspace.projects.length > 0 && (
             <section>
               <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-4">
-                Active Projects
+                {t.dashboard.activeProjects}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {workspace.projects.map((project: Project & { _count: { notes: number } }) => (
@@ -121,7 +124,7 @@ export default async function DashboardPage() {
           {workspace.notes.length > 0 && (
             <section>
               <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-4">
-                Recent Notes
+                {t.dashboard.recentNotes}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {workspace.notes.map((note: Note) => (
@@ -144,10 +147,10 @@ export default async function DashboardPage() {
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <Books size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
-                Your second brain is empty
+                {t.dashboard.emptyTitle}
               </p>
               <p className="mt-1 font-body text-sm text-on-surface-variant">
-                Start by capturing a thought or creating a project.
+                {t.dashboard.emptyDescription}
               </p>
             </div>
           )}

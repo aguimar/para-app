@@ -1,0 +1,221 @@
+{
+  "common": {
+    "save": "Salvar",
+    "saving": "Salvando\u2026",
+    "saved": "Salvo",
+    "notSaved": "N\u00e3o salvo",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "discard": "Descartar",
+    "loading": "Carregando\u2026",
+    "untitled": "Sem t\u00edtulo",
+    "back": "Voltar",
+    "attach": "Vincular",
+    "apply": "Aplicar",
+    "creating": "Criando\u2026",
+    "uploading": "Enviando\u2026",
+    "created": "Criadas!",
+    "noDeadline": "Sem prazo",
+    "optional": "opcional"
+  },
+  "landing": {
+    "title": "Second Brain",
+    "description": "Organize seu conhecimento com o m\u00e9todo PARA. Projetos, \u00c1reas, Recursos e Arquivo \u2014 tudo num espa\u00e7o focado e tranquilo.",
+    "getStarted": "Come\u00e7ar",
+    "signIn": "Entrar"
+  },
+  "sidebar": {
+    "brand": "Second Brain",
+    "subtitle": "PARA Methodology",
+    "dashboard": "Dashboard",
+    "projects": "Projetos",
+    "areas": "\u00c1reas",
+    "resources": "Recursos",
+    "archive": "Arquivo",
+    "guide": "Como usar"
+  },
+  "para": {
+    "inbox": "Inbox",
+    "project": "Projeto",
+    "area": "\u00c1rea",
+    "resource": "Recurso",
+    "archive": "Arquivo"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "paraInventory": "Invent\u00e1rio PARA",
+    "projects": "Projetos",
+    "areas": "\u00c1reas",
+    "resources": "Recursos",
+    "archives": "Arquivo",
+    "activeProjects": "Projetos Ativos",
+    "recentNotes": "Notas Recentes",
+    "emptyTitle": "Seu segundo c\u00e9rebro est\u00e1 vazio",
+    "emptyDescription": "Comece capturando um pensamento ou criando um projeto."
+  },
+  "inbox": {
+    "title": "Inbox",
+    "dragHint": "\u2190 arraste para uma categoria",
+    "suggest": "Sugerir",
+    "analyzing": "Analisando\u2026"
+  },
+  "projects": {
+    "title": "Projetos",
+    "badge": "Iniciativas Ativas",
+    "description": "Organize suas \u00e1reas de foco. Esfor\u00e7os com prazo e resultado espec\u00edficos.",
+    "activeCount_one": "projeto ativo",
+    "activeCount_other": "projetos ativos",
+    "progress": "Progresso",
+    "due": "Prazo",
+    "knowledgeKanban": "Kanban do Conhecimento",
+    "activeNotes": "Notas Ativas",
+    "noNotesYet": "Nenhuma nota neste projeto. Comece a capturar ideias para construir seu fluxo de conhecimento.",
+    "linkedArea": "\u00c1rea Vinculada",
+    "deadline": "Prazo",
+    "status": "Status",
+    "area": "\u00c1rea",
+    "tasks": "Tarefas",
+    "note_one": "nota",
+    "note_other": "notas"
+  },
+  "projectStatus": {
+    "active": "Ativo",
+    "onHold": "Em Espera",
+    "completed": "Conclu\u00eddo"
+  },
+  "projectPriority": {
+    "high": "Alta",
+    "medium": "M\u00e9dia",
+    "low": "Baixa"
+  },
+  "newProject": {
+    "button": "Novo Projeto",
+    "initiateCard": "Iniciar Novo Projeto",
+    "modalLabel": "Novo Projeto",
+    "modalTitle": "Iniciar um Projeto",
+    "titleLabel": "T\u00edtulo do Projeto *",
+    "titlePlaceholder": "ex: Redesign Q4",
+    "descriptionLabel": "Descri\u00e7\u00e3o",
+    "descriptionPlaceholder": "Qual \u00e9 o resultado esperado deste projeto?",
+    "areaLabel": "\u00c1rea",
+    "noArea": "\u2014 Sem \u00e1rea \u2014",
+    "priorityLabel": "Prioridade",
+    "deadlineLabel": "Prazo",
+    "submit": "Criar Projeto"
+  },
+  "kanban": {
+    "todo": "Inbox / Capta\u00e7\u00e3o",
+    "inProgress": "Em Progresso",
+    "done": "Integrado / Arquivo"
+  },
+  "suggestTasks": {
+    "button": "Sugerir tarefas",
+    "modalTitle": "Tarefas sugeridas",
+    "thinking": "Pensando nas melhores tarefas\u2026",
+    "error": "Erro ao gerar sugest\u00f5es. Tente novamente.",
+    "selected": "de",
+    "selectedSuffix": "selecionadas",
+    "submit": "Criar selecionadas"
+  },
+  "areas": {
+    "title": "\u00c1reas",
+    "emptyTitle": "Nenhuma \u00e1rea ainda",
+    "emptyDescription": "\u00c1reas s\u00e3o responsabilidades cont\u00ednuas que exigem um padr\u00e3o de desempenho ao longo do tempo.",
+    "project_one": "projeto",
+    "project_other": "projetos",
+    "resource_one": "recurso",
+    "resource_other": "recursos",
+    "note_one": "nota",
+    "note_other": "notas",
+    "unattachedNotes": "Notas de \u00c1rea \u2014 ainda n\u00e3o vinculadas"
+  },
+  "newArea": {
+    "button": "Nova \u00c1rea",
+    "modalLabel": "Nova \u00c1rea",
+    "modalTitle": "Definir uma \u00c1rea",
+    "titleLabel": "T\u00edtulo *",
+    "titlePlaceholder": "ex: Sa\u00fade, Finan\u00e7as, Carreira\u2026",
+    "descriptionLabel": "Descri\u00e7\u00e3o",
+    "descriptionPlaceholder": "Qual \u00e9 o padr\u00e3o de desempenho que voc\u00ea quer manter?",
+    "submit": "Criar \u00c1rea"
+  },
+  "resources": {
+    "title": "Recursos",
+    "badge": "Biblioteca Pessoal",
+    "topic_one": "t\u00f3pico",
+    "topic_other": "t\u00f3picos",
+    "emptyTitle": "Nenhum recurso ainda",
+    "emptyDescription": "Arraste uma nota da Inbox para a zona de Recurso para come\u00e7ar.",
+    "note_one": "nota",
+    "note_other": "notas",
+    "unattachedNotes": "Notas de Recurso \u2014 ainda n\u00e3o vinculadas"
+  },
+  "newResource": {
+    "button": "Novo Recurso",
+    "modalLabel": "Novo Recurso",
+    "modalTitle": "Adicionar T\u00f3pico",
+    "titleLabel": "T\u00edtulo *",
+    "titlePlaceholder": "ex: Psicologia, Design, Finan\u00e7as\u2026",
+    "descriptionLabel": "Descri\u00e7\u00e3o",
+    "descriptionPlaceholder": "Do que trata este t\u00f3pico?",
+    "urlLabel": "URL",
+    "areaLabel": "\u00c1rea",
+    "noArea": "\u2014 Nenhuma \u2014",
+    "submit": "Criar Recurso"
+  },
+  "archive": {
+    "title": "Arquivo",
+    "emptyTitle": "Nada arquivado ainda",
+    "emptyDescription": "Projetos conclu\u00eddos e notas arquivadas aparecem aqui.",
+    "completedProjects": "Projetos Conclu\u00eddos",
+    "archivedNotes": "Notas Arquivadas",
+    "note_one": "nota",
+    "note_other": "notas"
+  },
+  "noteEditor": {
+    "newNote": "Nova Nota",
+    "unsavedChanges": "Voc\u00ea tem altera\u00e7\u00f5es n\u00e3o salvas. Salvar antes de sair?",
+    "notFound": "Nota n\u00e3o encontrada.",
+    "deleteConfirm": "Excluir esta nota? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.",
+    "deleteNote": "Excluir nota",
+    "toggleInspector": "Abrir inspetor",
+    "placeholder": "Comece a escrever seus pensamentos\u2026",
+    "category": "Categoria",
+    "suggestCategory": "Sugerir categoria com IA",
+    "suggest": "Sugerir",
+    "dismiss": "Dispensar",
+    "project": "Projeto",
+    "noProject": "\u2014 Sem projeto \u2014",
+    "resource": "Recurso",
+    "noResource": "\u2014 Sem recurso \u2014",
+    "tags": "Tags",
+    "noTags": "Sem tags ainda.",
+    "linkedFrom": "Vinculado de",
+    "noBacklinks": "Sem backlinks ainda.",
+    "lastEdited": "\u00daltima edi\u00e7\u00e3o",
+    "created": "Criado em"
+  },
+  "attachments": {
+    "title": "Anexos",
+    "attach": "Anexar",
+    "noAttachments": "Sem anexos ainda."
+  },
+  "attachNotes": {
+    "projectCategory": "Notas N\u00e3o Vinculadas \u2014 Categoria Projeto",
+    "attachToProject": "Vincular ao Projeto",
+    "noProjects": "Nenhum projeto ainda"
+  },
+  "iconPicker": {
+    "search": "Buscar \u00edcone\u2026",
+    "recent": "Recentes",
+    "changeIcon": "Trocar \u00edcone",
+    "noRecent": "Nenhum \u00edcone recente",
+    "noResults": "Nenhum resultado",
+    "removeIcon": "Remover \u00edcone"
+  },
+  "dates": {
+    "today": "Hoje",
+    "yesterday": "Ontem",
+    "daysAgo": "h\u00e1 {count} dias"
+  }
+}

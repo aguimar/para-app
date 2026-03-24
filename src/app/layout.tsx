@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCProvider } from "@/components/providers/TRPCProvider";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -21,14 +22,16 @@ export const metadata: Metadata = {
   description: "Organize your knowledge with the PARA methodology",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocaleFromCookies();
+
   return (
     <ClerkProvider>
-      <html lang="en" className={`h-full ${manrope.variable} ${inter.variable}`}>
+      <html lang={locale} className={`h-full ${manrope.variable} ${inter.variable}`}>
         <head>
           <link rel="stylesheet" href="/blocknote.css" />
         </head>

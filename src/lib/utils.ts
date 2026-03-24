@@ -5,24 +5,28 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: Date | string): string {
-  return new Intl.DateTimeFormat("en-US", {
+export function formatDate(date: Date | string, locale = "pt-BR"): string {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).format(new Date(date));
 }
 
-export function formatRelativeDate(date: Date | string): string {
+export function formatRelativeDate(date: Date | string, locale = "pt-BR"): string {
   const now = new Date();
   const d = new Date(date);
   const diff = now.getTime() - d.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (days === 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days} days ago`;
-  return formatDate(date);
+  if (days === 0) return locale === "pt-BR" ? "Hoje" : "Today";
+  if (days === 1) return locale === "pt-BR" ? "Ontem" : "Yesterday";
+  if (days < 7) return locale === "pt-BR" ? `há ${days} dias` : `${days} days ago`;
+  return formatDate(date, locale);
+}
+
+export function plural(count: number, one: string, other: string): string {
+  return `${count} ${count === 1 ? one : other}`;
 }
 
 /** Extracts plain text from a note body (BlockNote JSON or legacy HTML). */
