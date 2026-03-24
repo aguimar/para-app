@@ -5,20 +5,28 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "@phosphor-icons/react";
+import { useTranslation } from "@/lib/i18n-client";
 
 interface NewProjectButtonProps {
   workspaceId: string;
   variant?: "sidebar" | "card";
 }
 
+const PRIORITY_DICT_KEY: Record<string, "high" | "medium" | "low"> = {
+  HIGH: "high",
+  MEDIUM: "medium",
+  LOW: "low",
+};
+
 const PRIORITIES = [
-  { value: "HIGH", label: "High", color: "bg-error-container text-on-error-container" },
-  { value: "MEDIUM", label: "Medium", color: "bg-secondary-container text-on-secondary-container" },
-  { value: "LOW", label: "Low", color: "bg-surface-container-highest text-on-surface-variant" },
+  { value: "HIGH", color: "bg-error-container text-on-error-container" },
+  { value: "MEDIUM", color: "bg-secondary-container text-on-secondary-container" },
+  { value: "LOW", color: "bg-surface-container-highest text-on-surface-variant" },
 ] as const;
 
 export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjectButtonProps) {
   const router = useRouter();
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -69,7 +77,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
           className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary shadow-ambient transition hover:bg-primary-dim"
         >
           <Plus size={18} />
-          New Project
+          {t.newProject.button}
         </button>
       ) : (
         <button
@@ -79,7 +87,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant transition-all group-hover:bg-primary group-hover:text-on-primary">
             <Plus size={24} />
           </div>
-          <p className="font-headline font-bold text-on-surface-variant">Initiate New Project</p>
+          <p className="font-headline font-bold text-on-surface-variant">{t.newProject.initiateCard}</p>
         </button>
       )}
 
@@ -98,10 +106,10 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
             <div className="flex items-center justify-between border-b border-outline-variant/15 px-6 py-4">
               <div>
                 <span className="font-label text-[10px] font-semibold uppercase tracking-widest text-primary">
-                  New Project
+                  {t.newProject.modalLabel}
                 </span>
                 <h2 className="font-headline text-lg font-bold text-on-surface">
-                  Initiate a Project
+                  {t.newProject.modalTitle}
                 </h2>
               </div>
               <button
@@ -117,13 +125,13 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
               {/* Title */}
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Project Title *
+                  {t.newProject.titleLabel}
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Q4 Brand Redesign"
+                  placeholder={t.newProject.titlePlaceholder}
                   required
                   autoFocus
                   className="w-full rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -133,12 +141,12 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
               {/* Description */}
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Description
+                  {t.newProject.descriptionLabel}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="What is the outcome of this project?"
+                  placeholder={t.newProject.descriptionPlaceholder}
                   rows={3}
                   className="w-full resize-none rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
@@ -148,14 +156,14 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
               {areas.length > 0 && (
                 <div>
                   <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Area
+                    {t.newProject.areaLabel}
                   </label>
                   <select
                     value={areaId}
                     onChange={(e) => setAreaId(e.target.value)}
                     className="w-full rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
                   >
-                    <option value="">— No area —</option>
+                    <option value="">{t.newProject.noArea}</option>
                     {areas.map((a) => (
                       <option key={a.id} value={a.id}>{a.title}</option>
                     ))}
@@ -167,7 +175,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
                 {/* Priority */}
                 <div>
                   <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Priority
+                    {t.newProject.priorityLabel}
                   </label>
                   <div className="flex gap-1.5">
                     {PRIORITIES.map((p) => (
@@ -181,7 +189,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
                           priority !== p.value && "opacity-30"
                         )}
                       >
-                        {p.label}
+                        {t.projectPriority[PRIORITY_DICT_KEY[p.value]]}
                       </button>
                     ))}
                   </div>
@@ -190,7 +198,7 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
                 {/* Deadline */}
                 <div>
                   <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Deadline
+                    {t.newProject.deadlineLabel}
                   </label>
                   <input
                     type="date"
@@ -208,14 +216,14 @@ export function NewProjectButton({ workspaceId, variant = "sidebar" }: NewProjec
                   onClick={() => setOpen(false)}
                   className="rounded-full px-4 py-2 font-label text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container"
                 >
-                  Cancel
+                  {t.common.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving || !title.trim()}
                   className="rounded-full bg-primary px-5 py-2 font-label text-sm font-semibold text-on-primary shadow-ambient transition hover:bg-primary-dim disabled:opacity-50"
                 >
-                  {saving ? "Creating…" : "Create Project"}
+                  {saving ? t.common.creating : t.newProject.submit}
                 </button>
               </div>
             </form>

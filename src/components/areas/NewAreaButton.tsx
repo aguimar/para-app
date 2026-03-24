@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Plus, X } from "@phosphor-icons/react";
 import { Modal } from "@/components/ui/Modal";
+import { useTranslation } from "@/lib/i18n-client";
 
 export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
   const router = useRouter();
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,7 +43,7 @@ export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
         className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-on-secondary shadow-ambient transition hover:opacity-90"
       >
         <Plus size={18} />
-        New Area
+        {t.newArea.button}
       </button>
 
       {open && (
@@ -50,10 +52,10 @@ export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
             <div className="flex items-center justify-between border-b border-outline-variant/15 px-6 py-4">
               <div>
                 <span className="font-label text-[10px] font-semibold uppercase tracking-widest text-secondary">
-                  New Area
+                  {t.newArea.modalLabel}
                 </span>
                 <h2 className="font-headline text-lg font-bold text-on-surface">
-                  Definir uma Área
+                  {t.newArea.modalTitle}
                 </h2>
               </div>
               <button
@@ -67,13 +69,13 @@ export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Título *
+                  {t.newArea.titleLabel}
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="ex: Saúde, Finanças, Carreira…"
+                  placeholder={t.newArea.titlePlaceholder}
                   required
                   autoFocus
                   className="w-full rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary/20"
@@ -82,12 +84,12 @@ export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
 
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Descrição
+                  {t.newArea.descriptionLabel}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Qual é o padrão de desempenho que você quer manter?"
+                  placeholder={t.newArea.descriptionPlaceholder}
                   rows={3}
                   className="w-full resize-none rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary/20"
                 />
@@ -99,14 +101,14 @@ export function NewAreaButton({ workspaceId }: { workspaceId: string }) {
                   onClick={() => setOpen(false)}
                   className="rounded-full px-4 py-2 font-label text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container"
                 >
-                  Cancelar
+                  {t.common.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving || !title.trim()}
                   className="rounded-full bg-secondary px-5 py-2 font-label text-sm font-semibold text-on-secondary shadow-ambient transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {saving ? "Criando…" : "Criar Área"}
+                  {saving ? t.common.creating : t.newArea.submit}
                 </button>
               </div>
             </form>

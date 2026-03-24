@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Plus, X } from "@phosphor-icons/react";
 import { Modal } from "@/components/ui/Modal";
+import { useTranslation } from "@/lib/i18n-client";
 
 export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
   const router = useRouter();
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -46,7 +48,7 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
         className="flex items-center gap-2 rounded-full bg-tertiary px-4 py-2 text-sm font-semibold text-on-tertiary shadow-ambient transition hover:opacity-90"
       >
         <Plus size={18} />
-        New Resource
+        {t.newResource.button}
       </button>
 
       {open && (
@@ -55,10 +57,10 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
             <div className="flex items-center justify-between border-b border-outline-variant/15 px-6 py-4">
               <div>
                 <span className="font-label text-[10px] font-semibold uppercase tracking-widest text-tertiary">
-                  New Resource
+                  {t.newResource.modalLabel}
                 </span>
                 <h2 className="font-headline text-lg font-bold text-on-surface">
-                  Adicionar Tópico
+                  {t.newResource.modalTitle}
                 </h2>
               </div>
               <button
@@ -72,13 +74,13 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Título *
+                  {t.newResource.titleLabel}
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="ex: Psicologia, Design, Finanças…"
+                  placeholder={t.newResource.titlePlaceholder}
                   required
                   autoFocus
                   className="w-full rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-tertiary/20"
@@ -87,12 +89,12 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
 
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  Descrição
+                  {t.newResource.descriptionLabel}
                 </label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Do que trata este tópico?"
+                  placeholder={t.newResource.descriptionPlaceholder}
                   rows={2}
                   className="w-full resize-none rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-tertiary/20"
                 />
@@ -100,7 +102,7 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
 
               <div>
                 <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                  URL <span className="normal-case font-normal opacity-60">(opcional)</span>
+                  {t.newResource.urlLabel} <span className="normal-case font-normal opacity-60">({t.common.optional})</span>
                 </label>
                 <input
                   type="url"
@@ -114,14 +116,14 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
               {areas.length > 0 && (
                 <div>
                   <label className="mb-1.5 block font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Área
+                    {t.newResource.areaLabel}
                   </label>
                   <select
                     value={areaId}
                     onChange={(e) => setAreaId(e.target.value)}
                     className="w-full rounded-xl bg-surface-container-low px-4 py-2.5 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-tertiary/20"
                   >
-                    <option value="">— Nenhuma —</option>
+                    <option value="">{t.newResource.noArea}</option>
                     {areas.map((a) => (
                       <option key={a.id} value={a.id}>{a.title}</option>
                     ))}
@@ -135,14 +137,14 @@ export function NewResourceButton({ workspaceId }: { workspaceId: string }) {
                   onClick={() => setOpen(false)}
                   className="rounded-full px-4 py-2 font-label text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container"
                 >
-                  Cancelar
+                  {t.common.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving || !title.trim()}
                   className="rounded-full bg-tertiary px-5 py-2 font-label text-sm font-semibold text-on-tertiary shadow-ambient transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {saving ? "Criando…" : "Criar Resource"}
+                  {saving ? t.common.creating : t.newResource.submit}
                 </button>
               </div>
             </form>

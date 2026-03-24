@@ -20,6 +20,7 @@ import {
   DotsSixVertical, Sparkle, CircleNotch, Check, X,
   type Icon,
 } from "@phosphor-icons/react";
+import { useTranslation } from "@/lib/i18n-client";
 
 interface InboxNote {
   id: string;
@@ -35,7 +36,7 @@ interface InboxBoardProps {
 const CATEGORIES = [
   {
     id: "PROJECT",
-    label: "Project",
+    dictKey: "project" as const,
     Icon: Rocket,
     color: "text-primary",
     activeColor: "bg-primary-container text-on-primary-container border-primary/40",
@@ -43,7 +44,7 @@ const CATEGORIES = [
   },
   {
     id: "AREA",
-    label: "Area",
+    dictKey: "area" as const,
     Icon: TreeStructure,
     color: "text-secondary",
     activeColor: "bg-secondary-container text-on-secondary-container border-secondary/40",
@@ -51,7 +52,7 @@ const CATEGORIES = [
   },
   {
     id: "RESOURCE",
-    label: "Resource",
+    dictKey: "resource" as const,
     Icon: Books,
     color: "text-tertiary",
     activeColor: "bg-tertiary-container text-on-tertiary-container border-tertiary/40",
@@ -59,7 +60,7 @@ const CATEGORIES = [
   },
   {
     id: "ARCHIVE",
-    label: "Archive",
+    dictKey: "archive" as const,
     Icon: Archive,
     color: "text-outline",
     activeColor: "bg-surface-container-highest text-on-surface-variant border-outline/40",
@@ -86,12 +87,13 @@ function DraggableNote({
   onAssign: (noteId: string, category: CategoryId) => void;
 }) {
   const router = useRouter();
+  const t = useTranslation();
   const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: note.id });
   const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
 
   const suggest = trpc.note.suggestCategory.useMutation({
     onSuccess: (data) => setSuggestion(data as Suggestion),
-    onError: (err) => alert("Erro: " + err.message),
+    onError: (err) => alert(err.message),
   });
 
   const style = transform
@@ -117,7 +119,7 @@ function DraggableNote({
       >
         <DotsSixVertical size={16} className="shrink-0 text-on-surface-variant" />
         <p className="flex-1 truncate font-body text-sm font-medium text-on-surface">
-          {note.title || "Untitled"}
+          {note.title || t.common.untitled}
         </p>
       </div>
 
@@ -137,7 +139,7 @@ function DraggableNote({
               className="flex items-center gap-1 rounded-md bg-white/30 px-2.5 py-1 font-label text-[10px] font-bold uppercase tracking-wider transition-colors hover:bg-white/50"
             >
               <Check size={11} />
-              Aplicar
+              {t.common.apply}
             </button>
             <button
               onClick={() => setSuggestion(null)}
@@ -163,7 +165,7 @@ function DraggableNote({
               <Sparkle size={12} />
             )}
             <span className="font-label text-[10px] uppercase tracking-wider">
-              {suggest.isPending ? "Analisando…" : "Sugerir"}
+              {suggest.isPending ? t.inbox.analyzing : t.inbox.suggest}
             </span>
           </button>
         </div>
@@ -175,12 +177,13 @@ function DraggableNote({
 // ─── Ghost card shown while dragging ─────────────────────────────────────────
 
 function NoteGhost({ note }: { note: InboxNote }) {
+  const t = useTranslation();
   return (
     <div className="cursor-grabbing rounded-xl bg-surface-container-lowest px-4 py-3 shadow-[0_16px_48px_rgba(42,52,57,0.18)] ring-2 ring-primary/20 select-none rotate-2">
       <div className="flex items-center gap-2">
         <DotsSixVertical size={16} className="text-primary" />
         <p className="truncate font-body text-sm font-medium text-on-surface">
-          {note.title || "Untitled"}
+          {note.title || t.common.untitled}
         </p>
       </div>
     </div>
@@ -197,6 +200,7 @@ function CategoryZone({
   isOver: boolean;
 }) {
   const { setNodeRef } = useDroppable({ id: category.id });
+  const t = useTranslation();
 
   return (
     <div
@@ -210,7 +214,7 @@ function CategoryZone({
     >
       <category.Icon size={28} className={cn(isOver && category.color)} />
       <p className={cn("font-label text-[11px] font-bold uppercase tracking-widest", isOver && category.color)}>
-        {category.label}
+        {t.para[category.dictKey]}
       </p>
     </div>
   );
@@ -224,6 +228,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
   const [overId, setOverId] = useState<string | null>(null);
 
   const router = useRouter();
+  const t = useTranslation();
   const assignNote = trpc.note.assign.useMutation({ onSuccess: () => router.refresh() });
 
   const sensors = useSensors(
@@ -273,7 +278,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
         <div className="mb-4 flex items-center gap-2">
           <Tray size={18} className="text-on-surface-variant" />
           <h2 className="font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
-            Inbox
+            {t.para.inbox}
           </h2>
           <span className="ml-auto rounded bg-surface-container px-2 py-0.5 font-label text-[10px] font-semibold text-on-surface-variant">
             {notes.length}
@@ -292,7 +297,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
               />
             ))}
             <p className="mt-1 font-label text-[10px] text-on-surface-variant">
-              ← drag onto a category
+              {t.inbox.dragHint}
             </p>
           </div>
 

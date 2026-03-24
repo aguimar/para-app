@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
-import { getLocaleFromCookies } from "@/lib/get-locale";
+import { getLocaleFromCookies, getDict } from "@/lib/get-locale";
 import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
@@ -47,6 +47,7 @@ export default async function ArchivePage({
   if (!workspace || workspace.userId !== userId) notFound();
 
   const locale = await getLocaleFromCookies();
+  const t = await getDict();
   const hasContent = workspace.notes.length > 0 || completedProjects.length > 0;
 
   return (
@@ -56,7 +57,7 @@ export default async function ArchivePage({
       <main className="flex-1 overflow-y-auto bg-surface-dim">
         <div className="sticky top-0 z-10 flex h-14 items-center bg-surface-dim/80 px-8 backdrop-blur-md">
           <h1 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
-            Archive
+            {t.archive.title}
           </h1>
         </div>
 
@@ -65,10 +66,10 @@ export default async function ArchivePage({
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <Archive size={48} className="text-on-surface-variant" />
               <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
-                Nothing archived yet
+                {t.archive.emptyTitle}
               </p>
               <p className="mt-1 font-body text-sm text-on-surface-variant">
-                Projetos concluídos e notas arquivadas aparecem aqui.
+                {t.archive.emptyDescription}
               </p>
             </div>
           ) : (
@@ -78,7 +79,7 @@ export default async function ArchivePage({
                 <section>
                   <div className="mb-4 flex items-center gap-3">
                     <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
-                      Projetos Concluídos
+                      {t.archive.completedProjects}
                     </span>
                     <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
                       {completedProjects.length}
@@ -112,7 +113,7 @@ export default async function ArchivePage({
 
                         {/* Note count */}
                         <span className="font-label text-[10px] text-on-surface-variant tabular-nums">
-                          {project._count.notes} {project._count.notes === 1 ? "nota" : "notas"}
+                          {project._count.notes} {project._count.notes === 1 ? t.archive.note_one : t.archive.note_other}
                         </span>
 
                         {/* Status picker — allows reactivating */}
@@ -131,7 +132,7 @@ export default async function ArchivePage({
                 <section>
                   <div className="mb-4 flex items-center gap-3">
                     <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
-                      Notas Arquivadas
+                      {t.archive.archivedNotes}
                     </span>
                     <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
                       {workspace.notes.length}

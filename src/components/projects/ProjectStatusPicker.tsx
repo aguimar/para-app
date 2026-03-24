@@ -3,11 +3,12 @@
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { type ProjectStatus } from "@/types";
+import { useTranslation } from "@/lib/i18n-client";
 
-const STATUS_LABELS: Record<ProjectStatus, string> = {
-  ACTIVE: "Active",
-  ON_HOLD: "On Hold",
-  COMPLETED: "Completed",
+const STATUS_DICT_KEY: Record<ProjectStatus, "active" | "onHold" | "completed"> = {
+  ACTIVE: "active",
+  ON_HOLD: "onHold",
+  COMPLETED: "completed",
 };
 
 const STATUS_BADGE: Record<ProjectStatus, string> = {
@@ -16,6 +17,8 @@ const STATUS_BADGE: Record<ProjectStatus, string> = {
   COMPLETED: "bg-surface-container-high text-on-surface-variant",
 };
 
+const STATUSES: ProjectStatus[] = ["ACTIVE", "ON_HOLD", "COMPLETED"];
+
 interface Props {
   projectId: string;
   currentStatus: ProjectStatus;
@@ -23,6 +26,7 @@ interface Props {
 
 export function ProjectStatusPicker({ projectId, currentStatus }: Props) {
   const router = useRouter();
+  const t = useTranslation();
   const update = trpc.project.update.useMutation({ onSuccess: () => router.refresh() });
 
   return (
@@ -34,9 +38,9 @@ export function ProjectStatusPicker({ projectId, currentStatus }: Props) {
       }
       className={`mt-1.5 rounded-md px-2 py-0.5 font-label text-[11px] font-bold cursor-pointer border-none outline-none appearance-none transition-opacity ${STATUS_BADGE[currentStatus]} ${update.isPending ? "opacity-50" : ""}`}
     >
-      {(Object.keys(STATUS_LABELS) as ProjectStatus[]).map((s) => (
+      {STATUSES.map((s) => (
         <option key={s} value={s}>
-          {STATUS_LABELS[s]}
+          {t.projectStatus[STATUS_DICT_KEY[s]]}
         </option>
       ))}
     </select>

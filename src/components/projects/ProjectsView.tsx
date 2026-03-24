@@ -8,6 +8,7 @@ import { PickedIcon } from "@/components/ui/PickedIcon";
 import { NewProjectButton } from "@/components/projects/NewProjectButton";
 import { formatDate } from "@/lib/utils";
 import { type ProjectPriority, type ProjectStatus } from "@/types";
+import { useTranslation } from "@/lib/i18n-client";
 
 const PRIORITY_STYLES: Record<ProjectPriority, { badge: string; border: string; bar: string; dot: string }> = {
   HIGH:   { badge: "bg-error-container text-on-error-container",           border: "border-l-4 border-primary",   bar: "bg-primary",   dot: "bg-primary" },
@@ -21,10 +22,10 @@ const STATUS_BADGE: Record<ProjectStatus, string> = {
   COMPLETED: "bg-surface-container-high text-on-surface-variant",
 };
 
-const STATUS_LABELS: Record<ProjectStatus, string> = {
-  ACTIVE: "Active",
-  ON_HOLD: "On Hold",
-  COMPLETED: "Completed",
+const STATUS_DICT_KEY: Record<ProjectStatus, "active" | "onHold" | "completed"> = {
+  ACTIVE: "active",
+  ON_HOLD: "onHold",
+  COMPLETED: "completed",
 };
 
 type AreaSnippet = { id: string; title: string; icon: string } | null;
@@ -49,6 +50,7 @@ interface Props {
 }
 
 function GridCard({ project, workspaceSlug }: { project: ProjectItem; workspaceSlug: string }) {
+  const t = useTranslation();
   const priority = (project.priority ?? "MEDIUM") as ProjectPriority;
   const status = (project.status ?? "ACTIVE") as ProjectStatus;
   const styles = PRIORITY_STYLES[priority];
@@ -71,14 +73,14 @@ function GridCard({ project, workspaceSlug }: { project: ProjectItem; workspaceS
       <div className="flex flex-col flex-1">
         <div className="mb-4 flex items-start justify-between gap-2 flex-wrap">
           <span className="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">
-            {project.deadline ? `Due ${formatDate(project.deadline)}` : "No deadline"}
+            {project.deadline ? `${t.projects.due} ${formatDate(project.deadline)}` : t.common.noDeadline}
           </span>
           <div className="flex items-center gap-1.5">
             <span className={`rounded px-2 py-0.5 font-label text-[10px] font-bold uppercase tracking-wide ${STATUS_BADGE[status]}`}>
-              {STATUS_LABELS[status]}
+              {t.projectStatus[STATUS_DICT_KEY[status]]}
             </span>
             <span className={`rounded px-2 py-0.5 font-label text-[10px] font-bold uppercase tracking-wide ${styles.badge}`}>
-              {priority.charAt(0) + priority.slice(1).toLowerCase()}
+              {t.projectPriority[priority.toLowerCase() as "high" | "medium" | "low"]}
             </span>
           </div>
         </div>
@@ -108,7 +110,7 @@ function GridCard({ project, workspaceSlug }: { project: ProjectItem; workspaceS
 
         <div className="mt-auto">
           <div className="mb-2 flex justify-between font-label text-[11px] font-bold uppercase tracking-widest text-on-surface">
-            <span>Progress</span>
+            <span>{t.projects.progress}</span>
             <span>{project.progress}%</span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high">
@@ -124,6 +126,7 @@ function GridCard({ project, workspaceSlug }: { project: ProjectItem; workspaceS
 }
 
 function ListRow({ project, index, workspaceSlug }: { project: ProjectItem; index: number; workspaceSlug: string }) {
+  const t = useTranslation();
   const priority = (project.priority ?? "MEDIUM") as ProjectPriority;
   const status = (project.status ?? "ACTIVE") as ProjectStatus;
   const styles = PRIORITY_STYLES[priority];
@@ -165,7 +168,7 @@ function ListRow({ project, index, workspaceSlug }: { project: ProjectItem; inde
       {/* Status badge */}
       <div className="self-center">
         <span className={`rounded px-2 py-0.5 font-label text-[10px] font-bold uppercase tracking-wide ${STATUS_BADGE[status]}`}>
-          {STATUS_LABELS[status]}
+          {t.projectStatus[STATUS_DICT_KEY[status]]}
         </span>
       </div>
 
@@ -223,6 +226,7 @@ function ListRow({ project, index, workspaceSlug }: { project: ProjectItem; inde
 }
 
 export function ProjectsView({ projects, workspaceId, workspaceSlug }: Props) {
+  const t = useTranslation();
   const [view, setView] = useState<"grid" | "list">("grid");
 
   const active = projects.filter((p) => (p.status ?? "ACTIVE") !== "COMPLETED");
@@ -246,7 +250,7 @@ export function ProjectsView({ projects, workspaceId, workspaceSlug }: Props) {
           </button>
         </div>
         <span className="font-label text-xs text-on-surface-variant">
-          {active.length} {active.length === 1 ? "projeto ativo" : "projetos ativos"}
+          {active.length} {active.length === 1 ? t.projects.activeCount_one : t.projects.activeCount_other}
         </span>
       </div>
 
@@ -272,12 +276,12 @@ export function ProjectsView({ projects, workspaceId, workspaceSlug }: Props) {
             style={{ gridTemplateColumns: "44px 44px 1fr 80px 100px 120px 80px auto" }}
           >
             <span /><span />
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Projeto</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Status</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Área</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Progresso</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Prazo</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right">Tarefas</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t.para.project}</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t.projects.status}</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t.projects.area}</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t.projects.progress}</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{t.projects.deadline}</span>
+            <span className="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right">{t.projects.tasks}</span>
           </div>
 
           {active.map((project, i) => (

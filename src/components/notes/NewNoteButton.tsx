@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Plus } from "@phosphor-icons/react";
+import { useTranslation } from "@/lib/i18n-client";
 
 interface NewNoteButtonProps {
   workspaceId: string;
@@ -9,6 +10,7 @@ interface NewNoteButtonProps {
 
 export function NewNoteButton({ workspaceId }: NewNoteButtonProps) {
   const router = useRouter();
+  const t = useTranslation();
 
   return (
     <button
@@ -16,7 +18,7 @@ export function NewNoteButton({ workspaceId }: NewNoteButtonProps) {
       className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary shadow-ambient transition hover:bg-primary-dim"
     >
       <Plus size={18} />
-      New Note
+      {t.noteEditor.newNote}
     </button>
   );
 }

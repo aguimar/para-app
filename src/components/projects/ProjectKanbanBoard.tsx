@@ -8,13 +8,14 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import type { Note } from "@/generated/prisma/client";
 import { type ParaCategory } from "@/types";
 import { trpc } from "@/lib/trpc";
+import { useTranslation } from "@/lib/i18n-client";
 
 type KanbanColumn = "TODO" | "IN_PROGRESS" | "DONE";
 
-const COLUMNS: { id: KanbanColumn; title: string; color: string }[] = [
-  { id: "TODO", title: "Inbox / Captação", color: "bg-outline/10 text-outline" },
-  { id: "IN_PROGRESS", title: "Em Progresso", color: "bg-primary-container/50 text-primary" },
-  { id: "DONE", title: "Integrado / Arquivo", color: "bg-secondary-container/50 text-secondary" },
+const COLUMN_DEFS: { id: KanbanColumn; dictKey: "todo" | "inProgress" | "done"; color: string }[] = [
+  { id: "TODO", dictKey: "todo", color: "bg-outline/10 text-outline" },
+  { id: "IN_PROGRESS", dictKey: "inProgress", color: "bg-primary-container/50 text-primary" },
+  { id: "DONE", dictKey: "done", color: "bg-secondary-container/50 text-secondary" },
 ];
 
 function SortableNoteItem({ note }: { note: Note }) {
@@ -47,6 +48,7 @@ function SortableNoteItem({ note }: { note: Note }) {
 }
 
 export function ProjectKanbanBoard({ initialNotes, projectId }: { initialNotes: Note[]; projectId: string }) {
+  const t = useTranslation();
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -111,10 +113,10 @@ export function ProjectKanbanBoard({ initialNotes, projectId }: { initialNotes: 
   return (
     <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        {COLUMNS.map((col) => {
+        {COLUMN_DEFS.map((col) => {
           const columnNotes = notes.filter((n) => (n as any).status === col.id || (!("status" in n) && col.id === "TODO"));
           return (
-            <DroppableColumn key={col.id} id={col.id} title={col.title} color={col.color}>
+            <DroppableColumn key={col.id} id={col.id} title={t.kanban[col.dictKey]} color={col.color}>
               <SortableContext items={columnNotes.map((n) => n.id)} strategy={verticalListSortingStrategy}>
                 <div className="flex flex-col gap-3 min-h-[150px]">
                   {columnNotes.map((note) => (
