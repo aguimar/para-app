@@ -9,6 +9,7 @@ import { type ParaCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft, Link as LinkIcon, ArrowSquareOut, Books } from "@/components/ui/icons";
 import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 
 export default async function ResourceDetailPage({
   params,
@@ -41,9 +42,11 @@ export default async function ResourceDetailPage({
   ]);
   if (!resource) notFound();
 
+  const locale = await getLocaleFromCookies();
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         {/* ── Sticky top bar ───────────────────────────────────────── */}

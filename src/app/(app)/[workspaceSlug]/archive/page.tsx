@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/server/db";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
@@ -45,11 +46,12 @@ export default async function ArchivePage({
 
   if (!workspace || workspace.userId !== userId) notFound();
 
+  const locale = await getLocaleFromCookies();
   const hasContent = workspace.notes.length > 0 || completedProjects.length > 0;
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface-dim">
         <div className="sticky top-0 z-10 flex h-14 items-center bg-surface-dim/80 px-8 backdrop-blur-md">

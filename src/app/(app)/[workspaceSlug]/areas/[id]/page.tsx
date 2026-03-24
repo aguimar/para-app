@@ -7,6 +7,7 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { IconPicker } from "@/components/ui/IconPicker";
 import { type ParaCategory } from "@/types";
 import { ArrowLeft } from "@/components/ui/icons";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 
 export default async function AreaDetailPage({
   params,
@@ -36,9 +37,11 @@ export default async function AreaDetailPage({
   });
   if (!area) notFound();
 
+  const locale = await getLocaleFromCookies();
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         <div className="sticky top-0 z-10 flex h-14 items-center gap-4 bg-surface/80 px-8 backdrop-blur-md">

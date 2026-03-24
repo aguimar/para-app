@@ -15,6 +15,7 @@ import { ProjectStatusPicker } from "@/components/projects/ProjectStatusPicker";
 import { ProjectKanbanBoard } from "@/components/projects/ProjectKanbanBoard";
 import { SuggestTasksButton } from "@/components/projects/SuggestTasksButton";
 import { ProjectProgress } from "@/components/projects/ProjectProgress";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   ACTIVE: "Active",
@@ -61,9 +62,11 @@ export default async function ProjectDetailPage({
   ]);
   if (!project) notFound();
 
+  const locale = await getLocaleFromCookies();
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         <div className="sticky top-0 z-10 flex h-14 items-center gap-4 bg-surface/80 px-8 backdrop-blur-md border-b border-outline-variant/10">

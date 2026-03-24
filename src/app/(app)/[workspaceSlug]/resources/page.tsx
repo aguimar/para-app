@@ -7,6 +7,7 @@ import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNo
 import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
 import { NewResourceButton } from "@/components/resources/NewResourceButton";
 import { IconPicker } from "@/components/ui/IconPicker";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 import Link from "next/link";
 import { Books, TreeStructure } from "@/components/ui/icons";
 import { PickedIcon } from "@/components/ui/PickedIcon";
@@ -46,13 +47,15 @@ export default async function ResourcesPage({
 
   if (!workspace || workspace.userId !== userId) notFound();
 
+  const locale = await getLocaleFromCookies();
+
   type AreaSnippet = { id: string; title: string; icon: string };
   const resources = workspace.resources as (Resource & { _count: { notes: number }; area: AreaSnippet | null })[];
   const areas = workspace.areas as AreaSnippet[];
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
 

@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/server/db";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { getLocaleFromCookies } from "@/lib/get-locale";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -23,9 +24,11 @@ export default async function GuidePage() {
   const workspace = user?.workspaces[0];
   if (!workspace) redirect("/sign-in");
 
+  const locale = await getLocaleFromCookies();
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} />
+      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         {/* Top bar */}
