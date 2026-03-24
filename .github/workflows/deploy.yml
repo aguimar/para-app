@@ -32,32 +32,14 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/para-app:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/para-app:buildcache,mode=max
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Deploy to Droplet
-        run: |
-          ssh -o StrictHostKeyChecking=no aguimar@${{ secrets.SERVER_HOST }} << 'DEPLOY_SCRIPT'
-          set -e
-          cd ~/para-app
-
-          git fetch origin
-          git checkout main
-          git pull origin main
-
-          export APP_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/para-app:${{ github.sha }}
-          docker pull $APP_IMAGE
-
-          sed -i "s|build: .|image: $APP_IMAGE|g" docker-compose.prod.yml
-          docker compose -f docker-compose.prod.yml run --rm app npx prisma migrate deploy
-          docker compose -f docker-compose.prod.yml down
-          docker compose -f docker-compose.prod.yml up -d
-          git checkout docker-compose.prod.yml
-
-          sleep 5
-          echo "✅ Deployment complete"
-          docker compose -f docker-compose.prod.yml ps
-          docker compose -f docker-compose.prod.yml logs --tail=20 app
-          DEPLOY_SCRIPT
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            docker image prune -f
