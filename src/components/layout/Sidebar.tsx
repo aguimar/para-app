@@ -95,7 +95,7 @@ export function Sidebar({ workspaceSlug, workspaceName, locale }: SidebarProps) 
         </Link>
 
         {/* Workspace name + user + locale */}
-        <div className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2">
+        <div className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2" suppressHydrationWarning>
           <UserButton />
           <span className="flex-1 truncate font-label text-xs text-on-surface-variant">
             {workspaceName}

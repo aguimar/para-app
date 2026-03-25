@@ -285,9 +285,9 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
           </span>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row">
           {/* Notes column */}
-          <div className="flex w-52 shrink-0 flex-col gap-2">
+          <div className="flex shrink-0 flex-col gap-2 lg:w-52">
             {notes.map((note) => (
               <DraggableNote
                 key={note.id}
@@ -302,7 +302,7 @@ export function InboxBoard({ inboxNotes: initialNotes }: InboxBoardProps) {
           </div>
 
           {/* 4 category drop zones */}
-          <div className="flex-1 grid grid-cols-4 gap-3">
+          <div className="flex-1 grid grid-cols-2 gap-3 lg:grid-cols-4">
             {CATEGORIES.map((cat) => (
               <CategoryZone key={cat.id} category={cat} isOver={overId === cat.id} />
             ))}
