@@ -9,13 +9,15 @@ import { IconPicker } from "@/components/ui/IconPicker";
 import { cn } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
-import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle } from "@phosphor-icons/react";
+import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle, X } from "@phosphor-icons/react";
 import { NoteAttachments } from "@/components/notes/NoteAttachments";
+import { useTranslation } from "@/lib/i18n-client";
 
 export default function NoteEditorPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const utils = trpc.useUtils();
+  const t = useTranslation();
 
   const { data: note, isLoading } = trpc.note.byId.useQuery({ id: params.id });
   const updateNote = trpc.note.update.useMutation();
@@ -27,11 +29,16 @@ export default function NoteEditorPage() {
   const [category, setCategory] = useState<ParaCategory>("INBOX");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [resourceId, setResourceId] = useState<string | null>(null);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [initializedId, setInitializedId] = useState<string | null>(null);
   const [suggestion, setSuggestion] = useState<{ category: ParaCategory; reason: string } | null>(null);
+
+  // Open inspector by default on desktop only
+  useEffect(() => {
+    if (window.innerWidth >= 768) setInspectorOpen(true);
+  }, []);
 
   const suggestCategory = trpc.note.suggestCategory.useMutation({
     onSuccess: (data) => setSuggestion(data as { category: ParaCategory; reason: string }),
@@ -78,7 +85,6 @@ export default function NoteEditorPage() {
         title,
         body,
         category,
-        // Set/clear parent IDs based on category
         projectId:  category === "PROJECT"  ? projectId  : null,
         areaId:     category === "AREA"     ? undefined  : null,
         resourceId: category === "RESOURCE" ? resourceId : null,
@@ -106,12 +112,11 @@ export default function NoteEditorPage() {
 
   const goBack = useCallback(async () => {
     if (isDirty) {
-      const confirmed = window.confirm("You have unsaved changes. Save before leaving?");
+      const confirmed = window.confirm(t.noteEditor.unsavedChanges);
       if (confirmed) await save();
     }
-    // Navigate to dashboard so the server component re-renders fresh
     router.push("/dashboard");
-  }, [isDirty, save, note, router]);
+  }, [isDirty, save, note, router, t]);
 
   // Ctrl/Cmd+S to save
   useEffect(() => {
@@ -136,7 +141,7 @@ export default function NoteEditorPage() {
   if (!note) {
     return (
       <div className="flex h-screen items-center justify-center bg-surface">
-        <p className="font-body text-on-surface-variant">Note not found.</p>
+        <p className="font-body text-on-surface-variant">{t.noteEditor.notFound}</p>
       </div>
     );
   }
@@ -149,28 +154,214 @@ export default function NoteEditorPage() {
     );
   }
 
+  const inspectorContent = (
+    <>
+      {/* Category */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
+            {t.noteEditor.category}
+          </p>
+          <button
+            onClick={() => suggestCategory.mutate({ id: params.id })}
+            disabled={suggestCategory.isPending}
+            title={t.noteEditor.suggestCategory}
+            className="flex items-center gap-1 rounded-md px-2 py-1 text-on-surface-variant opacity-50 hover:opacity-100 hover:bg-surface-container transition-all"
+          >
+            {suggestCategory.isPending ? (
+              <CircleNotch size={12} className="animate-spin" />
+            ) : (
+              <Sparkle size={12} />
+            )}
+            <span className="font-label text-[10px] uppercase tracking-wider">
+              {suggestCategory.isPending ? "…" : t.noteEditor.suggest}
+            </span>
+          </button>
+        </div>
+
+        {suggestion && (
+          <div className="mb-2 rounded-lg border border-primary/20 bg-primary-container/30 px-3 py-2">
+            <p className="font-body text-xs text-primary leading-snug">{suggestion.reason}</p>
+            <button
+              onClick={() => setSuggestion(null)}
+              className="mt-1 font-label text-[10px] text-primary/60 hover:text-primary/100 transition-colors uppercase tracking-wider"
+            >
+              {t.noteEditor.dismiss}
+            </button>
+          </div>
+        )}
+
+        <div className="space-y-1">
+          {PARA_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setCategory(cat);
+                setIsDirty(true);
+                setSuggestion(null);
+              }}
+              className={cn(
+                "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                category === cat
+                  ? "bg-surface-container-lowest text-on-surface shadow-ambient"
+                  : "text-on-surface-variant hover:bg-surface-container",
+                suggestion?.category === cat && category !== cat
+                  ? "ring-2 ring-primary/40 ring-offset-1"
+                  : ""
+              )}
+            >
+              {(() => { const CatIcon = PARA_ICONS[cat]; return <CatIcon size={16} />; })()}
+              {PARA_LABELS[cat]}
+              {suggestion?.category === cat && category !== cat && (
+                <Sparkle size={11} className="ml-auto text-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Project picker */}
+      {category === "PROJECT" && (
+        <div>
+          <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+            {t.noteEditor.project}
+          </p>
+          <select
+            value={projectId ?? ""}
+            onChange={(e) => {
+              setProjectId(e.target.value || null);
+              setIsDirty(true);
+            }}
+            className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="">{t.noteEditor.noProject}</option>
+            {projects
+              .filter((p) => p.status !== "COMPLETED")
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title}
+                </option>
+              ))}
+          </select>
+        </div>
+      )}
+
+      {/* Resource picker */}
+      {category === "RESOURCE" && (
+        <div>
+          <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+            {t.noteEditor.resource}
+          </p>
+          <select
+            value={resourceId ?? ""}
+            onChange={(e) => {
+              setResourceId(e.target.value || null);
+              setIsDirty(true);
+            }}
+            className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-tertiary/20"
+          >
+            <option value="">{t.noteEditor.noResource}</option>
+            {resources.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Attachments */}
+      <NoteAttachments noteId={params.id} />
+
+      {/* Tags */}
+      <div>
+        <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+          {t.noteEditor.tags}
+        </p>
+        {note.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5">
+            {note.tags.map((tag: string) => (
+              <span
+                key={tag}
+                className="rounded bg-surface-container px-2 py-0.5 font-label text-[11px] text-on-surface-variant"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="font-body text-xs text-on-surface-variant">{t.noteEditor.noTags}</p>
+        )}
+      </div>
+
+      {/* Backlinks */}
+      <div>
+        <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+          {t.noteEditor.linkedFrom}
+        </p>
+        {note.linkedFrom.length > 0 ? (
+          <div className="space-y-1.5">
+            {note.linkedFrom.map((linked: { id: string; title: string }) => (
+              <a
+                key={linked.id}
+                href={`/note/${linked.id}`}
+                className="block truncate rounded-lg px-3 py-1.5 font-body text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+              >
+                {linked.title || t.common.untitled}
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p className="font-body text-xs text-on-surface-variant">{t.noteEditor.noBacklinks}</p>
+        )}
+      </div>
+
+      {/* Metadata */}
+      <div className="pt-4 border-t border-outline-variant/15 space-y-2">
+        <div>
+          <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+            {t.noteEditor.lastEdited}
+          </p>
+          <p className="font-body text-xs text-on-surface">
+            {new Date(note.updatedAt).toLocaleString()}
+          </p>
+        </div>
+        <div>
+          <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+            {t.noteEditor.created}
+          </p>
+          <p className="font-body text-xs text-on-surface">
+            {new Date(note.createdAt).toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex h-screen overflow-hidden bg-surface-container-lowest">
       {/* Editor area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <div className="flex h-14 shrink-0 items-center gap-3 px-6 bg-surface-container-lowest">
+        <div className="flex h-14 shrink-0 items-center gap-2 px-3 md:gap-3 md:px-6 bg-surface-container-lowest">
           <button
             onClick={goBack}
-            className="text-on-surface-variant hover:text-on-surface transition-colors"
+            className="text-on-surface-variant hover:text-on-surface transition-colors shrink-0"
           >
             <ArrowLeft size={20} />
           </button>
 
-          <IconPicker
-            entityType="note"
-            entityId={params.id}
-            currentIcon={icon}
-            entityTitle={title}
-            accentClass="text-on-surface-variant"
-            bgClass="bg-surface-container"
-            onIconChange={setIcon}
-          />
+          <div className="hidden md:block">
+            <IconPicker
+              entityType="note"
+              entityId={params.id}
+              currentIcon={icon}
+              entityTitle={title}
+              accentClass="text-on-surface-variant"
+              bgClass="bg-surface-container"
+              onIconChange={setIcon}
+            />
+          </div>
 
           <input
             type="text"
@@ -179,19 +370,19 @@ export default function NoteEditorPage() {
               setTitle(e.target.value);
               setIsDirty(true);
             }}
-            placeholder="Untitled"
-            className="flex-1 bg-transparent font-headline text-lg font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+            placeholder={t.common.untitled}
+            className="flex-1 min-w-0 bg-transparent font-headline text-base md:text-lg font-bold text-on-surface placeholder:text-on-surface-variant focus:outline-none"
           />
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
             <button
               onClick={async () => {
-                if (!window.confirm("Delete this note? This cannot be undone.")) return;
+                if (!window.confirm(t.noteEditor.deleteConfirm)) return;
                 await deleteNote.mutateAsync({ id: params.id });
                 router.push("/dashboard");
               }}
               className="flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-error-container hover:text-on-error-container transition-colors"
-              title="Delete note"
+              title={t.noteEditor.deleteNote}
             >
               <Trash size={18} />
             </button>
@@ -200,15 +391,15 @@ export default function NoteEditorPage() {
               <>
                 <button
                   onClick={discard}
-                  className="font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors"
+                  className="hidden md:block font-label text-[11px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors"
                 >
-                  Discard
+                  {t.common.discard}
                 </button>
                 <button
                   onClick={save}
                   disabled={saving}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 font-label text-[11px] font-bold uppercase tracking-widest text-on-primary transition-opacity",
+                    "flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 md:px-4 font-label text-[11px] font-bold uppercase tracking-widest text-on-primary transition-opacity",
                     saving && "opacity-60 cursor-not-allowed"
                   )}
                 >
@@ -217,28 +408,32 @@ export default function NoteEditorPage() {
                   ) : (
                     <FloppyDisk size={14} />
                   )}
-                  {saving ? "Saving…" : "Save"}
+                  <span className="hidden md:inline">
+                    {saving ? t.common.saving : t.common.save}
+                  </span>
                 </button>
               </>
             )}
 
             {!isDirty && (
-              <span className="font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
-                Saved
+              <span className="hidden md:inline font-label text-[11px] uppercase tracking-widest text-on-surface-variant">
+                {t.common.saved}
               </span>
             )}
 
-            <ParaBadge category={category} />
+            <div className="hidden md:block">
+              <ParaBadge category={category} />
+            </div>
 
             <button
               onClick={() => setInspectorOpen((o) => !o)}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors shrink-0",
                 inspectorOpen
                   ? "bg-primary-container text-on-primary-container"
                   : "text-on-surface-variant hover:bg-surface-container"
               )}
-              title="Toggle inspector"
+              title={t.noteEditor.toggleInspector}
             >
               <Info size={18} />
             </button>
@@ -246,7 +441,7 @@ export default function NoteEditorPage() {
         </div>
 
         {/* Writing canvas */}
-        <div className="flex-1 overflow-y-auto px-12 py-8">
+        <div className="flex-1 overflow-y-auto px-4 py-6 md:px-12 md:py-8">
           <NoteEditor
             key={note.id}
             noteId={params.id}
@@ -255,194 +450,43 @@ export default function NoteEditorPage() {
               setBody(html);
               setIsDirty(true);
             }}
-            placeholder="Start writing your thoughts…"
+            placeholder={t.noteEditor.placeholder}
           />
         </div>
       </div>
 
-      {/* Inspector drawer */}
+      {/* Inspector — desktop: side panel */}
       {inspectorOpen && (
-        <aside className="w-72 shrink-0 overflow-y-auto bg-surface-container-low border-l-0 p-6 space-y-6">
-          {/* Category */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-                Category
-              </p>
+        <aside className="hidden md:block w-72 shrink-0 overflow-y-auto bg-surface-container-low border-l-0 p-6 space-y-6">
+          {inspectorContent}
+        </aside>
+      )}
+
+      {/* Inspector — mobile: bottom sheet */}
+      {inspectorOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-inverse-surface/25 backdrop-blur-[2px]"
+            onClick={() => setInspectorOpen(false)}
+          />
+          {/* Sheet */}
+          <div className="relative max-h-[75vh] overflow-y-auto rounded-t-2xl bg-surface-container-low shadow-[0_-8px_40px_rgba(42,52,57,0.15)]">
+            {/* Drag handle + close */}
+            <div className="sticky top-0 z-10 flex items-center justify-between bg-surface-container-low px-5 pt-3 pb-2">
+              <div className="mx-auto h-1 w-10 rounded-full bg-outline-variant/40" />
               <button
-                onClick={() => suggestCategory.mutate({ id: params.id })}
-                disabled={suggestCategory.isPending}
-                title="Sugerir categoria com IA"
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-on-surface-variant opacity-50 hover:opacity-100 hover:bg-surface-container transition-all"
+                onClick={() => setInspectorOpen(false)}
+                className="absolute right-3 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
               >
-                {suggestCategory.isPending ? (
-                  <CircleNotch size={12} className="animate-spin" />
-                ) : (
-                  <Sparkle size={12} />
-                )}
-                <span className="font-label text-[10px] uppercase tracking-wider">
-                  {suggestCategory.isPending ? "…" : "Sugerir"}
-                </span>
+                <X size={18} />
               </button>
             </div>
-
-            {suggestion && (
-              <div className="mb-2 rounded-lg border border-primary/20 bg-primary-container/30 px-3 py-2">
-                <p className="font-body text-xs text-primary leading-snug">{suggestion.reason}</p>
-                <button
-                  onClick={() => setSuggestion(null)}
-                  className="mt-1 font-label text-[10px] text-primary/60 hover:text-primary/100 transition-colors uppercase tracking-wider"
-                >
-                  Dispensar
-                </button>
-              </div>
-            )}
-
-            <div className="space-y-1">
-              {PARA_CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setCategory(cat);
-                    setIsDirty(true);
-                    setSuggestion(null);
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
-                    category === cat
-                      ? "bg-surface-container-lowest text-on-surface shadow-ambient"
-                      : "text-on-surface-variant hover:bg-surface-container",
-                    suggestion?.category === cat && category !== cat
-                      ? "ring-2 ring-primary/40 ring-offset-1"
-                      : ""
-                  )}
-                >
-                  {(() => { const CatIcon = PARA_ICONS[cat]; return <CatIcon size={16} />; })()}
-                  {PARA_LABELS[cat]}
-                  {suggestion?.category === cat && category !== cat && (
-                    <Sparkle size={11} className="ml-auto text-primary" />
-                  )}
-                </button>
-              ))}
+            <div className="px-5 pb-8 space-y-6">
+              {inspectorContent}
             </div>
           </div>
-
-          {/* Project picker (only when category = PROJECT) */}
-          {category === "PROJECT" && (
-            <div>
-              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
-                Projeto
-              </p>
-              <select
-                value={projectId ?? ""}
-                onChange={(e) => {
-                  setProjectId(e.target.value || null);
-                  setIsDirty(true);
-                }}
-                className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
-              >
-                <option value="">— Sem projeto —</option>
-                {projects
-                  .filter((p) => p.status !== "COMPLETED")
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.title}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {/* Resource picker (only when category = RESOURCE) */}
-          {category === "RESOURCE" && (
-            <div>
-              <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
-                Resource
-              </p>
-              <select
-                value={resourceId ?? ""}
-                onChange={(e) => {
-                  setResourceId(e.target.value || null);
-                  setIsDirty(true);
-                }}
-                className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-tertiary/20"
-              >
-                <option value="">— Sem resource —</option>
-                {resources.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Attachments */}
-          <NoteAttachments noteId={params.id} />
-
-          {/* Tags */}
-          <div>
-            <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
-              Tags
-            </p>
-            {note.tags.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {note.tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="rounded bg-surface-container px-2 py-0.5 font-label text-[11px] text-on-surface-variant"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="font-body text-xs text-on-surface-variant">No tags yet.</p>
-            )}
-          </div>
-
-          {/* Backlinks */}
-          <div>
-            <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
-              Linked from
-            </p>
-            {note.linkedFrom.length > 0 ? (
-              <div className="space-y-1.5">
-                {note.linkedFrom.map((linked: { id: string; title: string }) => (
-                  <a
-                    key={linked.id}
-                    href={`/note/${linked.id}`}
-                    className="block truncate rounded-lg px-3 py-1.5 font-body text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
-                  >
-                    {linked.title || "Untitled"}
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <p className="font-body text-xs text-on-surface-variant">No backlinks yet.</p>
-            )}
-          </div>
-
-          {/* Metadata */}
-          <div className="pt-4 border-t border-outline-variant/15 space-y-2">
-            <div>
-              <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-                Last edited
-              </p>
-              <p className="font-body text-xs text-on-surface">
-                {new Date(note.updatedAt).toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
-                Created
-              </p>
-              <p className="font-body text-xs text-on-surface">
-                {new Date(note.createdAt).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </aside>
+        </div>
       )}
     </div>
   );
