@@ -22,9 +22,10 @@ export async function GET(
 
   const buffer = await readFile(attachment.storedAs);
 
-  return new NextResponse(new Blob([new Uint8Array(buffer)]), {
+  return new NextResponse(buffer, {
     headers: {
       "Content-Type": attachment.mimeType,
+      "Content-Length": String(buffer.length),
       "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(attachment.filename)}`,
       "Cache-Control": "private, max-age=3600",
     },

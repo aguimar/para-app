@@ -200,10 +200,10 @@ export function NoteAttachments({ noteId }: Props) {
                   />
                 </div>
               ) : (
-                <embed
+                <iframe
                   src={`/api/files/${viewer.id}`}
-                  type={viewer.mimeType}
-                  className="h-full w-full rounded-b-2xl"
+                  className="h-full w-full rounded-b-2xl border-0"
+                  title={viewer.filename}
                 />
               )}
             </div>
