@@ -13,6 +13,7 @@ export {
   ArrowSquareOut,
   ArrowsClockwise,
   Books,
+  CalendarBlank,
   CircleNotch,
   DotsSixVertical,
   FloppyDisk,

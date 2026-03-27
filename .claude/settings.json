@@ -6,7 +6,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '$CLAUDE_TOOL_INPUT' | grep -qE '\\.(env|env\\.local|env\\.production)' && echo 'BLOCKED: edit .env files manually to avoid leaking secrets' && exit 1 || exit 0"
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -qE '\\.(env|env\\.local|env\\.production)' && echo 'BLOCKED: edit .env files manually to avoid leaking secrets' && exit 1 || exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'package-lock.json' && echo 'BLOCKED: never edit lock files directly — use npm install inside the container' && exit 1 || exit 0"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; if echo \"$FILE\" | grep -qE '\\.(ts|tsx|js|jsx)$'; then cd /Users/aguimar/Documents/devel/para/para-app && docker compose exec -T app npx eslint --fix \"$FILE\" 2>/dev/null; fi; exit 0",
+            "timeout": 30
           }
         ]
       }

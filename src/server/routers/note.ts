@@ -92,6 +92,8 @@ export const noteRouter = router({
           .enum(["INBOX", "PROJECT", "AREA", "RESOURCE", "ARCHIVE"])
           .default("INBOX"),
         tags: z.array(z.string()).default([]),
+        dueDate: z.date().nullable().optional(),
+        startDate: z.date().nullable().optional(),
         projectId: z.string().optional(),
         areaId: z.string().optional(),
         resourceId: z.string().optional(),
@@ -147,6 +149,8 @@ export const noteRouter = router({
           .optional(),
         status: z.enum(["TODO", "IN_PROGRESS", "DONE"]).optional(),
         tags: z.array(z.string()).optional(),
+        dueDate: z.date().nullable().optional(),
+        startDate: z.date().nullable().optional(),
         projectId: z.string().nullable().optional(),
         areaId: z.string().nullable().optional(),
         resourceId: z.string().nullable().optional(),

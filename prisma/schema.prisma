@@ -127,6 +127,8 @@ model Note {
   category    ParaCategory @default(INBOX)
   status      NoteStatus   @default(TODO)
   tags        String[]
+  dueDate     DateTime?
+  startDate   DateTime?
   projectId   String?
   project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
   areaId      String?

@@ -15,6 +15,7 @@ import { ProjectStatusPicker } from "@/components/projects/ProjectStatusPicker";
 import { ProjectKanbanBoard } from "@/components/projects/ProjectKanbanBoard";
 import { SuggestTasksButton } from "@/components/projects/SuggestTasksButton";
 import { ProjectProgress } from "@/components/projects/ProjectProgress";
+import { ProjectCalendarButton } from "@/components/projects/ProjectCalendar";
 import { getLocaleFromCookies } from "@/lib/get-locale";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
@@ -87,6 +88,19 @@ export default async function ProjectDetailPage({
           <h1 className="font-headline text-xl font-bold tracking-tight text-on-surface flex-1">
             {project.title}
           </h1>
+          <ProjectCalendarButton
+            notes={project.notes.map((n) => ({
+              id: n.id,
+              title: n.title,
+              status: n.status,
+              dueDate: n.dueDate ? n.dueDate.toISOString() : null,
+              startDate: n.startDate ? n.startDate.toISOString() : null,
+            }))}
+            projectId={project.id}
+            projectTitle={project.title}
+            workspaceId={workspace.id}
+            locale={locale as "pt-BR" | "en-US"}
+          />
           <SuggestTasksButton projectId={project.id} workspaceId={workspace.id} />
         </div>
 
@@ -161,6 +175,8 @@ export default async function ProjectDetailPage({
               </div>
             )}
           </section>
+
+
         </div>
       </main>
     </div>

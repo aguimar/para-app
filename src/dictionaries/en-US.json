@@ -188,6 +188,8 @@
     "noProject": "\u2014 No project \u2014",
     "resource": "Resource",
     "noResource": "\u2014 No resource \u2014",
+    "startDate": "Start date",
+    "dueDate": "Due date",
     "tags": "Tags",
     "noTags": "No tags yet.",
     "linkedFrom": "Linked from",
@@ -217,5 +219,12 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{count} days ago"
+  },
+  "calendar": {
+    "today": "Today",
+    "newNote": "New Note",
+    "more": "+ {count} more",
+    "timeline": "Timeline",
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   }
 }

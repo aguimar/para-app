@@ -148,6 +148,25 @@ h4 {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24);
 }
 
+/* shadcn compatibility — maps MD3 tokens to shadcn CSS variables for UI primitives */
+:root {
+  --background: var(--color-background);
+  --foreground: var(--color-on-surface);
+  --muted: var(--color-surface-container);
+  --muted-foreground: var(--color-on-surface-variant);
+  --accent: var(--color-surface-container-high);
+  --accent-foreground: var(--color-on-surface);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-on-primary);
+  --secondary: var(--color-secondary);
+  --secondary-foreground: var(--color-on-secondary);
+  --destructive: var(--color-error);
+  --destructive-foreground: var(--color-on-error);
+  --border: var(--color-outline-variant);
+  --input: var(--color-outline-variant);
+  --ring: var(--color-primary);
+}
+
 /* BlockNote — mapeia tokens do design system para :root para que os popovers
    (renderizados via Mantine portal em document.body) também recebam as variáveis */
 :root {

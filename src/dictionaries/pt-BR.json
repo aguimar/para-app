@@ -188,6 +188,8 @@
     "noProject": "\u2014 Sem projeto \u2014",
     "resource": "Recurso",
     "noResource": "\u2014 Sem recurso \u2014",
+    "startDate": "In\u00edcio",
+    "dueDate": "Prazo",
     "tags": "Tags",
     "noTags": "Sem tags ainda.",
     "linkedFrom": "Vinculado de",
@@ -217,5 +219,12 @@
     "today": "Hoje",
     "yesterday": "Ontem",
     "daysAgo": "h\u00e1 {count} dias"
+  },
+  "calendar": {
+    "today": "Hoje",
+    "newNote": "Nova Nota",
+    "more": "+ {count} mais",
+    "timeline": "Timeline",
+    "weekdays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "S\u00e1b"]
   }
 }

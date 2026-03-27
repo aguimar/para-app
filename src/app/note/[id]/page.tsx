@@ -29,6 +29,8 @@ export default function NoteEditorPage() {
   const [category, setCategory] = useState<ParaCategory>("INBOX");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [resourceId, setResourceId] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -52,6 +54,8 @@ export default function NoteEditorPage() {
       setCategory(note.category as ParaCategory);
       setProjectId((note as any).projectId ?? null);
       setResourceId((note as any).resourceId ?? null);
+      setDueDate((note as any).dueDate ? new Date((note as any).dueDate).toISOString().split("T")[0] : "");
+      setStartDate((note as any).startDate ? new Date((note as any).startDate).toISOString().split("T")[0] : "");
       setInitializedId(params.id);
     }
   }, [note, initializedId, params.id]);
@@ -88,6 +92,8 @@ export default function NoteEditorPage() {
         projectId:  category === "PROJECT"  ? projectId  : null,
         areaId:     category === "AREA"     ? undefined  : null,
         resourceId: category === "RESOURCE" ? resourceId : null,
+        dueDate:    category === "PROJECT" && dueDate   ? new Date(dueDate)   : null,
+        startDate:  category === "PROJECT" && startDate ? new Date(startDate) : null,
       });
       utils.note.invalidate();
       setIsDirty(false);
@@ -106,6 +112,8 @@ export default function NoteEditorPage() {
       setCategory(note.category as ParaCategory);
       setProjectId((note as any).projectId ?? null);
       setResourceId((note as any).resourceId ?? null);
+      setDueDate((note as any).dueDate ? new Date((note as any).dueDate).toISOString().split("T")[0] : "");
+      setStartDate((note as any).startDate ? new Date((note as any).startDate).toISOString().split("T")[0] : "");
       setIsDirty(false);
     }
   }, [note]);
@@ -243,6 +251,40 @@ export default function NoteEditorPage() {
                 </option>
               ))}
           </select>
+        </div>
+      )}
+
+      {/* Date fields for PROJECT notes */}
+      {category === "PROJECT" && (
+        <div className="space-y-3">
+          <div>
+            <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1.5">
+              {t.noteEditor.startDate}
+            </p>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setIsDirty(true);
+              }}
+              className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div>
+            <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-1.5">
+              {t.noteEditor.dueDate}
+            </p>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+                setIsDirty(true);
+              }}
+              className="w-full rounded-xl bg-surface-container px-3 py-2 font-body text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
         </div>
       )}
 

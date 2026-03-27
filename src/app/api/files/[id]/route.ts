@@ -22,7 +22,7 @@ export async function GET(
 
   const buffer = await readFile(attachment.storedAs);
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": attachment.mimeType,
       "Content-Length": String(buffer.length),
