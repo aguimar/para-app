@@ -20,7 +20,12 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const buffer = await readFile(attachment.storedAs);
+  let buffer: Buffer;
+  try {
+    buffer = await readFile(attachment.storedAs);
+  } catch {
+    return NextResponse.json({ error: "File not found on disk" }, { status: 404 });
+  }
 
   return new NextResponse(new Uint8Array(buffer), {
     headers: {

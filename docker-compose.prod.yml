@@ -4,12 +4,17 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    volumes:
+      - uploads_data:/app/uploads
     environment:
       - NODE_ENV=production
     env_file:
       - .env.prod
     networks:
       - para-network
+
+volumes:
+  uploads_data:
 
 networks:
   para-network:
