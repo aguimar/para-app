@@ -67,8 +67,8 @@ export async function POST(req: Request) {
   const payload = await req.json();
   const data = payload.data;
 
-  // Debug: log full payload to diagnose forwarded messages
-  console.log("[evolution-webhook]", JSON.stringify({ key: data?.key, messageType: data?.messageType, messageKeys: data?.message ? Object.keys(data.message) : null }, null, 2));
+  // Debug: log payload to diagnose forwarded messages
+  console.log("[evolution-webhook]", JSON.stringify({ key: data?.key, messageType: data?.messageType, message: data?.message }, null, 2));
 
   if (!data?.key) {
     return NextResponse.json({ ignored: true }, { status: 200 });
