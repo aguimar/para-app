@@ -2,6 +2,56 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { db } from "@/server/db";
 
+const TITLE_THRESHOLD = 120;
+
+const AI_MODELS = [
+  "google/gemini-2.0-flash-lite-001",
+  "google/gemini-2.5-flash-lite",
+  "openai/gpt-4o-mini",
+];
+
+async function generateTitle(text: string): Promise<string> {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) return text.slice(0, 120) + "\u2026";
+
+  for (const model of AI_MODELS) {
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${key}`,
+          "HTTP-Referer": "https://para-app.local",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You generate short note titles. Given a message, reply with ONLY a concise title (max 80 chars) that captures the essence. Same language as the input. No quotes, no prefix.",
+            },
+            { role: "user", content: text.slice(0, 1000) },
+          ],
+          max_tokens: 60,
+          temperature: 0.3,
+        }),
+      });
+
+      if (res.status === 429 || res.status === 404) continue;
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      const title = data.choices?.[0]?.message?.content?.trim();
+      if (title) return title;
+    } catch {
+      continue;
+    }
+  }
+
+  return text.slice(0, 120) + "\u2026";
+}
+
 export async function POST(req: Request) {
   const secret = process.env.EVOLUTION_WEBHOOK_SECRET;
   if (!secret) {
@@ -26,7 +76,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ignored: "not from me" }, { status: 200 });
   }
 
-  // Extract phone number from remoteJid (e.g. "5585988645679@s.whatsapp.net")
+  // Extract phone number from remoteJid (e.g. "558588645679@s.whatsapp.net")
   const remoteJid = data.key.remoteJid as string;
   const phone = remoteJid.replace(/@.*$/, "");
 
@@ -53,8 +103,17 @@ export async function POST(req: Request) {
   }
 
   const workspaceId = user.workspaces[0].id;
-  const title = text.length > 200 ? text.slice(0, 200) + "\u2026" : text;
-  const body = text.length > 200 ? `<p>${text}</p>` : "";
+
+  let title: string;
+  let body: string;
+
+  if (text.length <= TITLE_THRESHOLD) {
+    title = text;
+    body = "";
+  } else {
+    title = await generateTitle(text);
+    body = `<p>${text}</p>`;
+  }
 
   const note = await db.note.create({
     data: {
