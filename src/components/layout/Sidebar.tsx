@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { Rocket, TreeStructure, Books, Archive, House, Question, type Icon } from "@phosphor-icons/react";
+import { Rocket, TreeStructure, Books, Archive, House, Question, GearSix, type Icon } from "@phosphor-icons/react";
 import { useTranslation } from "@/lib/i18n-client";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
@@ -92,6 +92,20 @@ export function Sidebar({ workspaceSlug, workspaceName, locale }: SidebarProps) 
         >
           <Question size={20} className={pathname === "/guide" ? "text-primary" : ""} />
           {t.sidebar.guide}
+        </Link>
+
+        {/* Settings */}
+        <Link
+          href="/settings"
+          className={cn(
+            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/settings"
+              ? "bg-surface-container-lowest text-on-surface shadow-ambient"
+              : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+          )}
+        >
+          <GearSix size={20} className={pathname === "/settings" ? "text-primary" : ""} />
+          {t.sidebar.settings ?? "Settings"}
         </Link>
 
         {/* Workspace name + user + locale */}

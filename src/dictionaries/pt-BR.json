@@ -32,7 +32,8 @@
     "areas": "\u00c1reas",
     "resources": "Recursos",
     "archive": "Arquivo",
-    "guide": "Como usar"
+    "guide": "Como usar",
+    "settings": "Configura\u00e7\u00f5es"
   },
   "para": {
     "inbox": "Inbox",
@@ -226,5 +227,15 @@
     "more": "+ {count} mais",
     "timeline": "Timeline",
     "weekdays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "S\u00e1b"]
+  },
+  "settings": {
+    "title": "Configura\u00e7\u00f5es",
+    "whatsappIntegration": "Integra\u00e7\u00e3o WhatsApp",
+    "whatsappDescription": "Conecte seu n\u00famero do WhatsApp para capturar notas enviando mensagens para si mesmo.",
+    "phoneLabel": "N\u00famero do WhatsApp",
+    "phonePlaceholder": "ex: 5585988645679",
+    "phoneHint": "C\u00f3digo do pa\u00eds + n\u00famero, apenas d\u00edgitos.",
+    "save": "Salvar",
+    "saved": "Salvo!"
   }
 }

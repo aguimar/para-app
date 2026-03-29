@@ -6,8 +6,10 @@ import { resourceRouter } from "./resource";
 import { archiveRouter } from "./archive";
 import { noteRouter } from "./note";
 import { attachmentRouter } from "./attachment";
+import { userRouter } from "./user";
 
 export const appRouter = router({
+  user: userRouter,
   workspace: workspaceRouter,
   project: projectRouter,
   area: areaRouter,

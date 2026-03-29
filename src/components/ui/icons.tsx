@@ -30,5 +30,7 @@ export {
   Tray,
   TreeStructure,
   UploadSimple,
+  WhatsappLogo,
+  GearSix,
   X,
 } from "@phosphor-icons/react";

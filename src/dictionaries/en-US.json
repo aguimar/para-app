@@ -32,7 +32,8 @@
     "areas": "Areas",
     "resources": "Resources",
     "archive": "Archive",
-    "guide": "How to use"
+    "guide": "How to use",
+    "settings": "Settings"
   },
   "para": {
     "inbox": "Inbox",
@@ -226,5 +227,15 @@
     "more": "+ {count} more",
     "timeline": "Timeline",
     "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  },
+  "settings": {
+    "title": "Settings",
+    "whatsappIntegration": "WhatsApp Integration",
+    "whatsappDescription": "Connect your WhatsApp number to capture notes by sending messages to yourself.",
+    "phoneLabel": "WhatsApp Number",
+    "phonePlaceholder": "e.g. 5585988645679",
+    "phoneHint": "Country code + number, digits only.",
+    "save": "Save",
+    "saved": "Saved!"
   }
 }
