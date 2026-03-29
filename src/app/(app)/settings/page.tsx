@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { trpc } from "@/lib/trpc-client";
+import { trpc } from "@/lib/trpc";
 import { WhatsappLogo, FloppyDisk, Check, ArrowLeft } from "@/components/ui/icons";
 import { useTranslation } from "@/lib/i18n-client";
 import Link from "next/link";
