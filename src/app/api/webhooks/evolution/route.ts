@@ -68,7 +68,7 @@ async function generateTitle(text: string): Promise<string> {
 /** Download media from Evolution API using the base64 endpoint */
 async function downloadMedia(
   instance: string,
-  messageId: string
+  messageData: Record<string, unknown>
 ): Promise<{ buffer: Buffer; mimeType: string } | null> {
   const evoUrl = process.env.EVOLUTION_SERVER_URL;
   const evoKey = process.env.EVOLUTION_API_KEY;
@@ -84,20 +84,22 @@ async function downloadMedia(
           apikey: evoKey,
         },
         body: JSON.stringify({
-          message: { key: { id: messageId } },
+          message: messageData,
           convertToMp4: false,
         }),
       }
     );
 
     if (!res.ok) {
-      console.log("[evolution-webhook] media download failed:", res.status);
+      console.log("[evolution-webhook] media download failed:", res.status, await res.text());
       return null;
     }
 
     const json = await res.json();
     const base64: string = json.base64;
     const mimeType: string = json.mimetype || "application/octet-stream";
+
+    console.log("[evolution-webhook] media download ok, mimeType:", mimeType, "base64 length:", base64?.length);
 
     if (!base64) return null;
 
@@ -124,6 +126,8 @@ export async function POST(req: Request) {
   const payload = await req.json();
   const data = payload.data;
   const instance = payload.instance;
+
+  console.log("[evolution-webhook] event:", JSON.stringify({ messageType: data?.messageType, instance, keyId: data?.key?.id }));
 
   if (!data?.key) {
     return NextResponse.json({ ignored: true }, { status: 200 });
@@ -207,12 +211,13 @@ export async function POST(req: Request) {
 
   // If media, download and attach
   if (isMedia && instance && data.key.id) {
-    const media = await downloadMedia(instance, data.key.id);
+    const media = await downloadMedia(instance, data);
     if (media) {
       const extension = MIME_EXT[media.mimeType] ?? "bin";
       const storedAs = `${randomUUID()}.${extension}`;
       const filename =
         msg.documentMessage?.fileName ??
+        msg.documentWithCaptionMessage?.message?.documentMessage?.fileName ??
         `whatsapp-${data.key.id.slice(-8)}.${extension}`;
 
       await saveFile(media.buffer, storedAs);
