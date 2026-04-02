@@ -151,6 +151,11 @@ export async function POST(req: Request) {
   });
 
   if (!user || user.workspaces.length === 0) {
+    await sendWhatsAppReply(
+      instance,
+      phone,
+      "❌ Número não vinculado a nenhuma conta PARA. Acesse as configurações do app e cadastre seu número."
+    );
     return NextResponse.json({ ignored: "unknown phone" }, { status: 200 });
   }
 
@@ -234,5 +239,30 @@ export async function POST(req: Request) {
     }
   }
 
+  // Send confirmation back to the user via Evolution API
+  await sendWhatsAppReply(instance, phone, `✅ Nota salva no PARA: *${title}*`);
+
   return NextResponse.json({ created: note.id }, { status: 201 });
+}
+
+async function sendWhatsAppReply(instance: string, to: string, text: string) {
+  const evoUrl = process.env.EVOLUTION_SERVER_URL;
+  const evoKey = process.env.EVOLUTION_API_KEY;
+  if (!evoUrl || !evoKey) return;
+
+  try {
+    await fetch(`${evoUrl}/message/sendText/${instance}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: evoKey,
+      },
+      body: JSON.stringify({
+        number: to,
+        text,
+      }),
+    });
+  } catch (err) {
+    console.log("[evolution-webhook] reply failed:", err);
+  }
 }
