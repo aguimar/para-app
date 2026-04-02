@@ -133,9 +133,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ignored: true }, { status: 200 });
   }
 
-  // Only process messages sent by the user themselves
-  if (!data.key.fromMe) {
-    return NextResponse.json({ ignored: "not from me" }, { status: 200 });
+  // Only process messages received by the bot (sent by users)
+  if (data.key.fromMe) {
+    return NextResponse.json({ ignored: "from me" }, { status: 200 });
   }
 
   // Extract phone number from remoteJid
