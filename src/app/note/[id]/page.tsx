@@ -11,6 +11,7 @@ import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
 import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle, X } from "@phosphor-icons/react";
 import { NoteAttachments } from "@/components/notes/NoteAttachments";
+import { NoteComments } from "@/components/notes/NoteComments";
 import { useTranslation } from "@/lib/i18n-client";
 
 export default function NoteEditorPage() {
@@ -314,6 +315,11 @@ export default function NoteEditorPage() {
 
       {/* Attachments */}
       <NoteAttachments noteId={params.id} />
+
+      {/* Comments — PROJECT notes only */}
+      {category === "PROJECT" && (
+        <NoteComments noteId={params.id} />
+      )}
 
       {/* Tags */}
       <div>

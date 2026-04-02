@@ -145,12 +145,24 @@ model Note {
   updatedAt   DateTime     @updatedAt
 
   attachments Attachment[]
+  comments    NoteComment[]
 
   @@index([workspaceId])
   @@index([category])
   @@index([projectId])
   @@index([areaId])
   @@index([resourceId])
+}
+
+model NoteComment {
+  id        String   @id @default(cuid())
+  body      String
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([noteId])
 }
 
 model Attachment {
