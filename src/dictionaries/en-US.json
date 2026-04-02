@@ -231,7 +231,7 @@
   "settings": {
     "title": "Settings",
     "whatsappIntegration": "WhatsApp Integration",
-    "whatsappDescription": "Connect your WhatsApp number to capture notes by sending messages to yourself.",
+    "whatsappDescription": "Connect your WhatsApp number to capture notes by sending messages to the PARA Assistant.",
     "phoneLabel": "WhatsApp Number",
     "phonePlaceholder": "e.g. 5585988645679",
     "phoneHint": "Country code + number, digits only.",
