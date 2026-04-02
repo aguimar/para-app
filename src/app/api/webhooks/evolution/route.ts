@@ -133,9 +133,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ignored: true }, { status: 200 });
   }
 
-  // Only process messages received by the bot (sent by users)
+  // Ignore messages sent by the bot itself (prevents reply loops)
   if (data.key.fromMe) {
     return NextResponse.json({ ignored: "from me" }, { status: 200 });
+  }
+
+  // Secondary loop guard: ignore if text is one of our own reply messages
+  const rawText =
+    data.message?.conversation ||
+    data.message?.extendedTextMessage?.text ||
+    "";
+  if (rawText.startsWith("✅") || rawText.startsWith("❌")) {
+    return NextResponse.json({ ignored: "bot reply" }, { status: 200 });
   }
 
   // Extract phone number from remoteJid
