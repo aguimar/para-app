@@ -63,7 +63,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} locale={locale} />
+      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} workspaceId={workspace.id} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         {/* Top bar */}
