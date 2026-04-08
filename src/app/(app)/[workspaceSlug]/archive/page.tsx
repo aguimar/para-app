@@ -52,7 +52,7 @@ export default async function ArchivePage({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} workspaceId={workspace.id} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface-dim">
         <div className="sticky top-0 z-10 flex h-14 items-center bg-surface-dim/80 px-8 backdrop-blur-md">

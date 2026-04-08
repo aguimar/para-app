@@ -7,14 +7,16 @@ import { cn } from "@/lib/utils";
 import { Rocket, TreeStructure, Books, Archive, House, Question, GearSix, type Icon } from "@phosphor-icons/react";
 import { useTranslation } from "@/lib/i18n-client";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { CommandPalette } from "@/components/CommandPalette";
 
 interface SidebarProps {
   workspaceSlug: string;
   workspaceName: string;
+  workspaceId: string;
   locale: string;
 }
 
-export function Sidebar({ workspaceSlug, workspaceName, locale }: SidebarProps) {
+export function Sidebar({ workspaceSlug, workspaceName, workspaceId, locale }: SidebarProps) {
   const pathname = usePathname();
   const t = useTranslation();
 
@@ -117,6 +119,7 @@ export function Sidebar({ workspaceSlug, workspaceName, locale }: SidebarProps) 
           <LocaleSwitcher currentLocale={locale} />
         </div>
       </div>
+      <CommandPalette workspaceId={workspaceId} workspaceSlug={workspaceSlug} />
     </aside>
   );
 }

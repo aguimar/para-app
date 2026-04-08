@@ -45,7 +45,7 @@ export default async function ProjectsPage({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} workspaceId={workspace.id} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         <div className="mx-auto max-w-6xl px-8 py-12">
