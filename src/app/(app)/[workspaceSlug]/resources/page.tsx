@@ -4,7 +4,6 @@ import { db } from "@/server/db";
 import type { Resource } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
-import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
 import { NewResourceButton } from "@/components/resources/NewResourceButton";
 import { ResourcesView } from "@/components/resources/ResourcesView";
 import { getLocaleFromCookies, getDict } from "@/lib/get-locale";
