@@ -9,6 +9,7 @@ import { NewProjectButton } from "@/components/projects/NewProjectButton";
 import { formatDate } from "@/lib/utils";
 import { type ProjectPriority, type ProjectStatus } from "@/types";
 import { useTranslation } from "@/lib/i18n-client";
+import { ListFilter } from "@/components/ListFilter";
 
 const PRIORITY_STYLES: Record<ProjectPriority, { badge: string; border: string; bar: string; dot: string }> = {
   HIGH:   { badge: "bg-error-container text-on-error-container",           border: "border-l-4 border-primary",   bar: "bg-primary",   dot: "bg-primary" },
@@ -228,26 +229,30 @@ function ListRow({ project, index, workspaceSlug }: { project: ProjectItem; inde
 export function ProjectsView({ projects, workspaceId, workspaceSlug }: Props) {
   const t = useTranslation();
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [filteredProjects, setFilteredProjects] = useState<ProjectItem[]>(projects);
 
-  const active = projects.filter((p) => (p.status ?? "ACTIVE") !== "COMPLETED");
+  const active = filteredProjects.filter((p) => (p.status ?? "ACTIVE") !== "COMPLETED");
 
   return (
     <>
       {/* Toggle bar */}
       <div className="flex items-center justify-between mb-8">
-        <div className="flex rounded-xl bg-surface-container-low p-1">
-          <button
-            onClick={() => setView("grid")}
-            className={`rounded-lg px-4 py-2 transition-colors ${view === "grid" ? "bg-surface-container-lowest text-primary shadow-ambient" : "text-on-surface-variant hover:text-on-surface"}`}
-          >
-            <SquaresFour size={20} />
-          </button>
-          <button
-            onClick={() => setView("list")}
-            className={`rounded-lg px-4 py-2 transition-colors ${view === "list" ? "bg-surface-container-lowest text-primary shadow-ambient" : "text-on-surface-variant hover:text-on-surface"}`}
-          >
-            <List size={20} />
-          </button>
+        <div className="flex items-center gap-3">
+          <div className="flex rounded-xl bg-surface-container-low p-1">
+            <button
+              onClick={() => setView("grid")}
+              className={`rounded-lg px-4 py-2 transition-colors ${view === "grid" ? "bg-surface-container-lowest text-primary shadow-ambient" : "text-on-surface-variant hover:text-on-surface"}`}
+            >
+              <SquaresFour size={20} />
+            </button>
+            <button
+              onClick={() => setView("list")}
+              className={`rounded-lg px-4 py-2 transition-colors ${view === "list" ? "bg-surface-container-lowest text-primary shadow-ambient" : "text-on-surface-variant hover:text-on-surface"}`}
+            >
+              <List size={20} />
+            </button>
+          </div>
+          <ListFilter items={projects} onFilter={(f) => setFilteredProjects(f as ProjectItem[])} />
         </div>
         <span className="font-label text-xs text-on-surface-variant">
           {active.length} {active.length === 1 ? t.projects.activeCount_one : t.projects.activeCount_other}
@@ -289,6 +294,12 @@ export function ProjectsView({ projects, workspaceId, workspaceSlug }: Props) {
           ))}
 
         </div>
+      )}
+
+      {active.length === 0 && filteredProjects.length < projects.length && (
+        <p className="py-12 text-center font-body text-sm text-on-surface-variant">
+          {t.listFilter.noMatches}
+        </p>
       )}
     </>
   );
