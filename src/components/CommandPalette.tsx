@@ -51,6 +51,9 @@ export function CommandPalette({ workspaceId, workspaceSlug }: CommandPalettePro
         e.preventDefault();
         setOpen((prev) => !prev);
       }
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
