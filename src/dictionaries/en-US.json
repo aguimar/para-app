@@ -237,5 +237,19 @@
     "phoneHint": "Country code + number, digits only.",
     "save": "Save",
     "saved": "Saved!"
+  },
+  "search": {
+    "placeholder": "Search\u2026",
+    "noResults": "No results for",
+    "typeAll": "All",
+    "typeNotes": "Notes",
+    "typeProjects": "Projects",
+    "typeAreas": "Areas",
+    "typeResources": "Resources",
+    "hint": "\u2318K to search"
+  },
+  "listFilter": {
+    "placeholder": "Filter\u2026",
+    "noMatches": "No matches"
   }
 }
