@@ -22,6 +22,8 @@ export {
   Info,
   Link,
   List,
+  MagnifyingGlass,
+  Notebook,
   PencilSimple,
   Plus,
   Rocket,

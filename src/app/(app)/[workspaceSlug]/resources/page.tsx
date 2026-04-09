@@ -4,13 +4,9 @@ import { db } from "@/server/db";
 import type { Resource } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
-import { ResourceAreaPicker } from "@/components/resources/ResourceAreaPicker";
 import { NewResourceButton } from "@/components/resources/NewResourceButton";
-import { IconPicker } from "@/components/ui/IconPicker";
+import { ResourcesView } from "@/components/resources/ResourcesView";
 import { getLocaleFromCookies, getDict } from "@/lib/get-locale";
-import Link from "next/link";
-import { Books, TreeStructure } from "@/components/ui/icons";
-import { PickedIcon } from "@/components/ui/PickedIcon";
 
 export default async function ResourcesPage({
   params,
@@ -56,7 +52,7 @@ export default async function ResourcesPage({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} locale={locale} />
+      <Sidebar workspaceSlug={workspaceSlug} workspaceName={workspace.name} workspaceId={workspace.id} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
 
@@ -81,81 +77,7 @@ export default async function ResourcesPage({
         </div>
 
         {/* ── Index list ─────────────────────────────────────────── */}
-        {resources.length === 0 ? (
-          <div className="mx-auto max-w-5xl px-10 py-24 text-center">
-            <Books size={48} className="text-on-surface-variant" />
-            <p className="mt-4 font-headline text-lg font-semibold text-on-surface">
-              {t.resources.emptyTitle}
-            </p>
-            <p className="mt-1 font-body text-sm text-on-surface-variant">
-              {t.resources.emptyDescription}
-            </p>
-          </div>
-        ) : (
-          <div className="mx-auto max-w-5xl px-10 pb-16">
-            <div className="grid grid-cols-2 gap-x-12">
-              {resources.map((resource, i) => (
-                <div
-                  key={resource.id}
-                  className="group grid items-center gap-x-4 border-b border-surface-container-high transition-colors hover:bg-surface-container-low"
-                  style={{ gridTemplateColumns: "44px 44px 1fr auto", margin: "0 -16px", padding: "16px 16px" }}
-                >
-                  {/* Number */}
-                  <span className="font-body text-sm font-light tabular-nums text-on-surface-variant transition-colors group-hover:text-tertiary self-center">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-
-                  {/* Icon picker */}
-                  <div className="self-center">
-                    <IconPicker
-                      entityType="resource"
-                      entityId={resource.id}
-                      currentIcon={resource.icon}
-                      entityTitle={resource.title}
-                      accentClass="text-tertiary"
-                      bgClass="bg-tertiary-container/20"
-                    />
-                  </div>
-
-                  {/* Title + description + area */}
-                  <Link href={`/${workspaceSlug}/resources/${resource.id}`} className="min-w-0 block">
-                    <h2 className="font-headline text-base font-bold text-on-surface transition-colors group-hover:text-tertiary">
-                      {resource.title}
-                    </h2>
-                    {resource.description && (
-                      <p className="mt-0.5 font-body text-xs font-light text-on-surface-variant">
-                        {resource.description}
-                      </p>
-                    )}
-                    {resource.area && (
-                      <span className="mt-1 inline-flex items-center gap-1 font-label text-[10px] text-secondary">
-                        {resource.area.icon
-                          ? <PickedIcon name={resource.area.icon} size={10} />
-                          : <TreeStructure size={10} />}
-                        {resource.area.title}
-                      </span>
-                    )}
-                  </Link>
-
-                  {/* Note count + arrow */}
-                  <Link href={`/${workspaceSlug}/resources/${resource.id}`} className="flex items-center gap-2">
-                    <div className="text-right">
-                      <p className="font-headline text-xl font-light leading-none text-on-surface-variant">
-                        {resource._count.notes}
-                      </p>
-                      <p className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant">
-                        {resource._count.notes === 1 ? t.resources.note_one : t.resources.note_other}
-                      </p>
-                    </div>
-                    <span className="font-body text-sm text-on-surface-variant opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 group-hover:text-tertiary">
-                      →
-                    </span>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <ResourcesView resources={resources} workspaceSlug={workspaceSlug} />
 
         {/* ── Unattached resource notes ───────────────────────────── */}
         {unattachedNotes.length > 0 && (

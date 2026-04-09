@@ -8,6 +8,7 @@ import { noteRouter } from "./note";
 import { attachmentRouter } from "./attachment";
 import { userRouter } from "./user";
 import { commentRouter } from "./comment";
+import { searchRouter } from "./search";
 
 export const appRouter = router({
   user: userRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   note: noteRouter,
   attachment: attachmentRouter,
   comment: commentRouter,
+  search: searchRouter,
 });
 
 export type AppRouter = typeof appRouter;

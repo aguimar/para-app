@@ -16,7 +16,7 @@ export default async function GuidePage() {
       workspaces: {
         take: 1,
         orderBy: { createdAt: "asc" },
-        select: { slug: true, name: true },
+        select: { id: true, slug: true, name: true },
       },
     },
   });
@@ -28,7 +28,7 @@ export default async function GuidePage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} locale={locale} />
+      <Sidebar workspaceSlug={workspace.slug} workspaceName={workspace.name} workspaceId={workspace.id} locale={locale} />
 
       <main className="flex-1 overflow-y-auto bg-surface">
         {/* Top bar */}

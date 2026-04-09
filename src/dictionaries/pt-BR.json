@@ -237,5 +237,19 @@
     "phoneHint": "C\u00f3digo do pa\u00eds + n\u00famero, apenas d\u00edgitos.",
     "save": "Salvar",
     "saved": "Salvo!"
+  },
+  "search": {
+    "placeholder": "Buscar\u2026",
+    "noResults": "Nenhum resultado para",
+    "typeAll": "Todos",
+    "typeNotes": "Notas",
+    "typeProjects": "Projetos",
+    "typeAreas": "\u00c1reas",
+    "typeResources": "Recursos",
+    "hint": "\u2318K para buscar"
+  },
+  "listFilter": {
+    "placeholder": "Filtrar\u2026",
+    "noMatches": "Nenhuma correspond\u00eancia"
   }
 }
