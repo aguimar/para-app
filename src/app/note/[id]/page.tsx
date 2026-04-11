@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { NoteEditor } from "@/components/notes/NoteEditor";
 import { ParaBadge } from "@/components/ui/ParaBadge";
 import { IconPicker } from "@/components/ui/IconPicker";
-import { cn } from "@/lib/utils";
+import { cn, extractContactsFromBody, type NoteContact } from "@/lib/utils";
 import { type ParaCategory, PARA_CATEGORIES, PARA_LABELS } from "@/types";
 import { PARA_ICONS } from "@/lib/para-icons";
 import { ArrowLeft, Trash, CircleNotch, FloppyDisk, Info, Sparkle, X } from "@phosphor-icons/react";
@@ -37,6 +37,7 @@ export default function NoteEditorPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [initializedId, setInitializedId] = useState<string | null>(null);
   const [suggestion, setSuggestion] = useState<{ category: ParaCategory; reason: string } | null>(null);
+  const [contacts, setContacts] = useState<NoteContact[]>([]);
 
   // Open inspector by default on desktop only
   useEffect(() => {
@@ -57,6 +58,10 @@ export default function NoteEditorPage() {
       setResourceId((note as any).resourceId ?? null);
       setDueDate((note as any).dueDate ? new Date((note as any).dueDate).toISOString().split("T")[0] : "");
       setStartDate((note as any).startDate ? new Date((note as any).startDate).toISOString().split("T")[0] : "");
+      const noteContacts = Array.isArray((note as any).contacts)
+        ? (note as any).contacts as NoteContact[]
+        : [];
+      setContacts(noteContacts);
       setInitializedId(params.id);
     }
   }, [note, initializedId, params.id]);
@@ -85,17 +90,20 @@ export default function NoteEditorPage() {
   const save = useCallback(async () => {
     setSaving(true);
     try {
+      const extractedContacts = extractContactsFromBody(body);
       await updateNote.mutateAsync({
         id: params.id,
         title,
         body,
         category,
+        contacts: extractedContacts,
         projectId:  category === "PROJECT"  ? projectId  : null,
         areaId:     category === "AREA"     ? undefined  : null,
         resourceId: category === "RESOURCE" ? resourceId : null,
         dueDate:    category === "PROJECT" && dueDate   ? new Date(dueDate)   : null,
         startDate:  category === "PROJECT" && startDate ? new Date(startDate) : null,
       });
+      setContacts(extractedContacts);
       utils.note.invalidate();
       setIsDirty(false);
       router.refresh();
@@ -341,6 +349,35 @@ export default function NoteEditorPage() {
           <p className="font-body text-xs text-on-surface-variant">{t.noteEditor.noTags}</p>
         )}
       </div>
+
+      {/* Contacts */}
+      {contacts.length > 0 && (
+        <div>
+          <p className="font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant mb-3">
+            {t.noteEditor.contacts ?? "Contacts"}
+          </p>
+          <div className="space-y-1.5">
+            {contacts.map((contact) => (
+              <div
+                key={contact.googleId}
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-surface-container"
+              >
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-purple-500/20 text-[11px] font-bold text-purple-400">
+                  {contact.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-headline text-xs font-semibold text-on-surface truncate">
+                    {contact.name}
+                  </p>
+                  <p className="font-body text-[10px] text-on-surface-variant truncate">
+                    {contact.email}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Backlinks */}
       <div>
