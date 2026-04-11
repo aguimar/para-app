@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { google } from "googleapis";
-import { TRPCError } from "@trpc/server";
+import { PrismaClient } from "@/generated/prisma/client";
 
 async function makeOAuth2Client(
   accessToken: string,
   refreshToken: string | null,
   expiry: Date | null,
   userId: string,
-  db: any
+  db: PrismaClient
 ) {
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -29,6 +29,7 @@ async function makeOAuth2Client(
       where: { id: userId },
       data: {
         googleAccessToken: credentials.access_token ?? null,
+        googleRefreshToken: credentials.refresh_token ?? undefined,
         googleTokenExpiry: credentials.expiry_date
           ? new Date(credentials.expiry_date)
           : null,
@@ -82,7 +83,8 @@ export const contactsRouter = router({
             };
           })
           .filter((c) => c.googleId && c.email);
-      } catch {
+      } catch (error) {
+        console.error("[contacts] search failed:", error);
         return [];
       }
     }),
