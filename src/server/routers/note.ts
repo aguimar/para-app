@@ -154,6 +154,15 @@ export const noteRouter = router({
         projectId: z.string().nullable().optional(),
         areaId: z.string().nullable().optional(),
         resourceId: z.string().nullable().optional(),
+        contacts: z
+          .array(
+            z.object({
+              googleId: z.string(),
+              name: z.string(),
+              email: z.string(),
+            })
+          )
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
