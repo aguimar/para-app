@@ -3,10 +3,20 @@ import { router, protectedProcedure } from "../trpc";
 
 export const userRouter = router({
   me: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.user.findUnique({
+    const user = await ctx.db.user.findUnique({
       where: { id: ctx.userId },
-      select: { id: true, email: true, name: true, phone: true, imageUrl: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        imageUrl: true,
+        googleAccessToken: true,
+      },
     });
+    if (!user) return null;
+    const { googleAccessToken, ...rest } = user;
+    return { ...rest, isGoogleConnected: !!googleAccessToken };
   }),
 
   updatePhone: protectedProcedure
