@@ -123,6 +123,10 @@ export default function NoteEditorPage() {
       setResourceId((note as any).resourceId ?? null);
       setDueDate((note as any).dueDate ? new Date((note as any).dueDate).toISOString().split("T")[0] : "");
       setStartDate((note as any).startDate ? new Date((note as any).startDate).toISOString().split("T")[0] : "");
+      const noteContacts = Array.isArray((note as any).contacts)
+        ? (note as any).contacts as NoteContact[]
+        : [];
+      setContacts(noteContacts);
       setIsDirty(false);
     }
   }, [note]);
