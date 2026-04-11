@@ -9,6 +9,7 @@ import { attachmentRouter } from "./attachment";
 import { userRouter } from "./user";
 import { commentRouter } from "./comment";
 import { searchRouter } from "./search";
+import { contactsRouter } from "./contacts";
 
 export const appRouter = router({
   user: userRouter,
@@ -21,6 +22,7 @@ export const appRouter = router({
   attachment: attachmentRouter,
   comment: commentRouter,
   search: searchRouter,
+  contacts: contactsRouter,
 });
 
 export type AppRouter = typeof appRouter;
