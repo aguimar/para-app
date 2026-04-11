@@ -2,19 +2,17 @@ import { google } from "googleapis";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
-
-const appUrl = () =>
-  process.env.GOOGLE_REDIRECT_URI!.replace("/api/auth/google/callback", "");
+import { getAppUrl } from "@/lib/google-oauth";
 
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.redirect(new URL("/sign-in", appUrl()));
+    return NextResponse.redirect(new URL("/sign-in", getAppUrl()));
   }
 
   const code = req.nextUrl.searchParams.get("code");
   if (!code) {
-    return NextResponse.redirect(new URL("/settings?google=error", appUrl()));
+    return NextResponse.redirect(new URL("/settings?google=error", getAppUrl()));
   }
 
   const oauth2Client = new google.auth.OAuth2(
@@ -23,7 +21,14 @@ export async function GET(req: NextRequest) {
     process.env.GOOGLE_REDIRECT_URI
   );
 
-  const { tokens } = await oauth2Client.getToken(code);
+  let tokens: any;
+  try {
+    const result = await oauth2Client.getToken(code);
+    tokens = result.tokens;
+  } catch (error) {
+    console.error("[google-oauth] token exchange failed:", error);
+    return NextResponse.redirect(new URL("/settings?google=error", getAppUrl()));
+  }
 
   await db.user.update({
     where: { id: userId },
@@ -36,5 +41,5 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  return NextResponse.redirect(new URL("/settings?google=connected", appUrl()));
+  return NextResponse.redirect(new URL("/settings?google=connected", getAppUrl()));
 }

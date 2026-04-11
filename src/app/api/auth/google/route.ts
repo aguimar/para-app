@@ -1,11 +1,12 @@
 import { google } from "googleapis";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getAppUrl } from "@/lib/google-oauth";
 
 export async function GET() {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.redirect(new URL("/sign-in", process.env.GOOGLE_REDIRECT_URI!.replace("/api/auth/google/callback", "")));
+    return NextResponse.redirect(new URL("/sign-in", getAppUrl()));
   }
 
   const oauth2Client = new google.auth.OAuth2(
