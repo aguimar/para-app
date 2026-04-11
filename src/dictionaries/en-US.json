@@ -196,7 +196,9 @@
     "linkedFrom": "Linked from",
     "noBacklinks": "No backlinks yet.",
     "lastEdited": "Last edited",
-    "created": "Created"
+    "created": "Created",
+    "contacts": "Contacts",
+    "noContacts": "No contacts mentioned yet."
   },
   "attachments": {
     "title": "Attachments",
@@ -236,7 +238,12 @@
     "phonePlaceholder": "e.g. 5585988645679",
     "phoneHint": "Country code + number, digits only.",
     "save": "Save",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "googleIntegration": "Google Contacts",
+    "googleDescription": "Connect your Google account to mention contacts in notes with @.",
+    "googleConnect": "Connect Google",
+    "googleConnected": "Connected",
+    "googleDisconnect": "Disconnect"
   },
   "search": {
     "placeholder": "Search\u2026",

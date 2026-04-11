@@ -196,7 +196,9 @@
     "linkedFrom": "Vinculado de",
     "noBacklinks": "Sem backlinks ainda.",
     "lastEdited": "\u00daltima edi\u00e7\u00e3o",
-    "created": "Criado em"
+    "created": "Criado em",
+    "contacts": "Contatos",
+    "noContacts": "Nenhum contato mencionado ainda."
   },
   "attachments": {
     "title": "Anexos",
@@ -236,7 +238,12 @@
     "phonePlaceholder": "ex: 5585988645679",
     "phoneHint": "C\u00f3digo do pa\u00eds + n\u00famero, apenas d\u00edgitos.",
     "save": "Salvar",
-    "saved": "Salvo!"
+    "saved": "Salvo!",
+    "googleIntegration": "Google Contatos",
+    "googleDescription": "Conecte sua conta Google para mencionar contatos nas notas com @.",
+    "googleConnect": "Conectar Google",
+    "googleConnected": "Conectado",
+    "googleDisconnect": "Desconectar"
   },
   "search": {
     "placeholder": "Buscar\u2026",
