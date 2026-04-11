@@ -17,24 +17,15 @@ export const Mention = createReactInlineContentSpec(
   {
     render: (props) => (
       <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "4px",
-          background: "rgba(130,100,255,0.18)",
-          color: "#a98eff",
-          borderRadius: "6px",
-          padding: "1px 7px",
-          fontSize: "0.875em",
-          fontWeight: 500,
-          cursor: "default",
-        }}
+        className="inline-flex items-center gap-1 rounded-md bg-purple-500/20 px-1.5 py-px text-sm font-medium text-purple-400 cursor-default"
+        style={{ userSelect: "none" }}
       >
         {props.inlineContent.props.photoUrl && (
           <img
             src={props.inlineContent.props.photoUrl}
             alt=""
-            style={{ width: 14, height: 14, borderRadius: "50%" }}
+            className="rounded-full"
+            style={{ width: 14, height: 14 }}
           />
         )}
         @{props.inlineContent.props.name}

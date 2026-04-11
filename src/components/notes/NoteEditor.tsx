@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useCreateBlockNote, SuggestionMenuController } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
-import type { Block } from "@blocknote/core";
+import type { Block, PartialBlock } from "@blocknote/core";
 import dynamic from "next/dynamic";
 import { mentionSchema } from "./MentionInlineContent";
 import { trpc } from "@/lib/trpc";
@@ -27,7 +27,11 @@ function parseContent(raw: string): Block[] | undefined {
 }
 
 function NoteEditorInner({ noteId = "", content, onChange }: NoteEditorProps) {
-  const initialContent = useMemo(() => parseContent(content) as any, []);
+  const initialContent = useMemo(
+    () => parseContent(content) as PartialBlock<any, any, any>[] | undefined,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const utils = trpc.useUtils();
 
   const uploadFile = useMemo(
@@ -45,12 +49,14 @@ function NoteEditorInner({ noteId = "", content, onChange }: NoteEditorProps) {
 
   const editor = useCreateBlockNote({ schema: mentionSchema, initialContent, uploadFile });
 
-  // Import legacy HTML content on first mount
+  // Run once on mount only — re-seeding on content change would overwrite user edits.
+  // editor is a stable ref from useCreateBlockNote so omitting it is safe.
   useEffect(() => {
     if (!content || parseContent(content)) return;
     editor.tryParseHTMLToBlocks(content).then((blocks) => {
       editor.replaceBlocks(editor.document, blocks);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -78,20 +84,7 @@ function NoteEditorInner({ noteId = "", content, onChange }: NoteEditorProps) {
                   style={{ width: 20, height: 20, borderRadius: "50%" }}
                 />
               ) : (
-                <span
-                  style={{
-                    display: "inline-flex",
-                    width: 20,
-                    height: 20,
-                    borderRadius: "50%",
-                    background: "rgba(130,100,255,0.3)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 10,
-                    color: "#a98eff",
-                    fontWeight: 700,
-                  }}
-                >
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-purple-500/30 text-[10px] font-bold text-purple-400">
                   {contact.name.charAt(0).toUpperCase()}
                 </span>
               ),
@@ -110,7 +103,8 @@ function NoteEditorInner({ noteId = "", content, onChange }: NoteEditorProps) {
                 ]);
               },
             }));
-          } catch {
+          } catch (error) {
+            console.error("[mention] contact search failed:", error);
             return [];
           }
         }}
