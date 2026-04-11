@@ -11,7 +11,10 @@ export async function GET(req: NextRequest) {
   }
 
   const code = req.nextUrl.searchParams.get("code");
-  if (!code) {
+  const stateParam = req.nextUrl.searchParams.get("state");
+  const stateCookie = req.cookies.get("google_oauth_state")?.value;
+
+  if (!code || !stateParam || !stateCookie || stateParam !== stateCookie) {
     return NextResponse.redirect(new URL("/settings?google=error", getAppUrl()));
   }
 
@@ -41,5 +44,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  return NextResponse.redirect(new URL("/settings?google=connected", getAppUrl()));
+  const response = NextResponse.redirect(new URL("/settings?google=connected", getAppUrl()));
+  response.cookies.delete("google_oauth_state");
+  return response;
 }
