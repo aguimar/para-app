@@ -5,6 +5,7 @@ import { areaRouter } from "./area";
 import { resourceRouter } from "./resource";
 import { archiveRouter } from "./archive";
 import { noteRouter } from "./note";
+import { noteGroupRouter } from "./noteGroup";
 import { attachmentRouter } from "./attachment";
 import { userRouter } from "./user";
 import { commentRouter } from "./comment";
@@ -19,6 +20,7 @@ export const appRouter = router({
   resource: resourceRouter,
   archive: archiveRouter,
   note: noteRouter,
+  noteGroup: noteGroupRouter,
   attachment: attachmentRouter,
   comment: commentRouter,
   search: searchRouter,
