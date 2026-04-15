@@ -57,12 +57,13 @@ model Workspace {
   name      String
   userId    String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects  Project[]
-  areas     Area[]
-  resources Resource[]
-  notes     Note[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  projects   Project[]
+  areas      Area[]
+  resources  Resource[]
+  notes      Note[]
+  noteGroups NoteGroup[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@index([userId])
 }
@@ -140,6 +141,8 @@ model Note {
   area        Area?        @relation(fields: [areaId], references: [id], onDelete: SetNull)
   resourceId  String?
   resource    Resource?    @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  groupId     String?
+  group       NoteGroup?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
   workspaceId String
   workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   // Backlinks: self-referential many-to-many
@@ -156,6 +159,20 @@ model Note {
   @@index([projectId])
   @@index([areaId])
   @@index([resourceId])
+  @@index([groupId])
+}
+
+model NoteGroup {
+  id          String    @id @default(cuid())
+  title       String    @default("Unnamed group")
+  icon        String    @default("")
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  notes       Note[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
 }
 
 model NoteComment {
