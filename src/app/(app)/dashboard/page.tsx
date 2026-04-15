@@ -54,11 +54,27 @@ export default async function DashboardPage() {
   const workspace = user?.workspaces[0];
   if (!workspace) redirect("/sign-in");
 
-  const inboxNotes = await db.note.findMany({
-    where: { workspaceId: workspace.id, category: "INBOX" },
-    orderBy: { updatedAt: "desc" },
-    select: { id: true, title: true, updatedAt: true },
-  });
+  const [ungroupedInboxNotes, inboxGroups] = await Promise.all([
+    db.note.findMany({
+      where: { workspaceId: workspace.id, category: "INBOX", groupId: null },
+      orderBy: { updatedAt: "desc" },
+      select: { id: true, title: true, updatedAt: true },
+    }),
+    db.noteGroup.findMany({
+      where: { workspaceId: workspace.id },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        updatedAt: true,
+        notes: {
+          where: { category: "INBOX" },
+          orderBy: { updatedAt: "desc" },
+          select: { id: true, title: true, updatedAt: true },
+        },
+      },
+    }),
+  ]);
 
 
   return (
@@ -89,10 +105,11 @@ export default async function DashboardPage() {
           </section>
 
           {/* Inbox — drag notes to categorize */}
-          {inboxNotes.length > 0 && (
+          {(ungroupedInboxNotes.length > 0 || inboxGroups.length > 0) && (
             <InboxBoard
               workspaceId={workspace.id}
-              inboxNotes={inboxNotes}
+              inboxNotes={ungroupedInboxNotes}
+              inboxGroups={inboxGroups}
             />
           )}
 
@@ -132,7 +149,7 @@ export default async function DashboardPage() {
                     key={note.id}
                     id={note.id}
                     title={note.title}
-                    icon={(note as any).icon}
+                    icon={note.icon}
                     body={note.body}
                     category={note.category as ParaCategory}
                     updatedAt={note.updatedAt}

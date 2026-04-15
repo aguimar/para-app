@@ -58,7 +58,13 @@
     "title": "Inbox",
     "dragHint": "\u2190 drag onto a category",
     "suggest": "Suggest",
-    "analyzing": "Analyzing\u2026"
+    "analyzing": "Analyzing\u2026",
+    "group": {
+      "defaultTitle": "Unnamed group",
+      "toggle": "Expand/collapse group",
+      "delete": "Ungroup all and delete",
+      "rename": "Rename group"
+    }
   },
   "projects": {
     "title": "Projects",
