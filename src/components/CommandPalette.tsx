@@ -44,7 +44,7 @@ export function CommandPalette({ workspaceId, workspaceSlug }: CommandPalettePro
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Cmd+K listener
+  // Cmd+K listener + custom event trigger
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -55,8 +55,15 @@ export function CommandPalette({ workspaceId, workspaceSlug }: CommandPalettePro
         setOpen(false);
       }
     }
+    function handleOpen() {
+      setOpen(true);
+    }
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("open-command-palette", handleOpen);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("open-command-palette", handleOpen);
+    };
   }, []);
 
   // Focus input when opened

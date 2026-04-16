@@ -5,7 +5,21 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { NewProjectButton } from "@/components/projects/NewProjectButton";
 import { AttachNotePanel } from "@/components/projects/AttachNotePanel";
 import { ProjectsView } from "@/components/projects/ProjectsView";
+import { NoteGroupList } from "@/components/notes/NoteGroupList";
 import { getDict, getLocaleFromCookies } from "@/lib/get-locale";
+
+type ProjectListItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  icon: string;
+  status: string | null;
+  priority: string | null;
+  progress: number;
+  deadline: Date | null;
+  _count: { notes: number };
+  area: { id: string; title: string; icon: string } | null;
+};
 
 export default async function ProjectsPage({
   params,
@@ -16,7 +30,7 @@ export default async function ProjectsPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [t, locale, workspace, unattachedNotes] = await Promise.all([
+  const [t, locale, workspace, unattachedNotes, rawGroupedNotes] = await Promise.all([
     getDict(),
     getLocaleFromCookies(),
     db.workspace.findUnique({
@@ -39,7 +53,33 @@ export default async function ProjectsPage({
       },
       orderBy: { updatedAt: "desc" },
     }),
+    db.noteGroup.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "PROJECT",
+      },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        notes: {
+          where: { category: "PROJECT" },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            title: true,
+            icon: true,
+            body: true,
+            category: true,
+            updatedAt: true,
+            tags: true,
+          },
+        },
+      },
+    }),
   ]);
+
+  const groupedNotes = rawGroupedNotes.filter((group) => group.notes.length >= 2);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
@@ -71,10 +111,14 @@ export default async function ProjectsPage({
 
           {/* Projects grid / list (toggle managed client-side) */}
           <ProjectsView
-            projects={workspace.projects as any}
+            projects={workspace.projects as ProjectListItem[]}
             workspaceId={workspace.id}
             workspaceSlug={workspaceSlug}
           />
+
+          <div className="mt-12">
+            <NoteGroupList title={t.common.groupedNotes} groups={groupedNotes} />
+          </div>
 
           {/* Unattached PROJECT notes */}
           <AttachNotePanel

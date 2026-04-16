@@ -5,7 +5,16 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachAreaNotePanel } from "@/components/areas/AttachAreaNotePanel";
 import { NewAreaButton } from "@/components/areas/NewAreaButton";
 import { AreasView } from "@/components/areas/AreasView";
+import { NoteGroupList } from "@/components/notes/NoteGroupList";
 import { getDict, getLocaleFromCookies } from "@/lib/get-locale";
+
+type AreaListItem = {
+  id: string;
+  title: string;
+  icon: string;
+  description: string | null;
+  _count: { notes: number; projects: number; resources: number };
+};
 
 export default async function AreasPage({
   params,
@@ -16,7 +25,7 @@ export default async function AreasPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [t, locale, workspace, unattachedNotes] = await Promise.all([
+  const [t, locale, workspace, unattachedNotes, rawGroupedNotes] = await Promise.all([
     getDict(),
     getLocaleFromCookies(),
     db.workspace.findUnique({
@@ -36,7 +45,33 @@ export default async function AreasPage({
       },
       orderBy: { updatedAt: "desc" },
     }),
+    db.noteGroup.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "AREA",
+      },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        notes: {
+          where: { category: "AREA" },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            title: true,
+            icon: true,
+            body: true,
+            category: true,
+            updatedAt: true,
+            tags: true,
+          },
+        },
+      },
+    }),
   ]);
+
+  const groupedNotes = rawGroupedNotes.filter((group) => group.notes.length >= 2);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
@@ -53,8 +88,14 @@ export default async function AreasPage({
         </div>
 
         <div className="px-8 py-6">
-          <AreasView areas={workspace.areas as any} workspaceSlug={workspaceSlug} />
+          <AreasView areas={workspace.areas as AreaListItem[]} workspaceSlug={workspaceSlug} />
         </div>
+
+        {groupedNotes.length > 0 && (
+          <div className="px-8 pb-10">
+            <NoteGroupList title={t.common.groupedNotes} groups={groupedNotes} />
+          </div>
+        )}
 
         {/* ── Unattached area notes ─────────────────────────────── */}
         {unattachedNotes.length > 0 && (

@@ -126,15 +126,34 @@ export const noteRouter = router({
       });
       if (!note || note.workspace.userId !== ctx.userId)
         throw new TRPCError({ code: "NOT_FOUND" });
-      return ctx.db.note.update({
+
+      const updated = await ctx.db.note.update({
         where: { id: input.noteId },
         data: {
           category: input.category,
           projectId: input.projectId ?? null,
           areaId: input.areaId ?? null,
           resourceId: input.resourceId ?? null,
+          groupId: null,
         },
       });
+
+      if (note.groupId) {
+        const remaining = await ctx.db.note.findMany({
+          where: { groupId: note.groupId, category: "INBOX" },
+          select: { id: true },
+        });
+
+        if (remaining.length < 2) {
+          await ctx.db.note.updateMany({
+            where: { groupId: note.groupId },
+            data: { groupId: null },
+          });
+          await ctx.db.noteGroup.delete({ where: { id: note.groupId } });
+        }
+      }
+
+      return updated;
     }),
 
   update: protectedProcedure

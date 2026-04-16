@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { Rocket, TreeStructure, Books, Archive, House, Question, GearSix, type Icon } from "@phosphor-icons/react";
+import { Rocket, TreeStructure, Books, Archive, House, Question, GearSix, MagnifyingGlass, type Icon } from "@phosphor-icons/react";
 import { useTranslation } from "@/lib/i18n-client";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -41,6 +41,16 @@ export function Sidebar({ workspaceSlug, workspaceName, workspaceId, locale }: S
             </p>
           </Link>
         </div>
+
+        {/* Search */}
+        <button
+          onClick={() => document.dispatchEvent(new Event("open-command-palette"))}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+        >
+          <MagnifyingGlass size={20} />
+          <span className="flex-1 text-left">{t.search?.placeholder ?? "Search…"}</span>
+          <kbd className="hidden rounded bg-surface-container px-1.5 py-0.5 font-mono text-[10px] text-on-surface-variant lg:block">⌘K</kbd>
+        </button>
 
         {/* Dashboard */}
         <Link

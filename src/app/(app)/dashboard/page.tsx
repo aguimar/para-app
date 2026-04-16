@@ -54,14 +54,14 @@ export default async function DashboardPage() {
   const workspace = user?.workspaces[0];
   if (!workspace) redirect("/sign-in");
 
-  const [ungroupedInboxNotes, inboxGroups] = await Promise.all([
+  const [ungroupedInboxNotes, rawInboxGroups] = await Promise.all([
     db.note.findMany({
       where: { workspaceId: workspace.id, category: "INBOX", groupId: null },
       orderBy: { updatedAt: "desc" },
       select: { id: true, title: true, updatedAt: true },
     }),
     db.noteGroup.findMany({
-      where: { workspaceId: workspace.id },
+      where: { workspaceId: workspace.id, category: "INBOX" },
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -75,6 +75,15 @@ export default async function DashboardPage() {
       },
     }),
   ]);
+
+  const inboxGroups = rawInboxGroups.filter((group) => group.notes.length >= 2);
+  const inboxBoardKey = JSON.stringify({
+    notes: ungroupedInboxNotes.map((note) => note.id),
+    groups: inboxGroups.map((group) => ({
+      id: group.id,
+      notes: group.notes.map((note) => note.id),
+    })),
+  });
 
 
   return (
@@ -107,6 +116,7 @@ export default async function DashboardPage() {
           {/* Inbox — drag notes to categorize */}
           {(ungroupedInboxNotes.length > 0 || inboxGroups.length > 0) && (
             <InboxBoard
+              key={inboxBoardKey}
               workspaceId={workspace.id}
               inboxNotes={ungroupedInboxNotes}
               inboxGroups={inboxGroups}

@@ -16,7 +16,8 @@
     "uploading": "Enviando\u2026",
     "created": "Criadas!",
     "noDeadline": "Sem prazo",
-    "optional": "opcional"
+    "optional": "opcional",
+    "groupedNotes": "Notas agrupadas"
   },
   "landing": {
     "title": "Second Brain",
@@ -57,13 +58,16 @@
   "inbox": {
     "title": "Inbox",
     "dragHint": "\u2190 arraste para uma categoria",
+    "dragGroupHint": "\u2190 arraste o grupo para uma categoria",
     "suggest": "Sugerir",
     "analyzing": "Analisando\u2026",
     "group": {
       "defaultTitle": "Grupo sem nome",
       "toggle": "Expandir/recolher grupo",
       "delete": "Desagrupar e excluir",
-      "rename": "Renomear grupo"
+      "rename": "Renomear grupo",
+      "ungroupTarget": "Solte aqui para desagrupar",
+      "ungroupActive": "Solte para remover do grupo"
     }
   },
   "projects": {

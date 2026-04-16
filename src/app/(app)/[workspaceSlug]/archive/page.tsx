@@ -5,11 +5,21 @@ import { getLocaleFromCookies, getDict } from "@/lib/get-locale";
 import type { Note } from "@/generated/prisma/client";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NoteCard } from "@/components/ui/NoteCard";
+import { NoteGroupList } from "@/components/notes/NoteGroupList";
 import { ProjectStatusPicker } from "@/components/projects/ProjectStatusPicker";
 import { PickedIcon } from "@/components/ui/PickedIcon";
 import { type ParaCategory, type ProjectStatus } from "@/types";
 import { Archive, Folder } from "@/components/ui/icons";
 import Link from "next/link";
+
+type CompletedProjectItem = {
+  id: string;
+  title: string;
+  icon: string;
+  status: string;
+  _count: { notes: number };
+  area: { id: string; title: string; icon: string } | null;
+};
 
 export default async function ArchivePage({
   params,
@@ -20,7 +30,7 @@ export default async function ArchivePage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [workspace, completedProjects] = await Promise.all([
+  const [workspace, completedProjects, rawGroupedNotes] = await Promise.all([
     db.workspace.findUnique({
       where: { slug: workspaceSlug },
       include: {
@@ -42,13 +52,48 @@ export default async function ArchivePage({
         area: { select: { id: true, title: true, icon: true } },
       },
     }),
+    db.noteGroup.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "ARCHIVE",
+      },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        notes: {
+          where: { category: "ARCHIVE" },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            title: true,
+            icon: true,
+            body: true,
+            category: true,
+            updatedAt: true,
+            tags: true,
+          },
+        },
+      },
+    }),
   ]);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
   const locale = await getLocaleFromCookies();
   const t = await getDict();
-  const hasContent = workspace.notes.length > 0 || completedProjects.length > 0;
+  const groupedNotes = rawGroupedNotes.filter((group) => group.notes.length >= 2);
+  const groupedNoteIds = new Set(
+    groupedNotes.flatMap((group) => group.notes.map((note) => note.id)),
+  );
+  const standaloneArchivedNotes = workspace.notes.filter(
+    (note) => !groupedNoteIds.has(note.id),
+  );
+  const hasContent =
+    standaloneArchivedNotes.length > 0 ||
+    completedProjects.length > 0 ||
+    groupedNotes.length > 0;
+  const archiveProjects = completedProjects as CompletedProjectItem[];
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -87,7 +132,7 @@ export default async function ArchivePage({
                   </div>
 
                   <div className="flex flex-col divide-y divide-surface-container-high rounded-xl bg-surface-container-lowest overflow-hidden shadow-[0_4px_20px_rgba(42,52,57,0.06)]">
-                    {completedProjects.map((project) => (
+                    {archiveProjects.map((project) => (
                       <div key={project.id} className="flex items-center gap-4 px-5 py-4">
                         {/* Icon */}
                         <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant">
@@ -104,9 +149,9 @@ export default async function ArchivePage({
                           >
                             {project.title}
                           </Link>
-                          {(project as any).area && (
+                          {project.area && (
                             <p className="font-label text-[10px] text-on-surface-variant mt-0.5">
-                              {(project as any).area.title}
+                              {project.area.title}
                             </p>
                           )}
                         </div>
@@ -127,24 +172,28 @@ export default async function ArchivePage({
                 </section>
               )}
 
+              {groupedNotes.length > 0 && (
+                <NoteGroupList title={t.common.groupedNotes} groups={groupedNotes} />
+              )}
+
               {/* ── Archived Notes ─────────────────────────────── */}
-              {workspace.notes.length > 0 && (
+              {standaloneArchivedNotes.length > 0 && (
                 <section>
                   <div className="mb-4 flex items-center gap-3">
                     <span className="font-label text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant">
                       {t.archive.archivedNotes}
                     </span>
                     <span className="rounded bg-surface-container-high px-2 py-0.5 font-label text-[10px] font-bold text-on-surface-variant">
-                      {workspace.notes.length}
+                      {standaloneArchivedNotes.length}
                     </span>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {workspace.notes.map((note: Note) => (
+                    {standaloneArchivedNotes.map((note: Note) => (
                       <NoteCard
                         key={note.id}
                         id={note.id}
                         title={note.title}
-                        icon={(note as any).icon}
+                        icon={note.icon}
                         body={note.body}
                         category={note.category as ParaCategory}
                         updatedAt={note.updatedAt}

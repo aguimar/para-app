@@ -66,23 +66,46 @@ export const contactsRouter = router({
         );
 
         const people = google.people({ version: "v1", auth });
-        const res = await people.people.searchContacts({
-          query: input.query,
-          readMask: "names,emailAddresses,photos",
-          pageSize: 10,
+
+        const [contactsRes, otherRes] = await Promise.allSettled([
+          people.people.searchContacts({
+            query: input.query,
+            readMask: "names,emailAddresses,photos",
+            pageSize: 10,
+          }),
+          people.otherContacts.search({
+            query: input.query,
+            readMask: "names,emailAddresses,photos",
+            pageSize: 10,
+          }),
+        ]);
+
+        const toPerson = (person: {
+          resourceName?: string | null;
+          names?: { displayName?: string | null }[] | null;
+          emailAddresses?: { value?: string | null }[] | null;
+          photos?: { url?: string | null }[] | null;
+        }) => ({
+          googleId: person.resourceName ?? "",
+          name: person.names?.[0]?.displayName ?? "",
+          email: person.emailAddresses?.[0]?.value ?? "",
+          photoUrl: person.photos?.[0]?.url ?? "",
         });
 
-        return (res.data.results ?? [])
-          .map((r) => {
-            const person = r.person!;
-            return {
-              googleId: person.resourceName ?? "",
-              name: person.names?.[0]?.displayName ?? "",
-              email: person.emailAddresses?.[0]?.value ?? "",
-              photoUrl: person.photos?.[0]?.url ?? "",
-            };
-          })
-          .filter((c) => c.googleId && c.email);
+        const contactPeople =
+          contactsRes.status === "fulfilled"
+            ? (contactsRes.value.data.results ?? []).map((r) => toPerson(r.person!))
+            : [];
+
+        const otherPeople =
+          otherRes.status === "fulfilled"
+            ? (otherRes.value.data.results ?? []).map((r) => toPerson(r.person!))
+            : [];
+
+        const seen = new Set<string>();
+        return [...contactPeople, ...otherPeople]
+          .filter((c) => c.googleId && c.email && !seen.has(c.email) && seen.add(c.email))
+          .slice(0, 10);
       } catch (error) {
         console.error("[contacts] search failed:", error);
         return [];

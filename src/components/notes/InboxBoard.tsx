@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   DndContext,
@@ -83,20 +83,29 @@ interface Suggestion {
   reason: string;
 }
 
+type ActiveDragItem =
+  | { type: "note"; id: string }
+  | { type: "group"; id: string };
+
 // ─── Draggable note card (also a droppable, to support drop-onto-note) ────────
 
 function DraggableNote({
   note,
   isDragging,
   onAssign,
+  draggable = true,
 }: {
   note: InboxNote;
   isDragging?: boolean;
   onAssign: (noteId: string, category: CategoryId) => void;
+  draggable?: boolean;
 }) {
   const router = useRouter();
   const t = useTranslation();
-  const { attributes, listeners, setNodeRef: setDragRef, transform } = useDraggable({ id: note.id });
+  const { attributes, listeners, setNodeRef: setDragRef, transform } = useDraggable({
+    id: note.id,
+    disabled: !draggable,
+  });
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: `note:${note.id}` });
   const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
 
@@ -128,9 +137,15 @@ function DraggableNote({
         {...listeners}
         {...attributes}
         onDoubleClick={() => router.push(`/note/${note.id}`)}
-        className="flex items-center gap-2 cursor-grab px-4 pt-3 pb-2 active:cursor-grabbing"
+        className={cn(
+          "flex items-center gap-2 px-4 pt-3 pb-2",
+          draggable ? "cursor-grab active:cursor-grabbing" : "cursor-default"
+        )}
       >
-        <DotsSixVertical size={16} className="shrink-0 text-on-surface-variant" />
+        <DotsSixVertical
+          size={16}
+          className={cn("shrink-0 text-on-surface-variant", !draggable && "opacity-30")}
+        />
         <p className="flex-1 truncate font-body text-sm font-medium text-on-surface">
           {note.title || t.common.untitled}
         </p>
@@ -191,6 +206,7 @@ function GroupCard({
   group,
   isExpanded,
   isDropOver,
+  isDragging,
   onToggle,
   onRename,
   onDelete,
@@ -199,26 +215,43 @@ function GroupCard({
   group: InboxGroup;
   isExpanded: boolean;
   isDropOver: boolean;
+  isDragging: boolean;
   onToggle: () => void;
   onRename: (title: string) => void;
   onDelete: () => void;
   onAssignChild: (noteId: string, category: CategoryId) => void;
 }) {
   const { setNodeRef } = useDroppable({ id: `group:${group.id}` });
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    transform,
+  } = useDraggable({ id: `group-card:${group.id}` });
   const t = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(group.title);
   const inputRef = useRef<HTMLInputElement>(null);
+  const style = transform
+    ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    : undefined;
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
         "rounded-xl bg-surface-container shadow-ambient select-none transition-all",
+        isDragging && "opacity-40",
         isDropOver && "ring-2 ring-primary/50 scale-[1.02]",
       )}
     >
-      <div className="flex items-center gap-2 px-3 pt-2.5 pb-2">
+      <div
+        ref={setDragRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        className="flex cursor-grab items-center gap-2 px-3 pt-2.5 pb-2 active:cursor-grabbing"
+      >
         <button
           onClick={onToggle}
           className="shrink-0 text-on-surface-variant hover:text-on-surface"
@@ -266,10 +299,27 @@ function GroupCard({
       {isExpanded && group.notes.length > 0 && (
         <div className="flex flex-col gap-2 px-2 pb-2">
           {group.notes.map((n) => (
-            <DraggableNote key={n.id} note={n} onAssign={onAssignChild} />
+            <DraggableNote key={n.id} note={n} onAssign={onAssignChild} draggable={false} />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function GroupGhost({ group }: { group: InboxGroup }) {
+  const t = useTranslation();
+  return (
+    <div className="cursor-grabbing rounded-xl bg-surface-container px-4 py-3 shadow-[0_16px_48px_rgba(42,52,57,0.18)] ring-2 ring-primary/20 select-none rotate-2">
+      <div className="flex items-center gap-2">
+        <DotsSixVertical size={16} className="text-primary" />
+        <p className="truncate font-body text-sm font-semibold text-on-surface">
+          {group.title || t.inbox.group.defaultTitle}
+        </p>
+        <span className="rounded bg-surface-container-high px-1.5 py-0.5 font-label text-[10px] font-semibold text-on-surface-variant">
+          {group.notes.length}
+        </span>
+      </div>
     </div>
   );
 }
@@ -320,12 +370,35 @@ function CategoryZone({
   );
 }
 
+function UngroupZone({ isOver, visible }: { isOver: boolean; visible: boolean }) {
+  const { setNodeRef } = useDroppable({ id: "ungroup" });
+  const t = useTranslation();
+
+  if (!visible) return null;
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "rounded-xl border-2 border-dashed px-4 py-3 transition-all duration-200",
+        isOver
+          ? "border-primary/50 bg-primary-container/40 text-on-surface scale-[1.02]"
+          : "border-outline-variant/40 bg-surface-container-lowest text-on-surface-variant"
+      )}
+    >
+      <p className="font-label text-[11px] font-bold uppercase tracking-widest">
+        {isOver ? t.inbox.group.ungroupActive : t.inbox.group.ungroupTarget}
+      </p>
+    </div>
+  );
+}
+
 // ─── Main InboxBoard ──────────────────────────────────────────────────────────
 
 export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups: initialGroups }: InboxBoardProps) {
   const [notes, setNotes] = useState(initialNotes);
-  const [groups, setGroups] = useState(initialGroups);
-  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+  const [groups, setGroups] = useState(initialGroups.filter((group) => group.notes.length >= 2));
+  const [activeDragItem, setActiveDragItem] = useState<ActiveDragItem | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(() => new Set(initialGroups.map((g) => g.id)));
 
@@ -334,21 +407,34 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
   const assignNote = trpc.note.assign.useMutation({ onSuccess: () => router.refresh() });
   const createGroup = trpc.noteGroup.createFromNotes.useMutation({ onSuccess: () => router.refresh() });
   const addToGroup = trpc.noteGroup.addNote.useMutation({ onSuccess: () => router.refresh() });
-  const removeFromGroup = trpc.noteGroup.removeNote.useMutation({ onSuccess: () => router.refresh() });
   const renameGroup = trpc.noteGroup.rename.useMutation({ onSuccess: () => router.refresh() });
   const deleteGroup = trpc.noteGroup.delete.useMutation({ onSuccess: () => router.refresh() });
+  const assignGroup = trpc.noteGroup.assign.useMutation({ onSuccess: () => router.refresh() });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
   const activeNote =
-    notes.find((n) => n.id === activeNoteId) ??
-    groups.flatMap((g) => g.notes).find((n) => n.id === activeNoteId) ??
-    null;
+    activeDragItem?.type === "note"
+      ? notes.find((n) => n.id === activeDragItem.id) ??
+        groups.flatMap((g) => g.notes).find((n) => n.id === activeDragItem.id) ??
+        null
+      : null;
+
+  const activeGroup =
+    activeDragItem?.type === "group"
+      ? groups.find((group) => group.id === activeDragItem.id) ?? null
+      : null;
 
   function handleDragStart(event: DragStartEvent) {
-    setActiveNoteId(String(event.active.id));
+    const activeId = String(event.active.id);
+    if (activeId.startsWith("group-card:")) {
+      setActiveDragItem({ type: "group", id: activeId.slice("group-card:".length) });
+      return;
+    }
+
+    setActiveDragItem({ type: "note", id: activeId });
   }
 
   function handleDragOver(event: { over: { id: string | number } | null }) {
@@ -357,26 +443,48 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    const activeId = String(active.id);
-    setActiveNoteId(null);
+    const rawActiveId = String(active.id);
+    const activeId = rawActiveId.startsWith("group-card:")
+      ? rawActiveId.slice("group-card:".length)
+      : rawActiveId;
+    const activeType = rawActiveId.startsWith("group-card:") ? "group" : "note";
+    setActiveDragItem(null);
     setOverId(null);
 
-    // Drop outside any droppable: if the note was in a group, remove it.
     if (!over) {
-      const isGrouped = groups.some((g) => g.notes.some((n) => n.id === activeId));
-      if (isGrouped) {
-        await removeFromGroup.mutateAsync({ noteId: activeId });
-      }
       return;
     }
 
     const dropId = String(over.id);
 
+    if (activeType === "group") {
+      const draggedGroup = groups.find((group) => group.id === activeId);
+      if (!draggedGroup) return;
+
+      if (dropId === "ungroup") {
+        setGroups((prev) => prev.filter((group) => group.id !== activeId));
+        setNotes((prev) => [...draggedGroup.notes, ...prev]);
+        await deleteGroup.mutateAsync({ id: activeId });
+        return;
+      }
+
+      const maybeCategory = CATEGORIES.find((c) => c.id === dropId);
+      if (maybeCategory) {
+        setGroups((prev) => prev.filter((group) => group.id !== activeId));
+        await assignGroup.mutateAsync({ id: activeId, category: maybeCategory.id });
+      }
+      return;
+    }
+
     // 1. Drop onto PARA category
     const maybeCategory = CATEGORIES.find((c) => c.id === dropId);
     if (maybeCategory) {
       setNotes((prev) => prev.filter((n) => n.id !== activeId));
-      setGroups((prev) => prev.map((g) => ({ ...g, notes: g.notes.filter((n) => n.id !== activeId) })));
+      setGroups((prev) =>
+        prev
+          .map((g) => ({ ...g, notes: g.notes.filter((n) => n.id !== activeId) }))
+          .filter((g) => g.notes.length >= 2)
+      );
       await assignNote.mutateAsync({ noteId: activeId, category: maybeCategory.id });
       return;
     }
@@ -415,7 +523,11 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
 
   function handleAssign(noteId: string, category: CategoryId) {
     setNotes((prev) => prev.filter((n) => n.id !== noteId));
-    setGroups((prev) => prev.map((g) => ({ ...g, notes: g.notes.filter((n) => n.id !== noteId) })));
+    setGroups((prev) =>
+      prev
+        .map((g) => ({ ...g, notes: g.notes.filter((n) => n.id !== noteId) }))
+        .filter((g) => g.notes.length >= 2)
+    );
     assignNote.mutate({ noteId, category });
   }
 
@@ -447,6 +559,7 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
                 key={g.id}
                 group={g}
                 isExpanded={expandedGroupIds.has(g.id)}
+                isDragging={activeDragItem?.type === "group" && activeDragItem.id === g.id}
                 isDropOver={overId === `group:${g.id}`}
                 onToggle={() =>
                   setExpandedGroupIds((prev) => {
@@ -472,12 +585,16 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
               <DraggableNote
                 key={note.id}
                 note={note}
-                isDragging={activeNoteId === note.id}
+                isDragging={activeDragItem?.type === "note" && activeDragItem.id === note.id}
                 onAssign={handleAssign}
               />
             ))}
+            <UngroupZone
+              isOver={overId === "ungroup"}
+              visible={activeDragItem?.type === "group"}
+            />
             <p className="mt-1 font-label text-[10px] text-on-surface-variant">
-              {t.inbox.dragHint}
+              {activeDragItem?.type === "group" ? t.inbox.dragGroupHint : t.inbox.dragHint}
             </p>
           </div>
 
@@ -491,6 +608,7 @@ export function InboxBoard({ workspaceId, inboxNotes: initialNotes, inboxGroups:
 
       <DragOverlay>
         {activeNote ? <NoteGhost note={activeNote} /> : null}
+        {activeGroup ? <GroupGhost group={activeGroup} /> : null}
       </DragOverlay>
     </DndContext>
   );

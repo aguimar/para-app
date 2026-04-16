@@ -84,6 +84,34 @@ export const noteGroupRouter = router({
       });
     }),
 
+  assign: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        category: z.enum(["PROJECT", "AREA", "RESOURCE", "ARCHIVE"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertGroupOwned(ctx, input.id);
+
+      await ctx.db.noteGroup.update({
+        where: { id: input.id },
+        data: { category: input.category },
+      });
+
+      await ctx.db.note.updateMany({
+        where: { groupId: input.id },
+        data: {
+          category: input.category,
+          projectId: null,
+          areaId: null,
+          resourceId: null,
+        },
+      });
+
+      return { ok: true };
+    }),
+
   removeNote: protectedProcedure
     .input(z.object({ noteId: z.string() }))
     .mutation(async ({ ctx, input }) => {

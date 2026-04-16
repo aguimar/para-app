@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { AttachResourceNotePanel } from "@/components/resources/AttachResourceNotePanel";
 import { NewResourceButton } from "@/components/resources/NewResourceButton";
 import { ResourcesView } from "@/components/resources/ResourcesView";
+import { NoteGroupList } from "@/components/notes/NoteGroupList";
 import { getLocaleFromCookies, getDict } from "@/lib/get-locale";
 
 export default async function ResourcesPage({
@@ -17,7 +18,7 @@ export default async function ResourcesPage({
   if (!userId) redirect("/sign-in");
 
   const { workspaceSlug } = await params;
-  const [workspace, unattachedNotes] = await Promise.all([
+  const [workspace, unattachedNotes, rawGroupedNotes] = await Promise.all([
     db.workspace.findUnique({
       where: { slug: workspaceSlug },
       include: {
@@ -39,16 +40,40 @@ export default async function ResourcesPage({
       },
       orderBy: { updatedAt: "desc" },
     }),
+    db.noteGroup.findMany({
+      where: {
+        workspace: { slug: workspaceSlug, userId },
+        category: "RESOURCE",
+      },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        notes: {
+          where: { category: "RESOURCE" },
+          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            title: true,
+            icon: true,
+            body: true,
+            category: true,
+            updatedAt: true,
+            tags: true,
+          },
+        },
+      },
+    }),
   ]);
 
   if (!workspace || workspace.userId !== userId) notFound();
 
   const locale = await getLocaleFromCookies();
   const t = await getDict();
+  const groupedNotes = rawGroupedNotes.filter((group) => group.notes.length >= 2);
 
   type AreaSnippet = { id: string; title: string; icon: string };
   const resources = workspace.resources as (Resource & { _count: { notes: number }; area: AreaSnippet | null })[];
-  const areas = workspace.areas as AreaSnippet[];
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -78,6 +103,12 @@ export default async function ResourcesPage({
 
         {/* ── Index list ─────────────────────────────────────────── */}
         <ResourcesView resources={resources} workspaceSlug={workspaceSlug} />
+
+        {groupedNotes.length > 0 && (
+          <div className="mx-auto max-w-5xl px-10 pb-10">
+            <NoteGroupList title={t.common.groupedNotes} groups={groupedNotes} />
+          </div>
+        )}
 
         {/* ── Unattached resource notes ───────────────────────────── */}
         {unattachedNotes.length > 0 && (
