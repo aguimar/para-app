@@ -1,9 +1,8 @@
 services:
   app:
-    build: .
+    image: aguimar/para-app:latest
+    container_name: para-app
     restart: always
-    ports:
-      - "3000:3000"
     volumes:
       - uploads_data:/app/uploads
     environment:
@@ -12,6 +11,7 @@ services:
       - .env.prod
     networks:
       - para-network
+      - caddy-network
 
 volumes:
   uploads_data:
@@ -19,3 +19,6 @@ volumes:
 networks:
   para-network:
     driver: bridge
+  caddy-network:
+    external: true
+    name: n8n-docker-caddy_default
