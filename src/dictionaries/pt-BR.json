@@ -20,10 +20,69 @@
     "groupedNotes": "Notas agrupadas"
   },
   "landing": {
-    "title": "Second Brain",
-    "description": "Organize seu conhecimento com o m\u00e9todo PARA. Projetos, \u00c1reas, Recursos e Arquivo \u2014 tudo num espa\u00e7o focado e tranquilo.",
-    "getStarted": "Come\u00e7ar",
-    "signIn": "Entrar"
+    "nav": { "features": "Funcionalidades", "howItWorks": "Como funciona", "cta": "Comece gr\u00e1tis" },
+    "hero": {
+      "eyebrow": "M\u00e9todo PARA \u00b7 Second Brain",
+      "headlineLine1": "Suas notas est\u00e3o em todo lugar.",
+      "headlineAccent": "Seu pensamento",
+      "headlineLine2": "merece um lar.",
+      "sub": "O Second Brain organiza seu conhecimento em Projetos, \u00c1reas, Recursos e Arquivo \u2014 para que voc\u00ea encontre tudo, esque\u00e7a nada e foque no que importa.",
+      "cta": "Comece gr\u00e1tis",
+      "ghost": "Veja como funciona",
+      "footnote": "Sem cart\u00e3o de cr\u00e9dito \u00b7 Funciona com WhatsApp"
+    },
+    "pain": {
+      "label": "O problema",
+      "headline": "Sua inbox \u00e9 um cemit\u00e9rio. Suas notas s\u00e3o esquecidas no momento em que voc\u00ea as escreve.",
+      "body": "Favoritos, notas de reuni\u00e3o, destaques de artigos, mensagens de voz do WhatsApp \u2014 espalhados por dezenas de apps sem estrutura. Voc\u00ea salva tudo e n\u00e3o encontra nada.",
+      "stat1Num": "26%",
+      "stat1Label": "do tempo de trabalho gasto buscando informa\u00e7\u00f5es",
+      "stat2Num": "4+",
+      "stat2Label": "apps que o trabalhador m\u00e9dio usa para notas",
+      "stat3Num": "80%",
+      "stat3Label": "das notas salvas nunca s\u00e3o consultadas novamente"
+    },
+    "para": {
+      "label": "A solu\u00e7\u00e3o",
+      "headline": "Um sistema. Quatro categorias. Tudo no lugar certo.",
+      "sub": "O m\u00e9todo PARA, criado por Tiago Forte, \u00e9 o framework de organiza\u00e7\u00e3o mais simples para trabalhadores do conhecimento. O Second Brain \u00e9 o app dedicado a ele.",
+      "pTitle": "Projetos",
+      "pDesc": "Trabalho ativo com prazo. Acompanhe progresso, notas e tarefas em um \u00fanico lugar.",
+      "aTitle": "\u00c1reas",
+      "aDesc": "Responsabilidades cont\u00ednuas sem data de t\u00e9rmino \u2014 sa\u00fade, finan\u00e7as, gest\u00e3o de equipe.",
+      "rTitle": "Recursos",
+      "rDesc": "T\u00f3picos e materiais de refer\u00eancia que voc\u00ea quer guardar \u2014 livros, artigos, pesquisas.",
+      "arTitle": "Arquivo",
+      "arDesc": "Itens conclu\u00eddos ou inativos. Fora da vista, nunca fora do alcance."
+    },
+    "features": {
+      "label": "Funcionalidades",
+      "headline": "Tudo que seu segundo c\u00e9rebro precisa",
+      "f1Tag": "Projetos",
+      "f1Title": "Transforme projetos em quadros kanban",
+      "f1Desc": "Cada projeto tem seu pr\u00f3prio quadro. Arraste tarefas entre est\u00e1gios, anexe notas e mantenha o trabalho fluindo \u2014 sem ferramentas extras.",
+      "f2Tag": "Notas",
+      "f2Title": "Um editor rico que sai do seu caminho",
+      "f2Desc": "Editor em blocos com t\u00edtulos, checklists, blocos de c\u00f3digo e muito mais. Escreva r\u00e1pido, vincule notas e encontre tudo com busca de texto completo.",
+      "f3Tag": "Recursos",
+      "f3Title": "Capture recursos de qualquer lugar",
+      "f3Desc": "Salve artigos, livros, podcasts e refer\u00eancias diretamente na sua biblioteca. Marque, anote e recupere com facilidade."
+    },
+    "whatsapp": {
+      "badge": "Integra\u00e7\u00e3o com WhatsApp",
+      "headline": "Mande um \u00e1udio. Ele cai na sua Inbox.",
+      "body": "Conecte seu WhatsApp ao Second Brain. Cada mensagem que voc\u00ea encaminhar \u2014 texto, \u00e1udio, link ou imagem \u2014 \u00e9 transcrita e salva na sua Inbox, pronta para arquivar no PARA.",
+      "chatVoice": "\ud83c\udf99\ufe0f Mensagem de voz (0:32)",
+      "chatForward": "Encaminhar para o Second Brain",
+      "chatConfirm": "\u2705 Salvo na Inbox"
+    },
+    "cta": {
+      "headline": "Seu segundo c\u00e9rebro est\u00e1 a um clique de dist\u00e2ncia.",
+      "sub": "Junte-se aos early adopters construindo uma pr\u00e1tica de conhecimento mais organizada.",
+      "btn": "Criar conta gr\u00e1tis",
+      "footnote": "Sem cart\u00e3o de cr\u00e9dito \u00b7 Cancele quando quiser"
+    },
+    "footer": { "privacy": "Privacidade", "terms": "Termos", "contact": "Contato" }
   },
   "sidebar": {
     "brand": "Second Brain",

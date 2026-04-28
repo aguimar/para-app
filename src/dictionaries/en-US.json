@@ -20,10 +20,69 @@
     "groupedNotes": "Grouped Notes"
   },
   "landing": {
-    "title": "Second Brain",
-    "description": "Organize your knowledge with the PARA method. Projects, Areas, Resources, Archives \u2014 all in one quiet, focused workspace.",
-    "getStarted": "Get started",
-    "signIn": "Sign in"
+    "nav": { "features": "Features", "howItWorks": "How it works", "cta": "Get started free" },
+    "hero": {
+      "eyebrow": "PARA method \u00b7 Second Brain",
+      "headlineLine1": "Your notes are everywhere.",
+      "headlineAccent": "Your thinking",
+      "headlineLine2": "should have a home.",
+      "sub": "Second Brain organises your knowledge into Projects, Areas, Resources and Archives \u2014 so you find anything, forget nothing, and focus on what moves the needle.",
+      "cta": "Get started free",
+      "ghost": "See how it works",
+      "footnote": "No credit card required \u00b7 Works with WhatsApp"
+    },
+    "pain": {
+      "label": "The problem",
+      "headline": "Your inbox is a graveyard. Your notes are forgotten the moment you write them.",
+      "body": "Bookmarks, meeting notes, article highlights, WhatsApp voice messages \u2014 scattered across a dozen apps with no structure. You save everything and find nothing.",
+      "stat1Num": "26%",
+      "stat1Label": "of work time spent searching for information",
+      "stat2Num": "4+",
+      "stat2Label": "apps the average knowledge worker uses for notes",
+      "stat3Num": "80%",
+      "stat3Label": "of saved notes never referenced again"
+    },
+    "para": {
+      "label": "The solution",
+      "headline": "One system. Four buckets. Everything in its place.",
+      "sub": "The PARA method, created by Tiago Forte, is the simplest organising framework for knowledge workers. Second Brain is your dedicated app for it.",
+      "pTitle": "Projects",
+      "pDesc": "Active work with a deadline. Track progress, notes and tasks in one place.",
+      "aTitle": "Areas",
+      "aDesc": "Ongoing responsibilities with no end date \u2014 health, finances, team management.",
+      "rTitle": "Resources",
+      "rDesc": "Topics and reference material you want to keep \u2014 books, articles, research.",
+      "arTitle": "Archive",
+      "arDesc": "Completed or inactive items. Out of sight, never out of reach."
+    },
+    "features": {
+      "label": "Features",
+      "headline": "Everything your second brain needs",
+      "f1Tag": "Projects",
+      "f1Title": "Turn projects into kanban boards",
+      "f1Desc": "Each project gets its own board. Drag tasks between stages, attach notes, and keep your work moving \u2014 no extra tool required.",
+      "f2Tag": "Notes",
+      "f2Title": "A rich editor that gets out of your way",
+      "f2Desc": "Block-based editor with headings, checklists, code blocks and more. Write fast, link notes together, find everything with full-text search.",
+      "f3Tag": "Resources",
+      "f3Title": "Capture resources from anywhere",
+      "f3Desc": "Save articles, books, podcasts and references directly into your resource library. Tag, annotate and retrieve with ease."
+    },
+    "whatsapp": {
+      "badge": "WhatsApp integration",
+      "headline": "Send a voice note. It lands in your Inbox.",
+      "body": "Connect your WhatsApp to Second Brain. Every message you forward \u2014 text, voice, link or image \u2014 is transcribed and saved to your Inbox, ready to file into PARA.",
+      "chatVoice": "\ud83c\udf99\ufe0f Voice message (0:32)",
+      "chatForward": "Forward to Second Brain",
+      "chatConfirm": "\u2705 Saved to Inbox"
+    },
+    "cta": {
+      "headline": "Your second brain is one click away.",
+      "sub": "Join early adopters building a quieter, more organised knowledge practice.",
+      "btn": "Create your free account",
+      "footnote": "No credit card \u00b7 Cancel anytime"
+    },
+    "footer": { "privacy": "Privacy", "terms": "Terms", "contact": "Contact" }
   },
   "sidebar": {
     "brand": "Second Brain",
