@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
   if (xAgentKey === agentKey || xApiKey === agentKey) {
     isAuthorized = true;
   } else if (authHeader) {
-    // Support "ApiKey <key>" or just raw key in Authorization header to bypass Clerk's Bearer parser
-    if (authHeader === agentKey || authHeader === `ApiKey ${agentKey}`) {
+    // Support "Bearer <key>", "ApiKey <key>" or just raw key in Authorization header
+    if (authHeader === agentKey || authHeader === `ApiKey ${agentKey}` || authHeader === `Bearer ${agentKey}`) {
       isAuthorized = true;
     }
   }
