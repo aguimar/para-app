@@ -188,6 +188,22 @@ model NoteComment {
   @@index([noteId])
 }
 
+model CliAuthCodeRedemption {
+  codeHash  String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model CliTokenRevocation {
+  tokenHash String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
 model Attachment {
   id        String   @id @default(cuid())
   filename  String   // original filename shown to user
