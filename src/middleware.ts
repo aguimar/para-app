@@ -6,6 +6,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks(.*)",
+  "/api/external(.*)",
+  "/api/cli(.*)",
 ]);
 
 const LOCALES = ["pt-BR", "en-US"];
