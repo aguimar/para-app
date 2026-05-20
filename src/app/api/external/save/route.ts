@@ -26,7 +26,6 @@ function ext(mimeType: string): string {
 
 export async function POST(req: NextRequest) {
   // 1. Authenticate with AGENT_API_KEY
-  const authHeader = req.headers.get("authorization")?.trim();
   const agentKey = process.env.AGENT_API_KEY;
   if (!agentKey) {
     return NextResponse.json(
@@ -35,9 +34,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const expectedHeader = `Bearer ${agentKey}`;
-  if (authHeader !== expectedHeader) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const xAgentKey = req.headers.get("x-agent-key")?.trim();
+  const xApiKey = req.headers.get("x-api-key")?.trim();
+  const authHeader = req.headers.get("authorization")?.trim();
+
+  let isAuthorized = false;
+  if (xAgentKey === agentKey || xApiKey === agentKey) {
+    isAuthorized = true;
+  } else if (authHeader) {
+    // Support "ApiKey <key>" or just raw key in Authorization header to bypass Clerk's Bearer parser
+    if (authHeader === agentKey || authHeader === `ApiKey ${agentKey}`) {
+      isAuthorized = true;
+    }
+  }
+
+  if (!isAuthorized) {
+    return NextResponse.json(
+      { error: "Unauthorized (Invalid or missing API key). Use 'x-agent-key' header." },
+      { status: 401 }
+    );
   }
 
   const contentType = req.headers.get("content-type") || "";

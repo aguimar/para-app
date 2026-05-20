@@ -91,7 +91,7 @@ def main():
     args = parser.parse_args()
 
     headers = {
-        "Authorization": f"Bearer {AGENT_API_KEY}"
+        "x-agent-key": AGENT_API_KEY
     }
 
     # Prepara os campos normais
